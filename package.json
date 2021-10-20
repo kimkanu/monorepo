@@ -1,0 +1,17 @@
+{
+  "name": "2021-fall-cs492c-team-10",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "author": "Team 10",
+  "license": "MIT",
+  "devDependencies": {
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "3.3.0",
+    "lerna": "^4.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
