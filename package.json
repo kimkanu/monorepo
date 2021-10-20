@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "2021-fall-cs492c-team-10",
   "version": "0.0.1",
   "main": "src/index.ts",
@@ -9,6 +10,12 @@
     "cz-conventional-changelog": "3.3.0",
     "lerna": "^4.0.0"
   },
+  "scripts": {
+    "commit": "cz"
+  },
+  "workspaces": [
+    "packages/frontend"
+  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
