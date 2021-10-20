@@ -14,7 +14,8 @@
     "commit": "cz"
   },
   "workspaces": [
-    "packages/frontend"
+    "packages/frontend",
+    "packages/backend"
   ],
   "config": {
     "commitizen": {
