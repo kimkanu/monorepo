@@ -1,0 +1,26 @@
+version: "3"
+services:
+  app:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "pg://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME}"
+      SESSION_SECRET: ${SESSION_SECRET}
+      NODE_ENV: development
+      PORT: 3567
+    ports:
+      - "3567:3567"
+    command: yarn workspace backend run start:dev
+    volumes:
+      - .:/app/
+      - /app/node_modules
+
+  postgres:
+    image: postgres:10.4
+    ports:
+      - "35432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
