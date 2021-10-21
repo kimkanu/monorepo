@@ -5,10 +5,14 @@ import express, { Express } from 'express';
 import session from 'express-session';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import passport from 'passport';
 import { createConnection } from 'typeorm';
 import { TypeormStore } from 'typeorm-store';
 
 import Session from './entity/session';
+import SSOAccount from './entity/sso-account';
+import User from './entity/user';
+import initializePassport from './passport';
 import mainRouter from './routes';
 import frontendRouter from './routes/frontend';
 
@@ -44,7 +48,7 @@ export default class Server {
       type: 'postgres',
       url: process.env.DATABASE_URL,
       synchronize: true,
-      entities: [Session],
+      entities: [Session, User, SSOAccount],
     });
     const repository = connection.getRepository(Session);
 
@@ -73,6 +77,9 @@ export default class Server {
         },
       },
     }));
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
+    initializePassport(connection);
 
     this.app.use('/api', mainRouter);
     this.app.use(frontendRouter);

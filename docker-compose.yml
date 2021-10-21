@@ -9,6 +9,9 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       NODE_ENV: development
       PORT: 3567
+      AUTH_NAVER_CALLBACK_URL: ${AUTH_NAVER_CALLBACK_URL}
+      AUTH_NAVER_CLIENT_ID: ${AUTH_NAVER_CLIENT_ID}
+      AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
     ports:
       - "3567:3567"
     command: yarn workspace backend run start:dev
