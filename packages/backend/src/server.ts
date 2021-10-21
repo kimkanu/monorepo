@@ -1,5 +1,4 @@
 import http from 'http';
-import path from 'path';
 
 import cors from 'cors';
 import express, { Express } from 'express';
@@ -11,6 +10,7 @@ import { TypeormStore } from 'typeorm-store';
 
 import Session from './entity/session';
 import mainRouter from './routes';
+import frontendRouter from './routes/frontend';
 
 /** Class representing a server stack. */
 export default class Server {
@@ -75,22 +75,7 @@ export default class Server {
     }));
 
     this.app.use('/api', mainRouter);
-    this.app.use('/*', (req, res, next) => {
-      if (req.baseUrl.startsWith('/sock') || req.baseUrl.startsWith('/static')) {
-        next();
-        return;
-      }
-
-      res.sendFile(
-        path.join(__dirname, '..', '..', 'frontend', 'build', 'index.html'),
-      );
-    });
-    this.app.use(
-      '/static',
-      express.static(
-        path.join(__dirname, '..', '..', 'frontend', 'build', 'static'),
-      ),
-    );
+    this.app.use(frontendRouter);
   }
 
   listen() {
