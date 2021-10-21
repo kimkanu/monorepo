@@ -1,7 +1,10 @@
 {
-  "name": "frontend",
-  "version": "0.0.1",
   "private": true,
+  "name": "@team-10/frontend",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "author": "Team 10",
+  "license": "MIT",
   "dependencies": {
     "@craco/craco": "^6.3.0",
     "@tailwindcss/aspect-ratio": "^0.3.0",

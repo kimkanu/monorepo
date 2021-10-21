@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "backend",
+  "name": "@team-10/backend",
   "version": "0.0.1",
   "main": "src/index.ts",
   "author": "Team 10",
