@@ -6,6 +6,7 @@ import session from 'express-session';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import passport from 'passport';
+import { Server as IOServer, Socket } from 'socket.io';
 import { createConnection } from 'typeorm';
 import { TypeormStore } from 'typeorm-store';
 
@@ -15,6 +16,7 @@ import User from './entity/user';
 import initializePassport from './passport';
 import mainRouter from './routes';
 import frontendRouter from './routes/frontend';
+import Room from './types/room';
 
 /** Class representing a server stack. */
 export default class Server {
@@ -26,6 +28,12 @@ export default class Server {
 
   /** Http server instance. */
   http: http.Server;
+
+  /** Socket.io server instance. */
+  io: IOServer;
+
+  /** The collection of rooms. */
+  rooms: Map<string, Room>;
 
   /**
    * Create a server stack.
@@ -83,6 +91,21 @@ export default class Server {
 
     this.app.use('/api', mainRouter);
     this.app.use(frontendRouter);
+
+    this.io = new IOServer(this.http, {
+      cors: {
+        origin: '*',
+      },
+    });
+
+    const wrap = (middleware: any) => (
+      socket: Socket, next: Function,
+    ) => middleware(
+      socket.request, {}, next,
+    );
+    this.io.use(wrap(sessionMiddleware));
+    this.io.use(wrap(passport.initialize()));
+    this.io.use(wrap(passport.session()));
   }
 
   listen() {
