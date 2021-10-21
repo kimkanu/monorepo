@@ -22,7 +22,8 @@
   },
   "scripts": {
     "start:dev": "nodemon",
-    "start:prod": "ts-node src/index.ts"
+    "start:prod": "ts-node src/index.ts",
+    "commit": "cd ../.. && git add yarn.lock && cz"
   },
   "dependencies": {
     "cors": "^2.8.5",

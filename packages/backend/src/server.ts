@@ -2,7 +2,7 @@ import http from 'http';
 import path from 'path';
 
 import cors from 'cors';
-import express, { Express, Request } from 'express';
+import express, { Express } from 'express';
 import session from 'express-session';
 import helmet from 'helmet';
 import morgan from 'morgan';
