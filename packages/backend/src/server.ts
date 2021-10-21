@@ -1,16 +1,22 @@
 import http from 'http';
-import path from 'path';
 
 import cors from 'cors';
-import express, { Express, Request } from 'express';
+import express, { Express } from 'express';
 import session from 'express-session';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import passport from 'passport';
+import { Server as IOServer, Socket } from 'socket.io';
 import { createConnection } from 'typeorm';
 import { TypeormStore } from 'typeorm-store';
 
 import Session from './entity/session';
+import SSOAccount from './entity/sso-account';
+import User from './entity/user';
+import initializePassport from './passport';
 import mainRouter from './routes';
+import frontendRouter from './routes/frontend';
+import Room from './types/room';
 
 /** Class representing a server stack. */
 export default class Server {
@@ -22,6 +28,12 @@ export default class Server {
 
   /** Http server instance. */
   http: http.Server;
+
+  /** Socket.io server instance. */
+  io: IOServer;
+
+  /** The collection of rooms. */
+  rooms: Map<string, Room>;
 
   /**
    * Create a server stack.
@@ -44,7 +56,7 @@ export default class Server {
       type: 'postgres',
       url: process.env.DATABASE_URL,
       synchronize: true,
-      entities: [Session],
+      entities: [Session, User, SSOAccount],
     });
     const repository = connection.getRepository(Session);
 
@@ -73,24 +85,27 @@ export default class Server {
         },
       },
     }));
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
+    initializePassport(connection);
 
     this.app.use('/api', mainRouter);
-    this.app.use('/*', (req, res, next) => {
-      if (req.baseUrl.startsWith('/sock') || req.baseUrl.startsWith('/static')) {
-        next();
-        return;
-      }
+    this.app.use(frontendRouter);
 
-      res.sendFile(
-        path.join(__dirname, '..', '..', 'frontend', 'build', 'index.html'),
-      );
+    this.io = new IOServer(this.http, {
+      cors: {
+        origin: '*',
+      },
     });
-    this.app.use(
-      '/static',
-      express.static(
-        path.join(__dirname, '..', '..', 'frontend', 'build', 'static'),
-      ),
+
+    const wrap = (middleware: any) => (
+      socket: Socket, next: Function,
+    ) => middleware(
+      socket.request, {}, next,
     );
+    this.io.use(wrap(sessionMiddleware));
+    this.io.use(wrap(passport.initialize()));
+    this.io.use(wrap(passport.session()));
   }
 
   listen() {

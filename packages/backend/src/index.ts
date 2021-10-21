@@ -2,6 +2,7 @@
 
 import 'reflect-metadata';
 
+import ioHandler from './handlers/io';
 import Server from './server';
 
 if (!process.env.PORT) {
@@ -22,6 +23,7 @@ if (!process.env.SESSION_SECRET) {
 
 const server = new Server(port);
 server.initialize().then(() => {
+  ioHandler(server);
   server.listen();
 });
 

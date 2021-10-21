@@ -33,6 +33,7 @@
         "functions": false,
         "classes": true
       }
-    ]
+    ],
+    "import/no-cycle": "off"
   }
 }
