@@ -7,8 +7,8 @@ const router = Router();
 
 const buildPath = path.join(__dirname, '..', '..', 'public');
 const pathToPassThrough = /^\/(sock|static\/)/;
-const publicFiles = process.env.NODE_ENV === 'production' ?
-  fs.readdirSync(buildPath, { withFileTypes: true })
+const publicFiles = process.env.NODE_ENV === 'production'
+  ? fs.readdirSync(buildPath, { withFileTypes: true })
     .filter((dirent) => dirent.isFile())
     .map((dirent) => `/${dirent.name}`)
     .filter((file) => file !== '/index.html')

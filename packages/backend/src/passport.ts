@@ -25,9 +25,7 @@ export default (connection: Connection) => {
     });
   });
 
-  const callbackURL = process.env.AUTH_NAVER_CALLBACK_URL!.endsWith(':80')
-    ? process.env.AUTH_NAVER_CALLBACK_URL!.slice(0, -3)
-    : process.env.AUTH_NAVER_CALLBACK_URL!;
+  const callbackURL = process.env.AUTH_NAVER_CALLBACK_URL!.replace(':80', '');
 
   /** Sign in with Naver. */
   passport.use(new NaverStrategy({
