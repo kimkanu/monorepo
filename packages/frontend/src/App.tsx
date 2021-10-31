@@ -10,9 +10,15 @@ function App() {
     process.env.NODE_ENV === 'production'
       ? undefined
       : {
-        host: 'localhost:3567',
+        host: process.env.REACT_APP_PROXY_URL!.replace(/https?:\/\//g, ''),
       },
   );
+
+  React.useEffect(() => {
+    fetch('/api')
+      .then((r) => r.text())
+      .then((s) => console.log(`/: ${s}`));
+  }, []);
 
   return (
     <div className="App">

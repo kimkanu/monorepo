@@ -111,7 +111,7 @@ export default class Server {
   listen() {
     this.http.listen(this.port, () => {
       // eslint-disable-next-line no-console
-      console.log(`The server started on the port ${this.port}.`);
+      console.log('The backend server started.');
     });
   }
 

@@ -11,6 +11,16 @@
     "lerna": "^4.0.0"
   },
   "scripts": {
+    "development": "docker-compose --profile development up",
+    "build:development": "docker-compose --profile development build",
+    "production": "docker-compose --env-file .env.production --profile production up",
+    "build:production": "yarn workspace @team-10/frontend run production && mv packages/frontend/build packages/backend/public || move packages/frontend/build packages/backend/public && docker-compose --env-file .env.production --profile production build",
+    "dev": "yarn development",
+    "build:dev": "yarn build:development",
+    "prod": "yarn production",
+    "build:prod": "yarn build:production",
+    "stop": "docker-compose stop",
+    "down": "docker-compose down",
     "commit": "cz"
   },
   "workspaces": [

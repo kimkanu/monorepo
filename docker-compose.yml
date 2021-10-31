@@ -1,29 +1,68 @@
 version: "3"
 services:
-  app:
-    build: .
+  frontend:
+    profiles:
+      - development
+      - test:frontend
+    build:
+      context: .
+      dockerfile: ./packages/frontend/Dockerfile
+    expose: 
+      - ${FRONTEND_PORT}
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    networks:
+      - mynetwork
+    environment:
+      PORT: ${FRONTEND_PORT}
+      NODE_ENV: ${NODE_ENV}
+      REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
+    command: yarn workspace @team-10/frontend run ${NODE_ENV}
+    links:
+      - "backend"
+    volumes:
+      - ./packages/frontend/:/app/packages/frontend/
+  backend:
+    profiles:
+      - development
+      - production
+      - test:frontend
+    build:
+      context: .
+      dockerfile: ./packages/backend/Dockerfile
+    expose: 
+      - ${BACKEND_PORT}
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    networks:
+      - mynetwork
     depends_on:
       - postgres
     environment:
+      PORT: ${BACKEND_PORT}
       DATABASE_URL: "pg://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME}"
       SESSION_SECRET: ${SESSION_SECRET}
-      NODE_ENV: development
-      PORT: 3567
-      AUTH_NAVER_CALLBACK_URL: ${AUTH_NAVER_CALLBACK_URL}
+      NODE_ENV: ${NODE_ENV}
+      AUTH_NAVER_CALLBACK_URL: ${AUTH_NAVER_CALLBACK_HOST}:${FRONTEND_PORT}
       AUTH_NAVER_CLIENT_ID: ${AUTH_NAVER_CLIENT_ID}
       AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
-    ports:
-      - "3567:3567"
-    command: yarn workspace @team-10/backend run start:dev
+    command: yarn workspace @team-10/backend run ${NODE_ENV}
     volumes:
-      - .:/app/
-      - /app/node_modules
-
+      - ./packages/backend/:/app/packages/backend/
   postgres:
     image: postgres:10.4
+    profiles:
+      - development
+      - production
+      - test:frontend
     ports:
       - "35432:5432"
+    networks:
+      - mynetwork
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
+
+networks:
+  mynetwork:

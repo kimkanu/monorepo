@@ -37,10 +37,11 @@
     "workbox-streams": "^6.3.0"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
+    "development": "craco start",
+    "production": "craco build",
+    "dev": "yarn development",
+    "prod": "yarn production",
     "test": "craco test",
-    "eject": "react-scripts eject",
     "commit": "cd ../.. && git add yarn.lock && cz"
   },
   "eslintConfig": {
@@ -64,7 +65,7 @@
   "devDependencies": {
     "autoprefixer": "^9",
     "commitizen": "^4.2.4",
-    "eslint": "^8.0.1",
+    "eslint": "^7.11.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-typescript": "^14.0.1",
     "eslint-plugin-import": "^2.25.2",
