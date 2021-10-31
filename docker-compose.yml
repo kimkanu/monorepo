@@ -14,7 +14,7 @@ services:
       AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
     ports:
       - "3567:3567"
-    command: yarn workspace backend run start:dev
+    command: yarn workspace @team-10/backend run start:dev
     volumes:
       - .:/app/
       - /app/node_modules
