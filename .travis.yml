@@ -1,0 +1,21 @@
+language: node_js
+
+node_js:
+  - "14"
+
+cache:
+  npm: false
+  directories:
+    - ./.yarn/cache
+
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH="$HOME/.yarn/bin:$PATH"
+  - yarn set version berry
+  - yarn -v
+install: yarn install && yarn plugin import workspace-tools
+
+notifications:
+  email: false
+
+script: yarn workspaces foreach run test
