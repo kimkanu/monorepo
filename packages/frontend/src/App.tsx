@@ -7,10 +7,10 @@ import './App.css';
 function App() {
   const { socket, connected } = useSocket(
     '/',
-    process.env.NODE_ENV === 'production'
+    process.env.NODE_ENV === 'production' || !process.env.REACT_APP_PROXY_URL
       ? undefined
       : {
-        host: process.env.REACT_APP_PROXY_URL!.replace(/https?:\/\//g, ''),
+        host: process.env.REACT_APP_PROXY_URL.replace(/https?:\/\//g, ''),
       },
   );
 

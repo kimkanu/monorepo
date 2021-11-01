@@ -20,6 +20,9 @@
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "recoil": "^0.4.1",
+    "serve": "^12.0.1",
+    "socket.io-client": "^4.3.2",
+    "socket.io-mock": "^1.3.2",
     "socket.io-react-hook": "^1.0.12",
     "typescript": "^4.1.2",
     "web-vitals": "^2.1.2",
@@ -41,8 +44,9 @@
     "production": "craco build",
     "dev": "yarn development",
     "prod": "yarn production",
-    "test": "craco test",
-    "commit": "cd ../.. && git add yarn.lock && cz"
+    "test": "craco test --watchAll=false --forceExit --detectOpenHandles",
+    "lint": "eslint --fix .",
+    "commit": "yarn lint && cd ../.. && git add yarn.lock && cz"
   },
   "eslintConfig": {
     "extends": [

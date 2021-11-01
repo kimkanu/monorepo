@@ -25,7 +25,10 @@
   "scripts": {
     "development": "nodemon",
     "production": "ts-node src/index.ts",
-    "commit": "cd ../.. && git add yarn.lock && cz"
+    "dev": "yarn development",
+    "prod": "yarn production",
+    "lint": "eslint --fix .",
+    "commit": "yarn lint && cd ../.. && git add yarn.lock && cz"
   },
   "dependencies": {
     "cors": "^2.8.5",
