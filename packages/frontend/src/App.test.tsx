@@ -14,9 +14,9 @@ beforeEach(() => {
   mockUseSocket.mockImplementationOnce((namespaceKey: string) => {
     (socketClient as any).namespaceKey = namespaceKey;
     return ({
-      socket: socketClient as any,
       connected: socketClient.connected,
       error: undefined,
+      socket: socketClient as any,
     });
   });
 });

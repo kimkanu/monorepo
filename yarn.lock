@@ -1812,6 +1812,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fluentui/react-icons@npm:^1.1.145":
+  version: 1.1.145
+  resolution: "@fluentui/react-icons@npm:1.1.145"
+  checksum: 5f908e8627f20c2228dd85daf00ff0da79eed6612f06cfbbcc340b98410fb042705fcccff890f6730779715ad05245a2350a2f34a0058cc5c70475bc00439045
+  languageName: node
+  linkType: hard
+
 "@gar/promisify@npm:^1.0.1":
   version: 1.1.2
   resolution: "@gar/promisify@npm:1.1.2"
@@ -2111,6 +2118,13 @@ __metadata:
     "@types/yargs": ^16.0.0
     chalk: ^4.0.0
   checksum: 322603c24354a5333b5b7a670464422a46e0244a5a96a35552a7018eb4ac2e84c3b7657336b0ea6aa114963f9b6d0da8b8f6f963cb044fea9e7bc04d464b0ab1
+  languageName: node
+  linkType: hard
+
+"@juggle/resize-observer@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "@juggle/resize-observer@npm:3.3.1"
+  checksum: ddabc4044276a2cb57d469c4917206c7e39f2463aa8e3430e33e4eda554412afe29c22afa40e6708b49dad5d56768dc83acd68a704b1dcd49a0906bb96b991b2
   languageName: node
   linkType: hard
 
@@ -3187,12 +3201,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-hook/latest@npm:^1.0.2":
+  version: 1.0.3
+  resolution: "@react-hook/latest@npm:1.0.3"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 2408c9cd35c5cfa7697b6da3bc5eebef254a932ade70955074c474f23be7dd3e2f81bbba12edcc9208bd0f89c6ed366d6b11d4f6d7b1052877a0bac8f74afad4
+  languageName: node
+  linkType: hard
+
 "@react-hook/media-query@npm:^1.1.1":
   version: 1.1.1
   resolution: "@react-hook/media-query@npm:1.1.1"
   peerDependencies:
     react: ">=16.8"
   checksum: 141d271789250e2703329f94486b7c866b9cf44a79a6c347cbacdf07f1d480adb0841d297dd1a87e310afb44173811e117cf03bdc92043e360752246553c619d
+  languageName: node
+  linkType: hard
+
+"@react-hook/passive-layout-effect@npm:^1.2.0":
+  version: 1.2.1
+  resolution: "@react-hook/passive-layout-effect@npm:1.2.1"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 217cb8aa90fb8e677672319a9a466d7752890cf4357c76df000b207696e9cc717cf2ee88080671cc9dae238a82f92093ab4f61ab2f6032d2a8db958fc7d99b5d
+  languageName: node
+  linkType: hard
+
+"@react-hook/resize-observer@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "@react-hook/resize-observer@npm:1.2.4"
+  dependencies:
+    "@juggle/resize-observer": ^3.3.1
+    "@react-hook/latest": ^1.0.2
+    "@react-hook/passive-layout-effect": ^1.2.0
+    "@types/raf-schd": ^4.0.0
+    raf-schd: ^4.0.2
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 12dc95c6f9f46c3097dfba8573a5745e72f07ea44e9213d5d881648efb9cf8f12517063e01542b912ddcebe9d5e5f38051cc8e2211bc8bce58ef9fc275835a5c
   languageName: node
   linkType: hard
 
@@ -3474,7 +3521,9 @@ __metadata:
   resolution: "@team-10/frontend@workspace:packages/frontend"
   dependencies:
     "@craco/craco": ^6.3.0
+    "@fluentui/react-icons": ^1.1.145
     "@react-hook/media-query": ^1.1.1
+    "@react-hook/resize-observer": ^1.2.4
     "@tailwindcss/aspect-ratio": ^0.3.0
     "@testing-library/jest-dom": ^5.11.4
     "@testing-library/react": ^11.1.0
@@ -3523,6 +3572,7 @@ __metadata:
     workbox-routing: ^6.3.0
     workbox-strategies: ^6.3.0
     workbox-streams: ^6.3.0
+    youtube-player: ^5.5.2
   languageName: unknown
   linkType: soft
 
@@ -3984,6 +4034,13 @@ __metadata:
   version: 6.9.7
   resolution: "@types/qs@npm:6.9.7"
   checksum: 7fd6f9c25053e9b5bb6bc9f9f76c1d89e6c04f7707a7ba0e44cc01f17ef5284adb82f230f542c2d5557d69407c9a40f0f3515e8319afd14e1e16b5543ac6cdba
+  languageName: node
+  linkType: hard
+
+"@types/raf-schd@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "@types/raf-schd@npm:4.0.1"
+  checksum: 0babaa85541aadc6e5f8aa64ec79cd68bf67ea56abb7610c8daf3ca5f4b1a75d12e4e147a0b5434938a4031650ebddc733021ec4e7db4f11f7955390ec32c917
   languageName: node
   linkType: hard
 
@@ -16904,6 +16961,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"raf-schd@npm:^4.0.2":
+  version: 4.0.3
+  resolution: "raf-schd@npm:4.0.3"
+  checksum: 45514041c5ad31fa96aef3bb3c572a843b92da2f2cd1cb4a47c9ad58e48761d3a4126e18daa32b2bfa0bc2551a42d8f324a0e40e536cb656969929602b4e8b58
+  languageName: node
+  linkType: hard
+
 "raf@npm:^3.4.1":
   version: 3.4.1
   resolution: "raf@npm:3.4.1"
@@ -21772,7 +21836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"youtube-player@npm:5.5.2":
+"youtube-player@npm:5.5.2, youtube-player@npm:^5.5.2":
   version: 5.5.2
   resolution: "youtube-player@npm:5.5.2"
   dependencies:

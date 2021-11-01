@@ -72,6 +72,7 @@ function App() {
           </button>
         </Debug>
         <div className="w-full h-full bg-gray-100">
+          {/* Example usage of `YTWrapper` and `YTPlayer`. */}
           <Route
             path="/"
             render={({ location, history }) => {

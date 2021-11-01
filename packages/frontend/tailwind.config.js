@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies, global-require */
+/* eslint-disable import/no-extraneous-dependencies, global-require, sort-keys */
 module.exports = {
   purge: ['./src/**/*.{ts,tsx}', './public/index.html'],
   darkMode: false,

@@ -3,7 +3,7 @@ import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 import useScreenType, { ScreenType } from '../hooks/useScreenType';
-import { mergeClassNames, mergeStyles, Styled } from '../utils/style';
+import { mergeClassNames, Styled } from '../utils/style';
 
 import styles from './YTWrapper.module.css';
 
