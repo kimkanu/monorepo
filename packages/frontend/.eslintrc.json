@@ -23,6 +23,7 @@
         "alphabetize": { "order": "asc", "caseInsensitive": true }
       }
     ],
+    "react/require-default-props": "off",
     "@typescript-eslint/no-redeclare": [
       "error",
       {
@@ -35,6 +36,8 @@
         "functions": false,
         "classes": true
       }
-    ]
+    ],
+    "react/require-default-props": "off",
+    "sort-keys": "error"
   }
 }
