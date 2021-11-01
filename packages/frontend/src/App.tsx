@@ -28,7 +28,6 @@ function App() {
     fetch('/api')
       .then((r) => r.text())
       .then((s) => console.log(`/: ${s}`));
-    console.log('hi');
   }, []);
 
   const [videoId, setVideoId] = React.useState<string | undefined>(undefined);
