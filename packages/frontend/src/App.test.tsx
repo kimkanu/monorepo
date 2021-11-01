@@ -8,6 +8,17 @@ import App from './App';
 
 jest.mock('socket.io-react-hook');
 
+window.matchMedia = (query) => ({
+  addEventListener: jest.fn(),
+  addListener: jest.fn(), // Deprecated
+  dispatchEvent: jest.fn(),
+  matches: false,
+  media: query,
+  onchange: null,
+  removeEventListener: jest.fn(),
+  removeListener: jest.fn(), // Deprecated
+});
+
 beforeEach(() => {
   const mockUseSocket = useSocket as jest.MockedFunction<typeof useSocket>;
   const { socketClient } = new SocketMock();
@@ -25,8 +36,8 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-test('renders learn react link', () => {
+test('Renders `Connected!` message.', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
+  const linkElement = screen.getByText(/Connected!/i);
   expect(linkElement).toBeInTheDocument();
 });
