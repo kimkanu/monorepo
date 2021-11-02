@@ -1,0 +1,37 @@
+name: test@node-14.18.1
+
+on:
+  push:
+    branches:
+    - main
+    - features/**
+    - dependabot/**
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  docker:
+    timeout-minutes: 30
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Build containers
+        run: docker-compose -f "docker-compose.workflow.yml" build
+
+      - name: Test frontend
+        run: docker-compose -f "docker-compose.workflow.yml" up frontend
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage/
+          fail_ci_if_error: true
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.workflow.yml" down
