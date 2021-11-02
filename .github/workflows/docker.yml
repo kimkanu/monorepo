@@ -24,7 +24,7 @@ jobs:
         run: docker-compose -f "docker-compose.workflow.yml" build
 
       - name: Test frontend
-        run: docker-compose -f "docker-compose.workflow.yml" --env-file .env.test up frontend
+        run: docker-compose -f "docker-compose.workflow.yml" up frontend
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
