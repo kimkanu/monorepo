@@ -4,15 +4,15 @@ module.exports = function setupProxy(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://backend:3566',
       changeOrigin: true,
+      target: 'http://backend:3566',
     }),
   );
   app.use(
     '/socket.io',
     createProxyMiddleware({
-      target: 'http://backend:3566',
       changeOrigin: true,
+      target: 'http://backend:3566',
       ws: true,
     }),
   );
