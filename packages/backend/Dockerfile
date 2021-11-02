@@ -18,6 +18,4 @@ USER node
 RUN yarn set version berry
 RUN yarn install
 
-COPY ./packages/backend/ /app/packages/backend/
-
 EXPOSE ${BACKEND_PORT}

@@ -26,6 +26,7 @@
     "build:prod": "yarn build:production",
     "stop": "docker-compose stop",
     "down": "docker-compose down",
+    "build:common": "docker build -t keonwoo/cs492c:default -f Dockerfile.workflow . && docker push keonwoo/cs492c:default",
     "commit": "cz"
   },
   "workspaces": [

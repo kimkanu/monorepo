@@ -18,6 +18,4 @@ USER node
 RUN yarn set version berry
 RUN yarn install
 
-COPY ./packages/frontend/ /app/packages/frontend/
-
 EXPOSE ${FRONTEND_PORT}
