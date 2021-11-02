@@ -36,6 +36,8 @@ const YTWrapper: React.FC<Styled<Props>> = ({
   const TIMEOUT = 400;
 
   const [initialInClass, setInitialInClass] = React.useState(inClass);
+  const nodeRef = React.useRef<HTMLDivElement>(null);
+
   const screenType = useScreenType();
   const screenTypeName = ScreenType[screenType];
 
@@ -60,6 +62,7 @@ const YTWrapper: React.FC<Styled<Props>> = ({
     <CSSTransition
       in={inClass}
       timeout={TIMEOUT}
+      nodeRef={nodeRef}
       classNames={{
         enter: styles[`min${screenTypeName}`],
         enterActive: styles[`beingMax${screenTypeName}`],
@@ -70,6 +73,7 @@ const YTWrapper: React.FC<Styled<Props>> = ({
       }}
     >
       <div
+        ref={nodeRef}
         style={style}
         className={mergeClassNames(
           'relative overflow-hidden',
