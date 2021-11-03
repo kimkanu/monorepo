@@ -35,11 +35,11 @@ const WaveVisualizer: React.FC<Props> = () => {
   }, []);
 
   const paths = curves.map(({
-    animationType, key, components, type,
+    animationType: [a, b], key, components, type,
   }) => (
     <path
       key={key}
-      className={styles[`path-${animationType}`]}
+      className={styles[`path-${a}${b}`]}
       d={getBezierCurveSum(components)}
       fill={colors[type]}
       style={{ mixBlendMode: 'screen' }}

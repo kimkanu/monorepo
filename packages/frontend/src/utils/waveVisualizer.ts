@@ -6,7 +6,7 @@ import {
 
 export type Curve = {
   type: number; // color type
-  animationType: number; // animation type
+  animationType: [number, number]; // animation type
   key: string; // curve key, which is a function of (Date.now(), type)
   components: CurveProps[];
 };
@@ -211,7 +211,7 @@ export const generateCurve = (
     };
   });
   return {
-    animationType: randomInt(3),
+    animationType: [randomInt(3), randomInt(3)],
     components,
     key: `${Date.now()}-${type}`,
     type,
