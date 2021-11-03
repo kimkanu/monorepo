@@ -8,6 +8,7 @@ import { RecoilRoot } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
 import Debug from './components/Debug';
+import WaveVisualizer from './components/WaveVisualizer';
 import YTPlayer from './components/YTPlayer';
 import YTWrapper from './components/YTWrapper';
 import useScreenType, { ScreenType } from './hooks/useScreenType';
@@ -89,6 +90,13 @@ function App() {
               );
             }}
           />
+
+          <Route
+            path="/wavetest"
+            render={() => (
+              <WaveVisualizer />
+            )}
+          />
         </div>
         <div className="absolute top-0 left-0 z-10">
           <Route
@@ -97,7 +105,6 @@ function App() {
               <Link to="/">Back</Link>
             )}
           />
-
         </div>
       </Router>
     </RecoilRoot>
