@@ -46,21 +46,14 @@ const MAX = 400;
  * we have d/dx γ_{r, h, p}(x) = (h / r) * γ'((x - p) / r).
  *
  * Finally, the resulting curve (for one color) is defined as
- *     y = \sum_i γ_{r_i, h_i, p_i}(x) a(x)
- * where a(x) = (K / (K + (x / C)^2))^K is the global attenuation function;
+ *     y = \sum_i γ_{r_i, h_i, p_i}(x);
  * thus,
- *     dy/dx = \sum_i d/dx (γ_{r_i, h_i, p_i}(x) a(x))
- *           = \sum_i (h_i / r_i) * γ'((x - p_i) / r_i) * a(x) + h_i * γ((x - p_i) / r_i) * a'(x).
- * where a'(x) = -(2x / C) * (K / (K + (x / C)^2))^(K + 1).
+ *     dy/dx = \sum_i d/dx (γ_{r_i, h_i, p_i}(x))
+ *           = \sum_i (h_i / r_i) * γ'((x - p_i) / r_i).
  *
  * Given some x coordinates, we can get the direction vector parallel to (1, dy/dx).
  * And the length of the direction vector follows some heuristic: refer to the source code.
  */
-const K = 4;
-const getAttenuation = (x: number, scale: number) => (K / (K + (x / scale) ** 2)) ** K;
-const getDAttenuation = (x: number, scale: number) => (
-  (-2 * (x / scale) * (K / (K + (x / scale) ** 2)) ** (K + 1)) / scale
-);
 const getBaseCurveT = (x: number) => {
   // Assert x \in [0, 1].
   // Find the solution of $(1 - t) (t^2 - t + 1) - x = 0.$
@@ -79,21 +72,20 @@ const getBaseCurveDydx: (x: number) => number = (x) => {
   const t = getBaseCurveT(x);
   return (6 * (t - 1) * t) / (3 * t ** 2 - 4 * t + 2);
 };
-const getCurveDydx = (curves: CurveProps[]) => (x: number, attn: number) => sum(
+const getCurveDydx = (curves: CurveProps[]) => (x: number) => sum(
   curves.map(({ radius, height, position }) => (
-    (height / radius) * getBaseCurveDydx((x - position) / radius) * getAttenuation(x, attn)
-    + height * getBaseCurveY((x - position) / radius) * getDAttenuation(x, attn)
+    (height / radius) * getBaseCurveDydx((x - position) / radius)
   )),
 );
-const getCurveY = (curves: CurveProps[]) => (x: number, attn: number) => sum(
+const getCurveY = (curves: CurveProps[]) => (x: number) => sum(
   curves.map(({ radius, height, position }) => (
-    height * getBaseCurveY((x - position) / radius) * getAttenuation(x, attn)
+    height * getBaseCurveY((x - position) / radius)
   )),
 );
 export const getCurveTangent = (curves: CurveProps[]) => (
-  x: number, scale: number, attn: number,
+  x: number, scale: number,
 ) => {
-  const dydx = getCurveDydx(curves)(x, attn);
+  const dydx = getCurveDydx(curves)(x);
   const factor = scale / Math.hypot(1, dydx);
   return [factor, factor * dydx];
 };
@@ -111,14 +103,12 @@ export const getBezierCurveOverlappingSumPoints = (
   const mean = sum(curves.map(({ radius }) => radius)) / curves.length;
   const curveTangent = getCurveTangent(curves);
   const curveY = getCurveY(curves);
-  const attn = ((opts?.max ?? MAX) - (opts?.min ?? MIN)) / 3;
   return uniformSampling.map((x) => {
     const [tx, ty] = curveTangent(
       x,
       (mean * step) / ((opts?.smoothFactor ?? 1) * (maxTicks - minTicks)),
-      attn,
     );
-    const y = curveY(x, attn);
+    const y = curveY(x);
     return {
       tx, ty, x, y,
     } as Point;
@@ -192,7 +182,7 @@ const LOG_FREQ_MIN = 2;
 const LOG_FREQ_MAX = 2.6;
 
 export const generateCurve = (
-  type: number, amplitude: number, frequency: number,
+  type: number, { amplitude, frequency }: { amplitude: number, frequency: number },
 ): Curve => {
   const generator = seedrandom(`${Date.now()}-${type}`);
   const random = (min: number, max: number): number => (min + (max - min) * generator());
@@ -202,12 +192,21 @@ export const generateCurve = (
   const components: CurveProps[] = range(BASE_CURVES_IN_CURVE).map(() => {
     const r = random(0, 0.8);
     const min = MIN + 0.1 * (MAX - MIN);
-    const max = MIN + 0.9 * (MAX - MIN);
-    const position = random(min, max) * (1 - r) + (min + (max - min) * freqRatio) * r;
+    const max = MAX - 0.1 * (MAX - MIN);
+    const meanPosition = min + (max - min) * freqRatio;
+    const position = random(min, max) * (1 - r) + meanPosition * r;
     return {
-      height: clamp(10, random(0.8, 1) * amplitude, 70),
+      height: (
+        clamp(
+          3,
+          random(0.8, 1.2) * amplitude * (
+            random(0.1, 0.4) / (1 + 4 * ((meanPosition - position) / (max - min)) ** 2)
+          ),
+          50,
+        )
+      ),
       position,
-      radius: random(40, 100),
+      radius: random(30, 120),
     };
   });
   return {

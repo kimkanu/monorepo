@@ -33,6 +33,9 @@ function App() {
 
   const [videoId, setVideoId] = React.useState<string | undefined>(undefined);
 
+  const [freq, setFreq] = React.useState<number>(200);
+  const [amp, setAmp] = React.useState<number>(100);
+
   return (
     <RecoilRoot>
       <Router>
@@ -91,10 +94,32 @@ function App() {
             }}
           />
 
+          {/* Audio visualizer 테스트용 루트 */}
           <Route
             path="/wavetest"
             render={() => (
-              <WaveVisualizer />
+              <div className="w-full h-full">
+                <input
+                  type="range"
+                  min="100"
+                  max="400"
+                  value={freq}
+                  onChange={(e) => {
+                    setFreq(parseFloat(e.currentTarget.value));
+                  }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={amp}
+                  onChange={(e) => {
+                    setAmp(parseFloat(e.currentTarget.value));
+                  }}
+                />
+                <WaveVisualizer amplitude={amp} frequency={freq} />
+
+              </div>
             )}
           />
         </div>
