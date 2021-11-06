@@ -4,22 +4,22 @@ import ClassAddButton from './ClassAddButton';
 import ClassButton from './ClassButton';
 
 interface ClassInfo {
-  coursename: string;
-  islive: boolean;
-  ismine: boolean;
+  courseName: string;
+  live: boolean;
+  my: boolean;
 }
 
 interface Props {
-  classinfos: ClassInfo[];
+  classInfos: ClassInfo[];
 }
 
-const ClassList: React.FC<Props> = ({ classinfos }) => (
+const ClassList: React.FC<Props> = ({ classInfos }) => (
   <ul className="grid grid-cols-1 sm:grid-cols-3 gap-8 m-8">
-    {classinfos.map((classinfo) => (
+    {classInfos.map((classInfo) => (
       <ClassButton
-        courseName={classinfo.coursename}
-        isLive={classinfo.islive}
-        isMine={classinfo.ismine}
+        courseName={classInfo.courseName}
+        live={classInfo.live}
+        my={classInfo.my}
       />
     ))}
     <li>

@@ -7,6 +7,7 @@ import {
 import { RecoilRoot } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
+import ClassList from './components/ClassList';
 import Debug from './components/Debug';
 import YTPlayer from './components/YTPlayer';
 import YTWrapper from './components/YTWrapper';
@@ -29,6 +30,37 @@ function App() {
       .then((r) => r.text())
       .then((s) => console.log(`/: ${s}`));
   }, []);
+
+  interface ClassInfo {
+    courseName: string;
+    live: boolean;
+    my: boolean;
+  }
+
+  const classinfo: ClassInfo[] = [
+    {
+      courseName: '전산학특강<FE개발>',
+      live: true,
+      my: true,
+    },
+    {
+      courseName: '컴퓨터 시스템',
+      live: true,
+      my: false,
+    },
+    {
+      courseName: '알고리즘 개론',
+      live: false,
+      my: false,
+    },
+    {
+      courseName: '전산기조직',
+      live: false,
+      my: true,
+    },
+  ];
+
+  const [classinfos, setClass] = React.useState(classinfo);
 
   const [videoId, setVideoId] = React.useState<string | undefined>(undefined);
 
@@ -77,15 +109,22 @@ function App() {
             render={({ location, history }) => {
               const inClass = /^\/classes\/\d+$/.test(location.pathname);
               return (
-                <YTWrapper
-                  isPresent={!!videoId}
-                  inClass={inClass}
-                  onClick={() => {
-                    history.push('/classes/12345');
-                  }}
-                >
-                  <YTPlayer videoId={videoId} />
-                </YTWrapper>
+                <div>
+                  <div>
+                    <YTWrapper
+                      isPresent={!!videoId}
+                      inClass={inClass}
+                      onClick={() => {
+                        history.push('/classes/12345');
+                      }}
+                    >
+                      <YTPlayer videoId={videoId} />
+                    </YTWrapper>
+                  </div>
+                  <div>
+                    <ClassList classInfos={classinfos} />
+                  </div>
+                </div>
               );
             }}
           />
