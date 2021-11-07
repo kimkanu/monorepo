@@ -96,17 +96,6 @@ module.exports = {
         lineHeight: '3rem',
       }],
     },
-    screens: {
-      desktop: {
-        raw: '(min-width: 1024px) and (min-height: 576px)',
-      },
-      'mobile-port': {
-        raw: '(max-device-aspect-ratio: 0.625) and (max-width: 1023px), (max-device-aspect-ratio: 0.625) and (max-height: 575px)',
-      },
-      'mobile-land': {
-        raw: '(min-device-aspect-ratio: 0.62501) and (max-width: 1023px), (min-device-aspect-ratio: 0.62501) and (max-height: 575px)',
-      },
-    },
     extend: {
       borderRadius: {
         8: '32px',
@@ -122,6 +111,7 @@ module.exports = {
       height: {
         fit: 'fit-content',
         '100vh': 'calc(100 * var(--vh))',
+        '100wh': 'calc(100 * var(--wh))',
       },
       zIndex: {
         layout: 60,

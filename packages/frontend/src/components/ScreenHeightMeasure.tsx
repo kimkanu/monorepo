@@ -1,5 +1,8 @@
 import { useWindowSize } from '@react-hook/window-size';
 import React from 'react';
+import { useRecoilState } from 'recoil';
+
+import screenSizeState from '../recoil/screenSize';
 
 // Height change가 이 값을 넘지 않으면 키보드로 간주되지 않습니다.
 const HEIGHT_THRESHOLD = 160;
@@ -13,14 +16,24 @@ const ScreenHeightMeasure: React.FC = () => {
   const [width, height] = useWindowSize();
   const ref = React.useRef<HTMLDivElement>(null);
 
+  const [, setScreenSize] = useRecoilState(screenSizeState.atom);
+
   React.useEffect(() => {
     if (ref.current !== null) {
       setProblematic(ref.current.getBoundingClientRect().height !== height);
     }
-  }, [ref.current === null]);
+  }, [ref.current]);
+
+  React.useEffect(() => {
+    if (ref.current !== null && isProblematic) {
+      const difference = Math.round(ref.current?.getBoundingClientRect().height - height);
+      setScreenSize(([w, h]) => ([w, h, difference]));
+    }
+  }, [ref.current, isProblematic]);
 
   React.useEffect(() => {
     setLastWidth(width);
+    setScreenSize(([, h, diff]) => ([width, h, diff]));
   }, [width]);
 
   React.useEffect(() => {
@@ -54,8 +67,10 @@ const ScreenHeightMeasure: React.FC = () => {
     if (shouldUpdateVh && document.documentElement.style) {
       document.documentElement.style.setProperty('--vh', `${height / 100}px`);
     }
+    document.documentElement.style.setProperty('--wh', `${window.innerHeight / 100}px`);
 
     setLastHeight(height);
+    setScreenSize(([w, , diff]) => ([w, height, diff]));
   }, [height, ref.current]);
 
   return (
