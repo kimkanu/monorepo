@@ -110,6 +110,11 @@ module.exports = {
     extend: {
       width: {
         fit: 'fit-content',
+        '100vw': '100vw',
+      },
+      height: {
+        fit: 'fit-content',
+        '100vh': '100vh',
       },
       zIndex: {
         layout: 60,
