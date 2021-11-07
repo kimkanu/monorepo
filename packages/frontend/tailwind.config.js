@@ -21,7 +21,6 @@ module.exports = {
   darkMode: false,
   theme: {
     boxShadow: {
-      // sm: '0 1px 2px rgba(0, 0, 0, 0.05)',
       button: '0 3px 8px var(--shadow-color)',
       'button-hover': '0 6px 16px var(--shadow-color)',
       class: '0 6px 16px var(--shadow-color)',
@@ -105,7 +104,7 @@ module.exports = {
         raw: '(max-aspect-ratio: 5/8) and (max-width: 1023px), (max-aspect-ratio: 5/8) and (max-height: 575px)',
       },
       'mobile-land': {
-        raw: '(min-aspect-ratio: 5/8) and (max-width: 1023px), (max-aspect-ratio: 5/8) and (max-height: 575px)',
+        raw: '(min-aspect-ratio: 5/8) and (max-width: 1023px), (min-aspect-ratio: 5/8) and (max-height: 575px)',
       },
     },
     extend: {

@@ -37,7 +37,7 @@ function App() {
     <RecoilRoot>
       <Router>
         <Debug>
-          <span className="bold text-blue-600">
+          <span className="bold text-blue-500">
             {connected ? 'Connected!' : 'Disconnected.'}
           </span>
           <br />
@@ -51,13 +51,13 @@ function App() {
           {/* `mobile-port:`, `mobile-land:`, `desktop:`을 앞에 붙여서
               화면 종류별로 다른 tailwind 클래스 적용하기 */}
           <>
-            <span className="hidden mobile-port:inline text-red-600">
+            <span className="hidden mobile-port:inline text-red-500">
               Screen type: MobilePortait
             </span>
-            <span className="hidden mobile-land:inline text-yellow-600">
+            <span className="hidden mobile-land:inline text-green-500">
               Screen type: MobileLandscape
             </span>
-            <span className="hidden desktop:inline text-green-600">
+            <span className="hidden desktop:inline text-blue-500">
               Screen type: Desktop
             </span>
           </>
