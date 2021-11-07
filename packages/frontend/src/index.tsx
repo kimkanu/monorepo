@@ -8,6 +8,10 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 import './index.css';
 
+if (document.documentElement.style) {
+  document.documentElement.style.setProperty('--vh', '1vh');
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <IoProvider>

@@ -121,7 +121,7 @@ module.exports = {
       },
       height: {
         fit: 'fit-content',
-        '100vh': '100vh',
+        '100vh': 'calc(100 * var(--vh))',
       },
       zIndex: {
         layout: 60,

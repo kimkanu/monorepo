@@ -36,6 +36,9 @@ function App() {
   return (
     <RecoilRoot>
       <Router>
+        {/* 화면 vh 조정 */}
+        <ScreenHeightMeasure />
+
         <Debug>
           <span className="bold text-blue-500">
             {connected ? 'Connected!' : 'Disconnected.'}
