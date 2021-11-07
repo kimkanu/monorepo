@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
+import { RecoilRoot } from 'recoil';
 
 import SocketMock from 'socket.io-mock';
 import { useSocket } from 'socket.io-react-hook';
@@ -37,7 +38,7 @@ afterEach(() => {
 });
 
 test('Renders `Connected!` message.', () => {
-  render(<App />);
+  render(<RecoilRoot><App /></RecoilRoot>);
   const linkElement = screen.getByText(/Connected!/i);
   expect(linkElement).toBeInTheDocument();
 });

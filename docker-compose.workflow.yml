@@ -1,0 +1,12 @@
+version: "3"
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: ./packages/frontend/Dockerfile.workflow
+    environment:
+      NODE_ENV: test
+    command: yarn workspace @team-10/frontend run test
+    volumes:
+      - ./packages/frontend/:/app/packages/frontend/
+      - ./coverage/:/app/coverage/:Z

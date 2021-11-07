@@ -7,4 +7,25 @@ html, body, #root {
   padding: 0;
   width: 100%;
   height: 100%;
+  color: #111827;
+  @apply font-sans shadow-color-neutral;
+}
+
+#root {
+  @apply absolute top-0 left-0 w-100vw h-100vh bg-white;
+}
+
+@layer utilities {
+  .shadow-color-primary {
+    --shadow-color: rgba(255, 100, 146, 0.5);
+  }
+  .shadow-color-red {
+    --shadow-color: rgba(245, 50, 60, 0.5);
+  }
+  .shadow-color-positive {
+    --shadow-color: rgba(78, 116, 252, 0.5);
+  }
+  .shadow-color-neutral {
+    --shadow-color: rgba(17, 24, 39, 0.25);
+  }
 }

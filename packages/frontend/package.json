@@ -10,6 +10,7 @@
     "@fluentui/react-icons": "^1.1.145",
     "@react-hook/media-query": "^1.1.1",
     "@react-hook/resize-observer": "^1.2.4",
+    "@react-hook/window-size": "^3.0.7",
     "@tailwindcss/aspect-ratio": "^0.3.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -51,7 +52,7 @@
     "production": "craco build",
     "dev": "yarn development",
     "prod": "yarn production",
-    "test": "craco test --watchAll=false --forceExit --detectOpenHandles",
+    "test": "craco test --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"../../coverage/frontend/\"",
     "lint": "eslint --fix .",
     "commit": "yarn lint && cd ../.. && git add yarn.lock && cz"
   },

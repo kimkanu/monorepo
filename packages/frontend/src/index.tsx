@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { RecoilRoot } from 'recoil';
 import { IoProvider } from 'socket.io-react-hook';
 
 import App from './App';
@@ -8,10 +9,19 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 import './index.css';
 
+if (document.documentElement.style) {
+  document.documentElement.style.setProperty('--vh', '1vh');
+  if (window) {
+    document.documentElement.style.setProperty('--wh', `${window.innerHeight / 100}px`);
+  }
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <IoProvider>
-      <App />
+      <RecoilRoot>
+        <App />
+      </RecoilRoot>
     </IoProvider>
   </React.StrictMode>,
   document.getElementById('root'),
