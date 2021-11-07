@@ -103,7 +103,7 @@ function App() {
             render={() => (
               <div className="p-8 w-80 flex flex-col gap-4">
                 {/* Sample input */}
-                <div className="relative w-100% h-12">
+                <div className="relative w-full h-12">
                   <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
                     <NumberSymbol20Filled />
                   </div>
