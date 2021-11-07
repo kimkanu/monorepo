@@ -1,3 +1,4 @@
+import { NumberSymbol20Filled } from '@fluentui/react-icons';
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -70,7 +71,7 @@ function App() {
             {videoId ? 'Remove videoId' : 'Set videoId'}
           </button>
         </Debug>
-        <div className="w-full h-full bg-gray-100">
+        <div className="w-full h-full bg-white">
           {/* Example usage of `YTWrapper` and `YTPlayer`. */}
           <Route
             path="/"
@@ -97,7 +98,38 @@ function App() {
               <Link to="/">Back</Link>
             )}
           />
-
+          <Route
+            path="/test/tailwind"
+            render={() => (
+              <div className="p-8 w-80 flex flex-col gap-4">
+                {/* Sample input */}
+                <div className="relative w-100% h-12">
+                  <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
+                    <NumberSymbol20Filled />
+                  </div>
+                  <input
+                    className="bg-gray-200 text-emph w-full h-full pr-4 pl-14 rounded-full font-mono"
+                  />
+                </div>
+                {/* Sample button */}
+                <button
+                  type="button"
+                  className="
+                  w-full h-12 rounded-full
+                  flex items-center justify-center
+                  bg-primary-500 hover:bg-primary-500 active:bg-primary-700
+                  text-white text-emph font-bold
+                  shadow-button hover:shadow-button-hover active:shadow-button shadow-color-primary
+                  "
+                >
+                  <div className="mr-3 select-none pointer-events-none">
+                    <NumberSymbol20Filled />
+                  </div>
+                  <span>Re-hash</span>
+                </button>
+              </div>
+            )}
+          />
         </div>
       </Router>
     </RecoilRoot>
