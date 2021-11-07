@@ -18,10 +18,10 @@ module.exports = {
           raw: '(min-width: 1024px) and (min-height: 576px)',
         },
         'mobile-port': {
-          raw: '(max-aspect-ratio: 5/6) and (max-width: 1023px), (max-aspect-ratio: 5/6) and (max-height: 575px)',
+          raw: '(max-aspect-ratio: 5/8) and (max-width: 1023px), (max-aspect-ratio: 5/8) and (max-height: 575px)',
         },
         'mobile-land': {
-          raw: '(min-aspect-ratio: 5/6) and (max-width: 1023px), (max-aspect-ratio: 5/6) and (max-height: 575px)',
+          raw: '(min-aspect-ratio: 5/8) and (max-width: 1023px), (max-aspect-ratio: 5/8) and (max-height: 575px)',
         },
       },
     },
