@@ -108,6 +108,13 @@ module.exports = {
       },
     },
     extend: {
+      borderRadius: {
+        8: '32px',
+        10: '40px',
+        12: '48px',
+        14: '56px',
+        16: '64px',
+      },
       width: {
         fit: 'fit-content',
         '100vw': '100vw',
