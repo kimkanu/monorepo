@@ -108,7 +108,7 @@ function App() {
                     <NumberSymbol20Filled />
                   </div>
                   <input
-                    className="bg-gray-200 text-emph w-full h-full pr-4 pl-14 rounded-full font-mono"
+                    className="bg-gray-200 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
                   />
                 </div>
                 {/* Sample button */}
