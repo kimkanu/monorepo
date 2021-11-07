@@ -101,10 +101,10 @@ module.exports = {
         raw: '(min-width: 1024px) and (min-height: 576px)',
       },
       'mobile-port': {
-        raw: '(max-aspect-ratio: 5/8) and (max-width: 1023px), (max-aspect-ratio: 5/8) and (max-height: 575px)',
+        raw: '(max-device-aspect-ratio: 0.625) and (max-width: 1023px), (max-device-aspect-ratio: 0.625) and (max-height: 575px)',
       },
       'mobile-land': {
-        raw: '(min-aspect-ratio: 5/8) and (max-width: 1023px), (min-aspect-ratio: 5/8) and (max-height: 575px)',
+        raw: '(min-device-aspect-ratio: 0.62501) and (max-width: 1023px), (min-device-aspect-ratio: 0.62501) and (max-height: 575px)',
       },
     },
     extend: {

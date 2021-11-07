@@ -8,7 +8,7 @@ export enum ScreenType {
 
 const useScreenType: () => ScreenType = () => {
   const isDesktop = useMediaQuery('only screen and (min-width: 1024px) and (min-height: 576px)');
-  const isPortrait = useMediaQuery('only screen and (max-aspect-ratio: 5/6)');
+  const isPortrait = useMediaQuery('only screen and (max-device-aspect-ratio: 0.625)');
 
   if (isDesktop) {
     return ScreenType.Desktop;
