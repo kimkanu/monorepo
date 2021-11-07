@@ -1,7 +1,19 @@
 import { atom } from 'recoil';
 
-const screenSizeAtom = atom<[number, number, number]>({
-  default: [0, 0, 0],
+export interface ScreenSize {
+  width: number;
+  viewportHeight: number;
+  actualHeight: number;
+  offset: number;
+}
+
+const screenSizeAtom = atom<ScreenSize>({
+  default: {
+    actualHeight: 0,
+    offset: 0,
+    viewportHeight: 0,
+    width: 0,
+  },
   key: 'screenSizeAtom',
 });
 

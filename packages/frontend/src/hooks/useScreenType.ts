@@ -9,8 +9,10 @@ export enum ScreenType {
 }
 
 const useScreenType: () => ScreenType = () => {
-  const [width, h, diff] = useRecoilValue(screenSizeState.atom);
-  const height = h + diff;
+  const { width, viewportHeight, offset } = useRecoilValue(screenSizeState.atom);
+  const height = viewportHeight + offset;
+
+  console.log(viewportHeight, offset);
 
   const isDesktop = width >= 1024 && height >= 576;
   const isPortrait = !isDesktop && width / height <= 5 / 8;

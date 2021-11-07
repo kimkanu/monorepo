@@ -26,14 +26,14 @@ const ScreenHeightMeasure: React.FC = () => {
 
   React.useEffect(() => {
     if (ref.current !== null && isProblematic) {
-      const difference = Math.round(ref.current?.getBoundingClientRect().height - height);
-      setScreenSize(([w, h]) => ([w, h, difference]));
+      const offset = Math.round(ref.current?.getBoundingClientRect().height - height);
+      setScreenSize((s) => ({ ...s, offset }));
     }
   }, [ref.current, isProblematic]);
 
   React.useEffect(() => {
     setLastWidth(width);
-    setScreenSize(([, h, diff]) => ([width, h, diff]));
+    setScreenSize((s) => ({ ...s, width }));
   }, [width]);
 
   React.useEffect(() => {
@@ -70,7 +70,11 @@ const ScreenHeightMeasure: React.FC = () => {
     document.documentElement.style.setProperty('--wh', `${window.innerHeight / 100}px`);
 
     setLastHeight(height);
-    setScreenSize(([w, , diff]) => ([w, height, diff]));
+    setScreenSize((s) => ({
+      ...s,
+      actualHeight: window.innerHeight,
+      viewportHeight: shouldUpdateVh ? height : s.viewportHeight,
+    }));
   }, [height, ref.current]);
 
   return (
