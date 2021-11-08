@@ -136,5 +136,4 @@ module.exports = {
       boxShadow: ['active'],
     },
   },
-  plugins: [require('@tailwindcss/aspect-ratio')],
 };
