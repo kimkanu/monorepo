@@ -113,6 +113,12 @@ module.exports = {
         '100vh': 'calc(100 * var(--vh))',
         '100wh': 'calc(100 * var(--wh))',
       },
+      transitionProperty: {
+        button: 'background-color, border-color, color, fill, stroke, box-shadow',
+      },
+      transitionDuration: {
+        button: '130ms',
+      },
       zIndex: {
         layout: 60,
         dialog: 70,
