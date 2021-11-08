@@ -18,7 +18,7 @@ const useScreenType: () => ScreenType = () => {
 
   const isDesktop = width >= 1024 && height >= 576;
   const isPortrait = !isDesktop && (
-    actualHeight - width * (9 / 16) - 140 >= CHAT_SECTION_HEIGHT_THRESHOLD
+    viewportHeight - width * (9 / 16) - 140 >= CHAT_SECTION_HEIGHT_THRESHOLD
   );
 
   if (isDesktop) {
