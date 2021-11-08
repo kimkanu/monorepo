@@ -35,6 +35,8 @@
         "functions": false,
         "classes": true
       }
-    ]
+    ],
+    "react/require-default-props": "off",
+    "sort-keys": "error"
   }
 }

@@ -1,0 +1,137 @@
+:root {
+  --header-height: 4rem;
+  --footer-height: 4rem;
+  --pip-margin-x: 1rem;
+  --pip-margin-y: 1rem;
+  --pip-width--mobile: 16rem;
+  --pip-height--mobile: 9rem;
+  --pip-width--desktop: 24rem;
+  --pip-height--desktop: 13.5rem;
+  --chat-section-width--desktop: 25vw;
+}
+
+/* Mobile Portrait */
+
+.minMobilePortait {
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: var(--pip-width--mobile);
+  height: var(--pip-height--mobile);
+  transform: translate(
+    calc(100vw - 100% - var(--pip-margin-x)),
+    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+  );
+  border-radius: 0.5rem;
+}
+
+.maxMobilePortait {
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100vw;
+  height: 56.25vw;
+  transform: translate(calc(100vw - 100%), var(--header-height));
+  border-radius: 0rem;
+}
+
+.beingMinMobilePortait {
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: var(--pip-width--mobile);
+  height: var(--pip-height--mobile);
+  transform: translate(
+    calc(100vw - 100% - var(--pip-margin-x)),
+    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+  );
+  border-radius: 0.5rem;
+}
+
+.beingMaxMobilePortait {
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100vw;
+  height: 56.25vw;
+  transform: translate(calc(100vw - 100%), var(--header-height));
+  border-radius: 0.5rem;
+}
+
+/* Mobile Landscape */
+
+.minMobileLandscape {
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: var(--pip-width--mobile);
+  height: var(--pip-height--mobile);
+  transform: translate(
+    calc(100vw - 100% - var(--pip-margin-x)),
+    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+  );
+  border-radius: 0.5rem;
+}
+
+.maxMobileLandscape {
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100vw;
+  height: 100vh;
+  transform: translate(calc(100vw - 100%), calc(100vh - 100%));
+  border-radius: 0rem;
+}
+
+.beingMinMobileLandscape {
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: var(--pip-width--mobile);
+  height: var(--pip-height--mobile);
+  transform: translate(
+    calc(100vw - 100% - var(--pip-margin-x)),
+    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+  );
+  border-radius: 0.5rem;
+}
+
+.beingMaxMobileLandscape {
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100vw;
+  height: 100vh;
+  transform: translate(calc(100vw - 100%), calc(100vh - 100%));
+  border-radius: 0.5rem;
+}
+
+/* Desktop */
+
+.minDesktop {
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: var(--pip-width--desktop);
+  height: var(--pip-height--desktop);
+  transform: translate(
+    calc(100vw - 100% - var(--pip-margin-x)),
+    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+  );
+  border-radius: 0.5rem;
+}
+
+.maxDesktop {
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: calc(100vw - var(--chat-section-width--desktop));
+  height: calc(100vh - var(--header-height) - var(--footer-height));
+  transform: translate(
+    calc(100vw - var(--chat-section-width--desktop) - 100%),
+    calc(100vh - var(--header-height) - var(--footer-height) - 100% + var(--header-height))
+  );
+  border-radius: 0rem;
+}
+
+.beingMinDesktop {
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: var(--pip-width--desktop);
+  height: var(--pip-height--desktop);
+  transform: translate(
+    calc(100vw - 100% - var(--pip-margin-x)),
+    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+  );
+  border-radius: 0.5rem;
+}
+
+.beingMaxDesktop {
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: calc(100vw - var(--chat-section-width--desktop));
+  height: calc(100vh - var(--header-height) - var(--footer-height));
+  transform: translate(
+    calc(100vw - var(--chat-section-width--desktop) - 100%),
+    calc(100vh - var(--header-height) - var(--footer-height) - 100% + var(--header-height))
+  );
+  border-radius: 0.5rem;
+}
