@@ -8,6 +8,7 @@ import {
 import { useSocket } from 'socket.io-react-hook';
 
 import Debug from './components/Debug';
+import Dialog from './components/Dialog';
 import Dropdown from './components/Dropdown';
 import ScreenHeightMeasure from './components/ScreenHeightMeasure';
 import YTPlayer from './components/YTPlayer';
@@ -34,6 +35,7 @@ function App() {
   const [videoId, setVideoId] = React.useState<string | undefined>(undefined);
 
   const [dropdownVisible, setDropdownVisible] = React.useState(false);
+  const [dialogVisible, setDialogVisible] = React.useState(false);
   const nextInputRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -76,6 +78,15 @@ function App() {
           }}
         >
           Dropdown
+        </Link>
+        <br />
+        <Link
+          to="/test/dropdown"
+          onClick={() => {
+            setDialogVisible(true);
+          }}
+        >
+          Dialog
         </Link>
       </Debug>
       <div className="w-full h-full bg-white">
@@ -143,6 +154,13 @@ function App() {
             <>
               <Dropdown visible={dropdownVisible} onClose={() => setDropdownVisible(false)}>
                 <section>
+                  <h2 className="text-sect font-bold">
+                    Sample Dropdown
+                  </h2>
+                </section>
+              </Dropdown>
+              <Dialog visible={dialogVisible} onClose={() => setDialogVisible(false)}>
+                <section>
                   <h2 className="text-sect font-bold mb-8">
                     Join Class
                   </h2>
@@ -195,7 +213,7 @@ function App() {
                     <span>Re-hash</span>
                   </button>
                 </section>
-              </Dropdown>
+              </Dialog>
             </>
           )}
         />
