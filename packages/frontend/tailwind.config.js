@@ -120,7 +120,12 @@ module.exports = {
         button: '130ms',
       },
       zIndex: {
+        dropdown: 50,
+        'dropdown-1': 51,
+        'dropdown-2': 52,
         layout: 60,
+        'layout-1': 61,
+        'layout-2': 62,
         dialog: 70,
         'dialog-important': 80,
         toast: 90,

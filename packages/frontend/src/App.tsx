@@ -8,6 +8,7 @@ import {
 import { useSocket } from 'socket.io-react-hook';
 
 import Debug from './components/Debug';
+import Dropdown from './components/Dropdown';
 import ScreenHeightMeasure from './components/ScreenHeightMeasure';
 import YTPlayer from './components/YTPlayer';
 import YTWrapper from './components/YTWrapper';
@@ -31,6 +32,10 @@ function App() {
   }, []);
 
   const [videoId, setVideoId] = React.useState<string | undefined>(undefined);
+
+  const [dropdownVisible, setDropdownVisible] = React.useState(false);
+  const nextInputRef = React.useRef<HTMLInputElement>(null);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   return (
     <Router>
@@ -63,6 +68,15 @@ function App() {
         >
           {videoId ? 'Remove videoId' : 'Set videoId'}
         </button>
+        <br />
+        <Link
+          to="/test/dropdown"
+          onClick={() => {
+            setDropdownVisible(true);
+          }}
+        >
+          Dropdown
+        </Link>
       </Debug>
       <div className="w-full h-full bg-white">
         {/* Example usage of `YTWrapper` and `YTPlayer`. */}
@@ -121,6 +135,68 @@ function App() {
                 <span>Re-hash</span>
               </button>
             </div>
+          )}
+        />
+        <Route
+          path="/test/dropdown"
+          render={() => (
+            <>
+              <Dropdown visible={dropdownVisible} onClose={() => setDropdownVisible(false)}>
+                <section>
+                  <h2 className="text-sect font-bold mb-8">
+                    Join Class
+                  </h2>
+                  <div className="relative w-full h-12 mb-4">
+                    <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
+                      <NumberSymbol20Filled />
+                    </div>
+                    <input
+                      className="bg-gray-200 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !!e.currentTarget.value && nextInputRef.current) {
+                          nextInputRef.current.focus();
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="relative w-full h-12 mb-4">
+                    <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
+                      <NumberSymbol20Filled />
+                    </div>
+                    <input
+                      ref={nextInputRef}
+                      className="bg-gray-200 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !!e.currentTarget.value && buttonRef.current) {
+                          buttonRef.current.focus();
+                        }
+                      }}
+                    />
+                  </div>
+                  <button
+                    ref={buttonRef}
+                    type="button"
+                    className="
+                    w-full h-12 rounded-full
+                    outline-none
+                    flex items-center justify-center
+                    bg-primary-500 hover:bg-primary-500 focus:bg-primary-500 active:bg-primary-700
+                    text-white text-emph font-bold
+                    shadow-button hover:shadow-button-hover focus:shadow-button-hover active:shadow-button shadow-color-primary
+                    transition-button duration-button
+                    "
+                    onClick={(e) => {
+                      e.currentTarget.blur();
+                    }}
+                  >
+                    <div className="mr-3 select-none pointer-events-none">
+                      <NumberSymbol20Filled />
+                    </div>
+                    <span>Re-hash</span>
+                  </button>
+                </section>
+              </Dropdown>
+            </>
           )}
         />
       </div>
