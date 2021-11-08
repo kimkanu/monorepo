@@ -23,7 +23,7 @@ jobs:
         run: docker-compose -f "docker-compose.workflow.yml" build
 
       - name: Test frontend
-        run: docker-compose -f "docker-compose.workflow.yml" up frontend
+        run: docker-compose -f "docker-compose.workflow.yml" up --exit-code-from frontend frontend
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2

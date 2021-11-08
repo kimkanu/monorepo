@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { IoProvider } from 'socket.io-react-hook';
@@ -11,7 +12,9 @@ import './index.css';
 ReactDOM.render(
   <React.StrictMode>
     <IoProvider>
-      <App />
+      <RecoilRoot>
+        <App />
+      </RecoilRoot>
     </IoProvider>
   </React.StrictMode>,
   document.getElementById('root'),

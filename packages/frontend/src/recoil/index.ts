@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /* eslint-disable import/prefer-default-export */
 
 import { DefaultValue } from 'recoil';
