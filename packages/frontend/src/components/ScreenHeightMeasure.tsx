@@ -39,7 +39,7 @@ const ScreenHeightMeasure: React.FC = () => {
   React.useEffect(() => {
     const difference = height - (lastHeight ?? height);
 
-    const shouldUpdateVh = isProblematic === true && (
+    const shouldUpdateVh = isProblematic === false || (
       Math.abs(difference) < HEIGHT_THRESHOLD // 주소창
       || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height // orientation
     );
@@ -67,13 +67,14 @@ const ScreenHeightMeasure: React.FC = () => {
     if (shouldUpdateVh && document.documentElement.style) {
       document.documentElement.style.setProperty('--vh', `${height / 100}px`);
     }
-    document.documentElement.style.setProperty('--wh', `${window.innerHeight / 100}px`);
+    document.documentElement.style.setProperty('--wh', `${height / 100}px`);
 
+    console.log(height);
     setLastHeight(height);
     setScreenSize((s) => ({
       ...s,
-      actualHeight: window.innerHeight,
-      viewportHeight: shouldUpdateVh ? height : s.viewportHeight,
+      actualHeight: height,
+      viewportHeight: shouldUpdateVh ? height : (s.viewportHeight || height),
     }));
   }, [height, ref.current]);
 
