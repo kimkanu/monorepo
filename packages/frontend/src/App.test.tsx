@@ -23,7 +23,7 @@ window.matchMedia = (query) => ({
 beforeEach(() => {
   const mockUseSocket = useSocket as jest.MockedFunction<typeof useSocket>;
   const { socketClient } = new SocketMock();
-  mockUseSocket.mockImplementationOnce((namespaceKey: string) => {
+  mockUseSocket.mockImplementation((namespaceKey: string) => {
     (socketClient as any).namespaceKey = namespaceKey;
     return ({
       connected: socketClient.connected,
