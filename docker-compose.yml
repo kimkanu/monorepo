@@ -14,6 +14,7 @@ services:
     networks:
       - mynetwork
     environment:
+      CHOKIDAR_USEPOLLING: 1
       PORT: ${FRONTEND_PORT}
       NODE_ENV: ${NODE_ENV}
       REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
@@ -26,7 +27,7 @@ services:
     profiles:
       - development
       - production
-      - test:frontend
+      - test:backend
     build:
       context: .
       dockerfile: ./packages/backend/Dockerfile
@@ -39,6 +40,7 @@ services:
     depends_on:
       - postgres
     environment:
+      CHOKIDAR_USEPOLLING: 1
       PORT: ${BACKEND_PORT}
       DATABASE_URL: "pg://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME}"
       SESSION_SECRET: ${SESSION_SECRET}
