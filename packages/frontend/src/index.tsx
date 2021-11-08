@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { RecoilRoot } from 'recoil';
@@ -11,11 +12,11 @@ import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <RecoilRoot>
-      <IoProvider>
+    <IoProvider>
+      <RecoilRoot>
         <App />
-      </IoProvider>
-    </RecoilRoot>
+      </RecoilRoot>
+    </IoProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
