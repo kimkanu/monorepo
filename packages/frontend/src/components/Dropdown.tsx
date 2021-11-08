@@ -77,7 +77,7 @@ const Dropdown: React.FC<Styled<Props>> = ({
           className={mergeClassNames(
             'h-fit max-h-5/6 z-dropdown-1 bg-white overflow-hidden',
             screenType === ScreenType.Desktop
-              ? 'w-96 shadow-dropdown-desktop rounded-b-12 absolute pt-12'
+              ? 'w-96 shadow-dropdown-desktop rounded-b-12 absolute'
               : 'w-full shadow-dropdown-mobile rounded-t-12',
             {
               [ScreenType.MobilePortait]: 'max-w-md',
