@@ -22,6 +22,9 @@ const Dialog: React.FC<Styled<Props>> = ({
       in={visible}
       timeout={400}
       classNames={{
+        appear: styles.invisible,
+        appearActive: styles.beingVisible,
+        appearDone: styles.visible,
         enter: styles.invisible,
         enterActive: styles.beingVisible,
         enterDone: styles.visible,
