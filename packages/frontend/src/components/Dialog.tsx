@@ -16,7 +16,22 @@ interface Props {
 const Dialog: React.FC<Styled<Props>> = ({
   style, className, visible, onClose, children,
 }) => {
+  const TIMEOUT = 400;
+
   const screenType = useScreenType();
+
+  const [initialVisible, setInitialVisible] = React.useState(visible);
+
+  React.useEffect(() => {
+    setInitialVisible(initialVisible);
+  }, [screenType]);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setInitialVisible(visible);
+    }, TIMEOUT);
+    return () => clearTimeout(timeout);
+  }, [visible]);
 
   return (
     <CSSTransition
@@ -44,6 +59,7 @@ const Dialog: React.FC<Styled<Props>> = ({
             desktop: mergeClassNames('items-center justify-center', styles.desktop),
             mobile: mergeClassNames('items-center justify-end', styles.mobile),
           })(screenType),
+          styles[`${initialVisible ? 'visible' : 'invisible'}`],
         )}
         onClick={(e) => {
           if (e.target === e.currentTarget) {

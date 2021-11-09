@@ -17,17 +17,21 @@ interface Props {
 const Dropdown: React.FC<Styled<Props>> = ({
   style, className, visible, onClose, children, right = 0,
 }) => {
-  const [additionalClassName, setAdditionalClassName] = React.useState<string | null>(null);
+  const TIMEOUT = 400;
+
   const screenType = useScreenType();
 
+  const [initialVisible, setInitialVisible] = React.useState(visible);
+
   React.useEffect(() => {
-    if (visible) {
-      setAdditionalClassName(styles.visible);
-    }
+    setInitialVisible(initialVisible);
   }, [screenType]);
 
   React.useEffect(() => {
-    setAdditionalClassName(null);
+    const timeout = setTimeout(() => {
+      setInitialVisible(visible);
+    }, TIMEOUT);
+    return () => clearTimeout(timeout);
   }, [visible]);
 
   return (
@@ -53,7 +57,7 @@ const Dropdown: React.FC<Styled<Props>> = ({
             desktop: mergeClassNames('items-end justify-start z-dropdown-desktop', styles.desktop),
             mobile: mergeClassNames('items-center justify-end z-dropdown-mobile', styles.mobile),
           })(screenType),
-          additionalClassName,
+          styles[`${initialVisible ? 'visible' : 'invisible'}`],
         )}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
