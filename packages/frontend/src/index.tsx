@@ -10,6 +10,13 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 import './index.css';
 
+if (document.documentElement.style) {
+  document.documentElement.style.setProperty('--vh', '1vh');
+  if (window) {
+    document.documentElement.style.setProperty('--wh', `${window.innerHeight / 100}px`);
+  }
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <IoProvider>
