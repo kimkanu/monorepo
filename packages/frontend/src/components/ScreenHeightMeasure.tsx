@@ -26,20 +26,20 @@ const ScreenHeightMeasure: React.FC = () => {
 
   React.useEffect(() => {
     if (ref.current !== null && isProblematic) {
-      const difference = Math.round(ref.current?.getBoundingClientRect().height - height);
-      setScreenSize(([w, h]) => ([w, h, difference]));
+      const offset = Math.round(ref.current?.getBoundingClientRect().height - height);
+      setScreenSize((s) => ({ ...s, offset }));
     }
   }, [ref.current, isProblematic]);
 
   React.useEffect(() => {
     setLastWidth(width);
-    setScreenSize(([, h, diff]) => ([width, h, diff]));
+    setScreenSize((s) => ({ ...s, width }));
   }, [width]);
 
   React.useEffect(() => {
     const difference = height - (lastHeight ?? height);
 
-    const shouldUpdateVh = isProblematic === true && (
+    const shouldUpdateVh = isProblematic === false || (
       Math.abs(difference) < HEIGHT_THRESHOLD // 주소창
       || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height // orientation
     );
@@ -67,10 +67,14 @@ const ScreenHeightMeasure: React.FC = () => {
     if (shouldUpdateVh && document.documentElement.style) {
       document.documentElement.style.setProperty('--vh', `${height / 100}px`);
     }
-    document.documentElement.style.setProperty('--wh', `${window.innerHeight / 100}px`);
+    document.documentElement.style.setProperty('--wh', `${height / 100}px`);
 
     setLastHeight(height);
-    setScreenSize(([w, , diff]) => ([w, height, diff]));
+    setScreenSize((s) => ({
+      ...s,
+      actualHeight: height,
+      viewportHeight: shouldUpdateVh ? height : (s.viewportHeight || height),
+    }));
   }, [height, ref.current]);
 
   return (

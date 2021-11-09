@@ -1,24 +1,25 @@
 import { useRecoilValue } from 'recoil';
 
 import screenSizeState from '../recoil/screenSize';
+import ScreenType from '../types/screen';
 
-export enum ScreenType {
-  MobilePortait = 0,
-  MobileLandscape = 1,
-  Desktop = 2,
-}
+const CHAT_SECTION_HEIGHT_THRESHOLD = 80;
 
 const useScreenType: () => ScreenType = () => {
-  const [width, h, diff] = useRecoilValue(screenSizeState.atom);
-  const height = h + diff;
+  const {
+    width, actualHeight, viewportHeight, offset,
+  } = useRecoilValue(screenSizeState.atom);
+  const height = viewportHeight + offset;
 
   const isDesktop = width >= 1024 && height >= 576;
-  const isPortrait = !isDesktop && width / height <= 5 / 8;
+  const isPortrait = !isDesktop && (
+    actualHeight - width * (9 / 16) - 140 >= CHAT_SECTION_HEIGHT_THRESHOLD
+  );
 
   if (isDesktop) {
     return ScreenType.Desktop;
   }
-  return isPortrait ? ScreenType.MobilePortait : ScreenType.MobileLandscape;
+  return isPortrait ? ScreenType.MobilePortrait : ScreenType.MobileLandscape;
 };
 
 export default useScreenType;
