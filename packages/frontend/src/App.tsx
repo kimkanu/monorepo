@@ -13,7 +13,9 @@ import Dropdown from './components/Dropdown';
 import ScreenHeightMeasure from './components/ScreenHeightMeasure';
 import YTPlayer from './components/YTPlayer';
 import YTWrapper from './components/YTWrapper';
-import useScreenType, { ScreenType } from './hooks/useScreenType';
+import useScreenType from './hooks/useScreenType';
+import ScreenType from './types/screen';
+import { conditionalClassName } from './utils/style';
 
 function App() {
   const screenType = useScreenType();
@@ -51,11 +53,11 @@ function App() {
         <br />
         {/* Tailwind screen prefix에 대한 workaround (이슈 #49 참조) */}
         <span
-          className={{
-            [ScreenType.MobilePortait]: 'text-red-500',
-            [ScreenType.MobileLandscape]: 'text-green-500',
-            [ScreenType.Desktop]: 'text-blue-500',
-          }[screenType]}
+          className={conditionalClassName({
+            desktop: 'text-blue-500',
+            mobileLandscape: 'text-green-500',
+            mobilePortrait: 'text-red-500',
+          })(screenType)}
         >
           Screen type:
           {' '}

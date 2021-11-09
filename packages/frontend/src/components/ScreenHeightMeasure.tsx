@@ -69,7 +69,6 @@ const ScreenHeightMeasure: React.FC = () => {
     }
     document.documentElement.style.setProperty('--wh', `${height / 100}px`);
 
-    console.log(height);
     setLastHeight(height);
     setScreenSize((s) => ({
       ...s,
