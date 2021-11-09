@@ -1,4 +1,6 @@
-import { useMediaQuery } from '@react-hook/media-query';
+import { useRecoilValue } from 'recoil';
+
+import screenSizeState from '../recoil/screenSize';
 
 export enum ScreenType {
   MobilePortait = 0,
@@ -6,9 +8,18 @@ export enum ScreenType {
   Desktop = 2,
 }
 
+const CHAT_SECTION_HEIGHT_THRESHOLD = 80;
+
 const useScreenType: () => ScreenType = () => {
-  const isDesktop = useMediaQuery('only screen and (min-width: 1024px) and (min-height: 576px)');
-  const isPortrait = useMediaQuery('only screen and (max-aspect-ratio: 5/6)');
+  const {
+    width, actualHeight, viewportHeight, offset,
+  } = useRecoilValue(screenSizeState.atom);
+  const height = viewportHeight + offset;
+
+  const isDesktop = width >= 1024 && height >= 576;
+  const isPortrait = !isDesktop && (
+    viewportHeight - width * (9 / 16) - 140 >= CHAT_SECTION_HEIGHT_THRESHOLD
+  );
 
   if (isDesktop) {
     return ScreenType.Desktop;
