@@ -1,12 +1,7 @@
 import { useRecoilValue } from 'recoil';
 
 import screenSizeState from '../recoil/screenSize';
-
-export enum ScreenType {
-  MobilePortait = 0,
-  MobileLandscape = 1,
-  Desktop = 2,
-}
+import ScreenType from '../types/screen';
 
 const CHAT_SECTION_HEIGHT_THRESHOLD = 80;
 
