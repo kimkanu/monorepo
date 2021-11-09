@@ -5,22 +5,20 @@ import { YouTubePlayer } from 'youtube-player/dist/types';
 
 import useSize from '../hooks/useSize';
 import { mergeClassNames, mergeStyles, Styled } from '../utils/style';
-import { getYouTubePlayerStateName } from '../utils/youtube';
 
 import styles from './YTPlayer.module.css';
 
 interface Props {
   videoId?: string;
   options?: YouTubeProps['opts'];
+  onReady?: (player: YouTubePlayer) => void;
+  onStateChange?: (state: number, player: YouTubePlayer) => void;
 }
 
 const YTPlayer: React.FC<Styled<Props>> = ({
-  style, className, videoId, options = {},
+  style, className, videoId, options = {}, onReady, onStateChange,
 }) => {
   const aspectRatio = 16 / 9;
-
-  const [youTubeState, setYouTubeState] = React.useState<number>(YouTube.PlayerState.UNSTARTED);
-  const [youTubePlayer, setYouTubePlayer] = React.useState<YouTubePlayer | null>(null);
 
   const ref = React.useRef<HTMLDivElement>(null);
   const size = useSize(ref);
@@ -50,11 +48,14 @@ const YTPlayer: React.FC<Styled<Props>> = ({
               ...options,
             }}
             onReady={({ target: player }) => {
-              setYouTubePlayer(player);
+              if (onReady) {
+                onReady(player);
+              }
             }}
-            onStateChange={({ data: state }) => {
-              setYouTubeState(state);
-              console.log(getYouTubePlayerStateName(state));
+            onStateChange={({ target: player, data: state }) => {
+              if (onStateChange) {
+                onStateChange(state, player);
+              }
             }}
           />
         ) : (
