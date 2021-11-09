@@ -3,10 +3,10 @@ import React from 'react';
 const ClassAddButton: React.FC = (
 ) => (
   <div>
-    <button type="button" className="justify-center group rounded-md w-full h-48 sm:flex hover:border-transparent hover:shadow-lg items-center border-4 border-dashed border-gray-200">
+    <button type="button" className="justify-center group rounded-lg w-full h-48 bg-gray-300 sm:flex items-center hover:shadow-class-hover">
       <div>
-        <div className="text-8xl text-center text-gray-700 font-black"> &#43; </div>
-        <div className="text-lg text-center text-gray-700 font-semibold mb-4"> Join/Create New Class </div>
+        <div className="text-title text-center text-gray-700 font-black"> &#43; </div>
+        <div className="text-big text-center text-gray-700 font-semibold mb-4"> Join/Create New Class </div>
       </div>
     </button>
   </div>

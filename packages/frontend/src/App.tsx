@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import { useSocket } from 'socket.io-react-hook';
 
+import ClassList from './components/ClassList';
 import Debug from './components/Debug';
 import ScreenHeightMeasure from './components/ScreenHeightMeasure';
 import YTPlayer from './components/YTPlayer';
@@ -30,7 +31,42 @@ function App() {
       .then((s) => console.log(`/: ${s}`));
   }, []);
 
+  interface ClassInfo {
+    courseName: string;
+    live: boolean;
+    my: boolean;
+    background: string;
+  }
+
+  const classinfo: ClassInfo[] = [
+    {
+      background: 'bg-pink-500',
+      courseName: '전산학특강<FE개발>',
+      live: true,
+      my: true,
+    },
+    {
+      background: 'bg-violet-100',
+      courseName: '컴퓨터 시스템',
+      live: true,
+      my: false,
+    },
+    {
+      background: 'bg-pink-300',
+      courseName: '알고리즘 개론',
+      live: false,
+      my: false,
+    },
+    {
+      background: 'bg-violet-500',
+      courseName: '전산기조직',
+      live: false,
+      my: true,
+    },
+  ];
+
   const [videoId, setVideoId] = React.useState<string | undefined>(undefined);
+  const [classinfos, setClass] = React.useState(classinfo);
 
   return (
     <Router>
@@ -71,15 +107,18 @@ function App() {
           render={({ location, history }) => {
             const inClass = /^\/classes\/\d+$/.test(location.pathname);
             return (
-              <YTWrapper
-                isPresent={!!videoId}
-                inClass={inClass}
-                onClick={() => {
-                  history.push('/classes/12345');
-                }}
-              >
-                <YTPlayer videoId={videoId} />
-              </YTWrapper>
+              <div>
+                <YTWrapper
+                  isPresent={!!videoId}
+                  inClass={inClass}
+                  onClick={() => {
+                    history.push('/classes/12345');
+                  }}
+                >
+                  <YTPlayer videoId={videoId} />
+                </YTWrapper>
+                <ClassList classInfos={classinfos} />
+              </div>
             );
           }}
         />

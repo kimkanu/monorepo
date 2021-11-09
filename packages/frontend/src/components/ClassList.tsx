@@ -7,6 +7,7 @@ interface ClassInfo {
   courseName: string;
   live: boolean;
   my: boolean;
+  background: string;
 }
 
 interface Props {
@@ -20,6 +21,7 @@ const ClassList: React.FC<Props> = ({ classInfos }) => (
         courseName={classInfo.courseName}
         live={classInfo.live}
         my={classInfo.my}
+        background={classInfo.background}
       />
     ))}
     <li>

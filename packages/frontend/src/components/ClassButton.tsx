@@ -1,35 +1,41 @@
 import { Circle12Filled, Star16Filled } from '@fluentui/react-icons';
+
 import React from 'react';
+
+import { mergeClassNames, Styled } from '../utils/style';
 
 interface Props {
   courseName: string;
   live: boolean;
   my: boolean;
+  background: string;
 }
 
-const ClassButton: React.FC<Props> = ({ courseName, live, my }) => (
+const ClassButton: React.FC<Styled<Props>> = ({
+  courseName, live, my, background,
+}) => (
   <div>
-    <button type="button" className="group rounded-md bg-gray-200 w-full h-48 sm:flex font-semibold items-center hover:bg-blue-300 hover:shadow-lg">
-      <div className="m-4">
+    <button type="button" className={mergeClassNames('rounded-lg w-full h-48 sm:flex font-semibold items-center shadow-class hover:shadow-class-hover', background)}>
+      <div>
         {
           live && (
-            <div className="text-sm text-red-500 text-left">
-              <Circle12Filled className="animate-pulse mr-4 ml-0.5 -mb-0.5 inline-block" />
+            <div className="text-emph text-white text-left ml-5 mt-5">
+              <Circle12Filled className="animate-pulse mr-2 ml-0.5 -mb-0.5 inline-block" />
               <div className="inline-block"> Live </div>
             </div>
           )
         }
         {
           my && (
-            <div className="text-sm text-blue-500 text-left py-0.5 flex items-center">
+            <div className="text-emph text-white text-left ml-5 flex items-center">
               <div className="inline-block">
-                <Star16Filled className="mr-4 pt-2 inline-block" />
+                <Star16Filled className="mr-2 pt-2 inline-block" />
               </div>
               <div className="inline-block"> My </div>
             </div>
           )
         }
-        <div className="mt-8 text-lg text-center text-gray-700 group-hover:text-white">
+        <div className="mt-8 ml-6 mb-6 text-big text-center text-white">
           {courseName}
         </div>
       </div>
