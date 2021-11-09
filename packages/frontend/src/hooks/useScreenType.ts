@@ -19,7 +19,7 @@ const useScreenType: () => ScreenType = () => {
   if (isDesktop) {
     return ScreenType.Desktop;
   }
-  return isPortrait ? ScreenType.MobilePortait : ScreenType.MobileLandscape;
+  return isPortrait ? ScreenType.MobilePortrait : ScreenType.MobileLandscape;
 };
 
 export default useScreenType;

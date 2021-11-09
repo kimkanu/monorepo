@@ -1,5 +1,5 @@
 enum ScreenType {
-  MobilePortait = 0,
+  MobilePortrait = 0,
   MobileLandscape = 1,
   Desktop = 2,
 }

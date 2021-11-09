@@ -24,14 +24,14 @@ type ScreenTypeKeys =
   | 'mobilePortrait'
   | 'mobileLandscape'
   | 'desktop'
-  | 'portrait'; // MobilePortait + Desktop
+  | 'portrait'; // MobilePortrait + Desktop
 
 type ClassNames = {
   [keys in ScreenTypeKeys]: string | null;
 };
 export function conditionalClassName(classNames: Partial<ClassNames>) {
   return (screenType: ScreenType) => mergeClassNames(
-    screenType === ScreenType.MobilePortait ? classNames.mobilePortrait : null,
+    screenType === ScreenType.MobilePortrait ? classNames.mobilePortrait : null,
     screenType === ScreenType.MobileLandscape ? classNames.mobileLandscape : null,
     screenType === ScreenType.Desktop ? classNames.desktop : null,
     screenType !== ScreenType.Desktop ? classNames.mobile : null,
@@ -44,7 +44,7 @@ type Styles = {
 };
 export function conditionalStyle(styles: Partial<Styles>) {
   return (screenType: ScreenType) => mergeStyles(
-    screenType === ScreenType.MobilePortait ? styles.mobilePortrait : null,
+    screenType === ScreenType.MobilePortrait ? styles.mobilePortrait : null,
     screenType === ScreenType.MobileLandscape ? styles.mobileLandscape : null,
     screenType === ScreenType.Desktop ? styles.desktop : null,
     screenType !== ScreenType.Desktop ? styles.mobile : null,
