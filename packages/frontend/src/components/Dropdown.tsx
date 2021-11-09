@@ -46,10 +46,10 @@ const Dropdown: React.FC<Styled<Props>> = ({
         role="button"
         tabIndex={0}
         className={mergeClassNames(
-          'absolute w-100vw h-100wh flex flex-col z-dropdown cursor-default',
+          'absolute w-100vw h-100wh flex flex-col cursor-default',
           screenType === ScreenType.Desktop
-            ? mergeClassNames('items-end justify-start', styles.desktop)
-            : mergeClassNames('items-center justify-end', styles.mobile),
+            ? mergeClassNames('items-end justify-start z-dropdown-desktop', styles.desktop)
+            : mergeClassNames('items-center justify-end z-dropdown-mobile', styles.mobile),
           additionalClassName,
         )}
         onClick={(e) => {
