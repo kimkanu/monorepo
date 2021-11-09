@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { RecoilRoot } from 'recoil';
 import { IoProvider } from 'socket.io-react-hook';
 
 import App from './App';
