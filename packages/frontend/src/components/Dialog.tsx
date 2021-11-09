@@ -1,8 +1,10 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 
-import useScreenType, { ScreenType } from '../hooks/useScreenType';
-import { Styled, mergeClassNames, mergeStyles } from '../utils/style';
+import useScreenType from '../hooks/useScreenType';
+import {
+  Styled, mergeClassNames, mergeStyles, conditionalClassName,
+} from '../utils/style';
 
 import styles from './Dialog.module.css';
 
@@ -38,9 +40,10 @@ const Dialog: React.FC<Styled<Props>> = ({
         tabIndex={0}
         className={mergeClassNames(
           'absolute w-100vw h-100wh flex flex-col z-dialog cursor-default',
-          screenType === ScreenType.Desktop
-            ? mergeClassNames('items-center justify-center', styles.desktop)
-            : mergeClassNames('items-center justify-end', styles.mobile),
+          conditionalClassName({
+            desktop: mergeClassNames('items-center justify-center', styles.desktop),
+            mobile: mergeClassNames('items-center justify-end', styles.mobile),
+          })(screenType),
         )}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
@@ -63,19 +66,17 @@ const Dialog: React.FC<Styled<Props>> = ({
           )}
           className={mergeClassNames(
             'h-fit max-h-5/6 px-8 py-8 z-dialog-1 bg-white',
-            screenType === ScreenType.Desktop
-              ? 'w-96 shadow-dropdown-desktop rounded-8'
-              : 'w-full shadow-dropdown-mobile rounded-t-12',
-            {
-              [ScreenType.MobilePortait]: 'max-w-md',
-              [ScreenType.MobileLandscape]: 'max-w-sm',
-              [ScreenType.Desktop]: null,
-            }[screenType],
+            conditionalClassName({
+              desktop: 'w-96 shadow-dropdown-desktop rounded-8',
+              mobile: 'w-full shadow-dropdown-mobile rounded-t-12',
+              mobileLandscape: 'max-w-sm',
+              mobilePortrait: 'max-w-md',
+            })(screenType),
             className,
           )}
         >
           {children}
-          {screenType !== ScreenType.Desktop && <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />}
+          <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />
         </div>
       </div>
     </CSSTransition>

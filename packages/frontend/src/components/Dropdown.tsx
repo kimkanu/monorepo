@@ -1,8 +1,10 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 
-import useScreenType, { ScreenType } from '../hooks/useScreenType';
-import { Styled, mergeClassNames, mergeStyles } from '../utils/style';
+import useScreenType from '../hooks/useScreenType';
+import {
+  Styled, mergeClassNames, mergeStyles, conditionalClassName, conditionalStyle,
+} from '../utils/style';
 
 import styles from './Dropdown.module.css';
 
@@ -47,9 +49,10 @@ const Dropdown: React.FC<Styled<Props>> = ({
         tabIndex={0}
         className={mergeClassNames(
           'absolute w-100vw h-100wh flex flex-col cursor-default',
-          screenType === ScreenType.Desktop
-            ? mergeClassNames('items-end justify-start z-dropdown-desktop', styles.desktop)
-            : mergeClassNames('items-center justify-end z-dropdown-mobile', styles.mobile),
+          conditionalClassName({
+            desktop: mergeClassNames('items-end justify-start z-dropdown-desktop', styles.desktop),
+            mobile: mergeClassNames('items-center justify-end z-dropdown-mobile', styles.mobile),
+          })(screenType),
           additionalClassName,
         )}
         onClick={(e) => {
@@ -65,10 +68,12 @@ const Dropdown: React.FC<Styled<Props>> = ({
       >
         <div
           style={mergeStyles(
-            screenType === ScreenType.Desktop ? {
-              marginRight: right,
-              top: 'calc(env(safe-area-inset-top, 0px) + 64px)',
-            } : null,
+            conditionalStyle({
+              desktop: {
+                marginRight: right,
+                top: 'calc(env(safe-area-inset-top, 0px) + 64px)',
+              },
+            })(screenType),
             {
               maxHeight: 'calc(100 * var(--wh) - 1rem)',
             },
@@ -76,20 +81,18 @@ const Dropdown: React.FC<Styled<Props>> = ({
           )}
           className={mergeClassNames(
             'h-fit max-h-5/6 z-dropdown-1 bg-white overflow-hidden',
-            screenType === ScreenType.Desktop
-              ? 'w-96 shadow-dropdown-desktop rounded-b-8 absolute'
-              : 'w-full shadow-dropdown-mobile rounded-t-12',
-            {
-              [ScreenType.MobilePortait]: 'max-w-md',
-              [ScreenType.MobileLandscape]: 'max-w-sm',
-              [ScreenType.Desktop]: null,
-            }[screenType],
+            conditionalClassName({
+              desktop: 'w-96 shadow-dropdown-desktop rounded-b-8 absolute',
+              mobile: 'w-full shadow-dropdown-mobile rounded-t-12',
+              mobileLandscape: 'max-w-sm',
+              mobilePortrait: 'max-w-md',
+            })(screenType),
             className,
           )}
         >
           <div className="px-8 py-8 w-full h-full overflow-auto">
             {children}
-            {screenType !== ScreenType.Desktop && <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />}
+            <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />
           </div>
         </div>
       </div>
