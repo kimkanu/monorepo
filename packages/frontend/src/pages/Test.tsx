@@ -29,7 +29,7 @@ const Test: React.FC<Props> = ({ name }) => {
 
   const index = Object.keys(componentsToTest).findIndex((key) => key === name);
   if (index >= 0) {
-    return componentsToTest[index][1];
+    return componentsToTest[name][1];
   }
 
   return null;
