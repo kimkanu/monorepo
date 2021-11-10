@@ -15,13 +15,13 @@ interface Props {
 }
 
 const COLORS = [
-  '#ff2667',
-  '#ff9f29',
-  '#13ed79',
+  '#ff5cbe',
+  '#a526ff',
+  '#5e59f7',
 ];
 const INTERVAL = 200;
 const MAX_CURVES = 4 * COLORS.length;
-const AMP_THRESHOLD = 40;
+const AMP_THRESHOLD = 10;
 
 const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
   const [curves, setCurves] = React.useState<Curve[]>([]);
@@ -44,7 +44,7 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
           .filter((x) => x !== randomInt(COLORS.length) && state.amplitude > AMP_THRESHOLD)
           .map((x) => generateCurve(x, state)),
       ]);
-    }, INTERVAL);
+    }, INTERVAL * ((Math.random() + 2) / 2.5));
 
     return () => clearInterval(interval);
   }, []);
@@ -62,7 +62,10 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
   ));
 
   return (
-    <div className="absolute w-full bottom-0 left-0 flex justify-center items-center opacity-50">
+    <div
+      className="absolute w-full left-0 flex justify-center items-center opacity-50"
+      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
+    >
       <svg className="w-full" style={{ maxWidth: 1366 }} viewBox="-500 -100 1000 100" xmlns="http://www.w3.org/2000/svg">
         {paths}
       </svg>
