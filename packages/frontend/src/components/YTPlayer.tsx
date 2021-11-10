@@ -9,7 +9,7 @@ import { mergeClassNames, mergeStyles, Styled } from '../utils/style';
 import styles from './YTPlayer.module.css';
 
 interface Props {
-  videoId?: string;
+  videoId?: string | null;
   options?: YouTubeProps['opts'];
   onReady?: (player: YouTubePlayer) => void;
   onStateChange?: (state: number, player: YouTubePlayer) => void;
@@ -40,7 +40,7 @@ const YTPlayer: React.FC<Styled<Props>> = ({
       >
         {(!!videoId || !!options?.playerVars?.list) ? (
           <YouTube
-            videoId={videoId}
+            videoId={videoId ?? undefined}
             containerClassName={styles.youtubeContainer}
             opts={{
               height: '100%',
