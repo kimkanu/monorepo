@@ -3,12 +3,15 @@ import { atom } from 'recoil';
 
 interface DropdownState {
   element?: ReactElement;
+  visible: boolean;
   onClose?: () => void;
 }
 
 const dropdownAtom = atom<DropdownState>({
   key: 'dropdownAtom',
-  default: {},
+  default: {
+    visible: false,
+  },
 });
 
 export default dropdownAtom;
