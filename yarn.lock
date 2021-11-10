@@ -3590,6 +3590,7 @@ __metadata:
     eslint-plugin-react: ^7.26.1
     eslint-plugin-react-hooks: ^4.2.0
     http-proxy-middleware: ^2.0.1
+    jest-fail-on-console: ^2.1.1
     postcss: ^7
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -12273,6 +12274,15 @@ __metadata:
     jest-mock: ^26.6.2
     jest-util: ^26.6.2
   checksum: 0b69b481e6d6f2350ed241c2dabc70b0b1f3a00f9a410b7dad97c8ab38e88026acf7445ca663eb314f46ff50acee0133100b1006bf4ebda5298ffb02763a6861
+  languageName: node
+  linkType: hard
+
+"jest-fail-on-console@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "jest-fail-on-console@npm:2.1.1"
+  dependencies:
+    chalk: ^4.1.0
+  checksum: 19281d63776b88f822a415a409dbb8bdfb18801ca2b94e48240ff69cbb46501348e9e2afeb5b187ddaaf8cd264a6bf17bd3e071a7aadbe92015ef79565593022
   languageName: node
   linkType: hard
 
