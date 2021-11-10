@@ -92,6 +92,8 @@ function App() {
         </Link>
       </Debug>
       <div className="w-full h-full bg-white">
+        <div className="absolute border-t-4 border-primary-500 z-layout bottom-0 w-full" style={{ height: 'calc(env(safe-area-inset-bottom, 0px) + 72px)' }} />
+
         {/* Example usage of `YTWrapper` and `YTPlayer`. */}
         <Route
           path="/"
