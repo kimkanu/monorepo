@@ -7,7 +7,7 @@ const CHAT_SECTION_HEIGHT_THRESHOLD = 80;
 
 const useScreenType: () => ScreenType = () => {
   const {
-    width, actualHeight, viewportHeight, offset,
+    width, viewportHeight, offset,
   } = useRecoilValue(screenSizeState.atom);
   const height = viewportHeight + offset;
 
