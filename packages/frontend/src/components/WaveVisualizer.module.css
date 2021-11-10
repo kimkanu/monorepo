@@ -5,13 +5,13 @@
 }
 
 .path-00 {
-  animation: resize 0.33s both;
+  animation: resize 0.5s both;
 }
 .path-01 {
-  animation: resize 0.33s 0.07s both;
+  animation: resize 0.5s 0.07s both;
 }
 .path-02 {
-  animation: resize 0.33s 0.12s both;
+  animation: resize 0.5s 0.12s both;
 }
 .path-10 {
   animation: resize 0.46s both;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { randomInt, range } from '../utils/math';
+import { random, randomInt, range } from '../utils/math';
 
 import {
   Curve,
@@ -15,11 +15,11 @@ interface Props {
 }
 
 const COLORS = [
-  '#ff5cbe',
-  '#a526ff',
-  '#5e59f7',
+  '#ff78c9',
+  '#b957ff',
+  '#817df5',
 ];
-const INTERVAL = 200;
+const INTERVAL = 300;
 const MAX_CURVES = 4 * COLORS.length;
 const AMP_THRESHOLD = 10;
 
@@ -44,7 +44,7 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
           .filter((x) => x !== randomInt(COLORS.length) && state.amplitude > AMP_THRESHOLD)
           .map((x) => generateCurve(x, state)),
       ]);
-    }, INTERVAL * ((Math.random() + 2) / 2.5));
+    }, INTERVAL * random(0.9, 1.1));
 
     return () => clearInterval(interval);
   }, []);
@@ -66,7 +66,7 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
       className="absolute w-full left-0 flex justify-center items-center opacity-50"
       style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
     >
-      <svg className="w-full" style={{ maxWidth: 1366 }} viewBox="-500 -100 1000 100" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full max-w-5xl" viewBox="-400 -100 800 100" xmlns="http://www.w3.org/2000/svg">
         {paths}
       </svg>
     </div>

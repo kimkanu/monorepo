@@ -94,7 +94,7 @@ export const getBezierCurveOverlappingSumPoints = (
   curves: CurveProps[], opts?: Options,
 ) => {
   // Assume the union of the supports of given curves is connected.
-  const STEP_COUNT = (opts?.stepCountFactor ?? 8) * curves.length;
+  const STEP_COUNT = (opts?.stepCountFactor ?? 6) * curves.length;
   const ticks = curves.flatMap(({ position, radius }) => [position - radius, position + radius]);
   const minTicks = Math.min(...ticks);
   const maxTicks = Math.max(...ticks);
@@ -195,18 +195,26 @@ export const generateCurve = (
     const max = MAX - 0.1 * (MAX - MIN);
     const meanPosition = min + (max - min) * freqRatio;
     const position = random(min, max) * (1 - r) + meanPosition * r;
+
+    const heightTimesRadiusMean = 15 * amplitude;
+    const heightTimesRadius = clamp(
+      60,
+      random(0.7, 1.3) * heightTimesRadiusMean,
+      5000,
+    );
+    const heightCandidate = random(0.6, 0.9) * amplitude * (
+      random(0.1, 0.4) / (1 + 4 * ((meanPosition - position) / (max - min)) ** 2)
+    );
+    const radius = clamp(
+      30 + amplitude / 5,
+      heightTimesRadius / heightCandidate,
+      80 + amplitude / 5,
+    );
+    const height = heightTimesRadius / radius;
     return {
-      height: (
-        clamp(
-          3,
-          random(0.8, 1.2) * amplitude * (
-            random(0.1, 0.4) / (1 + 4 * ((meanPosition - position) / (max - min)) ** 2)
-          ),
-          50,
-        )
-      ),
+      height,
       position,
-      radius: random(30, 120),
+      radius,
     };
   });
   return {
