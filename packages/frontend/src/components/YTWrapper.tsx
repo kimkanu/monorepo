@@ -77,7 +77,7 @@ const YTWrapper: React.FC<Styled<Props>> = ({
         ref={nodeRef}
         style={style}
         className={mergeClassNames(
-          'relative overflow-hidden',
+          'relative overflow-hidden z-layout-1',
           isPresent || inClass ? null : 'opacity-0 pointer-events-none select-none',
           className,
           styles[`${initialInClass ? 'max' : 'min'}${screenTypeName}`],
