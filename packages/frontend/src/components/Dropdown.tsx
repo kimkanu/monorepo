@@ -36,6 +36,7 @@ const Dropdown: React.FC<Styled<Props>> = ({
 
   return (
     <CSSTransition
+      mountOnEnter
       unmountOnExit
       in={visible}
       timeout={400}
@@ -84,10 +85,10 @@ const Dropdown: React.FC<Styled<Props>> = ({
             style,
           )}
           className={mergeClassNames(
-            'h-fit max-h-5/6 z-dropdown-1 bg-white overflow-hidden',
+            'h-fit max-h-5/6 bg-white overflow-hidden',
             conditionalClassName({
-              desktop: 'w-96 shadow-dropdown-desktop rounded-b-8 absolute',
-              mobile: 'w-full shadow-dropdown-mobile rounded-t-12',
+              desktop: 'w-96 z-dropdown-desktop-1 shadow-dropdown-desktop rounded-b-8 absolute',
+              mobile: 'w-full z-dropdown-mobile-1 shadow-dropdown-mobile rounded-t-12',
               mobileLandscape: 'max-w-sm',
               mobilePortrait: 'max-w-md',
             })(screenType),

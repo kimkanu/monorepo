@@ -35,6 +35,7 @@ const Dialog: React.FC<Styled<Props>> = ({
 
   return (
     <CSSTransition
+      mountOnEnter
       unmountOnExit
       in={visible}
       timeout={400}

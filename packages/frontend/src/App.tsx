@@ -113,11 +113,11 @@ function App() {
           }}
         />
       </div>
-      <div className="absolute top-0 left-0 z-10">
+      <div className="absolute top-0 left-0">
         <Route
           path="/classes/:id"
           render={() => (
-            <Link to="/">Back</Link>
+            <Link className="relative z-layout-2" to="/">Back</Link>
           )}
         />
         <Route
