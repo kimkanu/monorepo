@@ -17,7 +17,7 @@ button {
 
 @layer utilities {
   .shadow-color-primary {
-    --shadow-color: rgba(255, 100, 146, 0.5);
+    --shadow-color: rgba(145, 84, 245, 0.5);
   }
   .shadow-color-red {
     --shadow-color: rgba(245, 50, 60, 0.5);
