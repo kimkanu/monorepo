@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom';
 
 import Global from './components/Global';
-import Layout from './Layout';
+import Layout from './components/Layout';
 import Class from './pages/Class';
 
 const App: React.FC = () => (
