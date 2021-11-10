@@ -1,13 +1,16 @@
 :root {
-  --header-height: 4rem;
-  --footer-height: 4rem;
+  --header-height: 64px;
+  --header-height: calc(64px + env(safe-area-inset-top, 0px));
+  --footer-height: 76px;
+  --footer-height: calc(76px + env(safe-area-inset-bottom, 0px));
   --pip-margin-x: 1rem;
+  --pip-margin-x: calc(1rem + env(safe-area-inset-right, 0px));
   --pip-margin-y: 1rem;
   --pip-width--mobile: 16rem;
   --pip-height--mobile: 9rem;
   --pip-width--desktop: 24rem;
   --pip-height--desktop: 13.5rem;
-  --chat-section-width--desktop: 25vw;
+  --chat-section-width--desktop: calc(clamp(352px, 30vw, 416px));
 }
 
 /* Mobile Portrait */
@@ -18,7 +21,7 @@
   height: var(--pip-height--mobile);
   transform: translate(
     calc(100vw - 100% - var(--pip-margin-x)),
-    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+    calc(100 * var(--wh) - 100% - var(--footer-height) - var(--pip-margin-y))
   );
   border-radius: 0.5rem;
 }
@@ -37,7 +40,7 @@
   height: var(--pip-height--mobile);
   transform: translate(
     calc(100vw - 100% - var(--pip-margin-x)),
-    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+    calc(100 * var(--wh) - 100% - var(--footer-height) - var(--pip-margin-y))
   );
   border-radius: 0.5rem;
 }
@@ -58,7 +61,7 @@
   height: var(--pip-height--mobile);
   transform: translate(
     calc(100vw - 100% - var(--pip-margin-x)),
-    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+    calc(100 * var(--wh) - 100% - var(--pip-margin-y))
   );
   border-radius: 0.5rem;
 }
@@ -66,8 +69,8 @@
 .maxMobileLandscape {
   transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: 100vw;
-  height: 100vh;
-  transform: translate(calc(100vw - 100%), calc(100vh - 100%));
+  height: calc(100 * var(--wh));
+  transform: translate(calc(100vw - 100%), calc(100 * var(--wh) - 100%));
   border-radius: 0rem;
 }
 
@@ -77,7 +80,7 @@
   height: var(--pip-height--mobile);
   transform: translate(
     calc(100vw - 100% - var(--pip-margin-x)),
-    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+    calc(100 * var(--wh) - 100% - var(--pip-margin-y))
   );
   border-radius: 0.5rem;
 }
@@ -85,8 +88,8 @@
 .beingMaxMobileLandscape {
   transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: 100vw;
-  height: 100vh;
-  transform: translate(calc(100vw - 100%), calc(100vh - 100%));
+  height: calc(100 * var(--wh));
+  transform: translate(calc(100vw - 100%), calc(100 * var(--wh) - 100%));
   border-radius: 0.5rem;
 }
 
@@ -98,7 +101,7 @@
   height: var(--pip-height--desktop);
   transform: translate(
     calc(100vw - 100% - var(--pip-margin-x)),
-    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+    calc(100 * var(--wh) - 100% - var(--pip-margin-y))
   );
   border-radius: 0.5rem;
 }
@@ -106,10 +109,10 @@
 .maxDesktop {
   transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: calc(100vw - var(--chat-section-width--desktop));
-  height: calc(100vh - var(--header-height) - var(--footer-height));
+  height: calc(100 * var(--wh) - var(--header-height) - var(--footer-height));
   transform: translate(
     calc(100vw - var(--chat-section-width--desktop) - 100%),
-    calc(100vh - var(--header-height) - var(--footer-height) - 100% + var(--header-height))
+    calc(100 * var(--wh) - var(--footer-height) - 100%)
   );
   border-radius: 0rem;
 }
@@ -120,7 +123,7 @@
   height: var(--pip-height--desktop);
   transform: translate(
     calc(100vw - 100% - var(--pip-margin-x)),
-    calc(100vh - 100% - var(--footer-height) - var(--pip-margin-y))
+    calc(100 * var(--wh) - 100% - var(--pip-margin-y))
   );
   border-radius: 0.5rem;
 }
@@ -128,10 +131,10 @@
 .beingMaxDesktop {
   transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: calc(100vw - var(--chat-section-width--desktop));
-  height: calc(100vh - var(--header-height) - var(--footer-height));
+  height: calc(100 * var(--wh) - var(--header-height) - var(--footer-height));
   transform: translate(
     calc(100vw - var(--chat-section-width--desktop) - 100%),
-    calc(100vh - var(--header-height) - var(--footer-height) - 100% + var(--header-height))
+    calc(100 * var(--wh) - var(--footer-height) - 100%)
   );
   border-radius: 0.5rem;
 }
