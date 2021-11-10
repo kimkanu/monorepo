@@ -8,10 +8,10 @@ export function range(start: number, end?: number, step?: number): number[] {
   }
 
   if (typeof step === 'undefined') {
-    return range(start, end, step);
+    return range(start, end, 1);
   }
 
-  const length = Math.floor((end - start) / step);
+  const length = Math.ceil((end - start) / step);
   if (length <= 0) return [];
   return new Array(length).fill(0).map((_, i) => start + i * step);
 }
@@ -20,7 +20,14 @@ export function rangeEnd(start: number, end?: number, step?: number): number[] {
   if (typeof end === 'undefined') {
     return [...range(start), start];
   }
-  return [...range(start, end, step), end];
+  return [
+    ...range(start, end, step),
+    ...(
+      (end - start) % (step ?? 1) === 0
+        ? [end]
+        : []
+    ),
+  ];
 }
 
 export function random(start?: number, end?: number): number {
