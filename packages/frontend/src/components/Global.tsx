@@ -35,11 +35,11 @@ const Global: React.FC = () => {
       {/* 디버그용 컴포넌트 */}
       <Debug />
 
-      <Dropdown visible={!!dropdown.element} onClose={dropdown.onClose ?? (() => {})}>
+      <Dropdown visible={dropdown.visible} onClose={dropdown.onClose ?? (() => {})}>
         {dropdown.element}
       </Dropdown>
 
-      <Dialog visible={!!dialog.element} onClose={dialog.onClose ?? (() => {})}>
+      <Dialog visible={dialog.visible} onClose={dialog.onClose ?? (() => {})}>
         {dialog.element}
       </Dialog>
 

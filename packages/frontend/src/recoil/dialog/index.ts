@@ -1,4 +1,5 @@
 import atom from './atom';
+import visible from './visible';
 
-const dialogState = { atom };
+const dialogState = { atom, visible };
 export default dialogState;

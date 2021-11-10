@@ -3,12 +3,15 @@ import { atom } from 'recoil';
 
 interface DialogState {
   element?: ReactElement;
+  visible: boolean;
   onClose?: () => void;
 }
 
 const dialogAtom = atom<DialogState>({
   key: 'dialogAtom',
-  default: {},
+  default: {
+    visible: false,
+  },
 });
 
 export default dialogAtom;
