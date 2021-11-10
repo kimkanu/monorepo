@@ -28,8 +28,14 @@ test('rangeEnd works well', () => {
 
 describe('random works well', () => {
   test.each(range(1, 11))('%i/10', () => {
-    const r = random(3, 7);
-    expect(r >= 3 && r < 7).toBe(true);
+    const r1 = random();
+    expect(r1 >= 0 && r1 < 1).toBe(true);
+
+    const r2 = random(7);
+    expect(r2 >= 0 && r2 < 7).toBe(true);
+
+    const r3 = random(3, 7);
+    expect(r3 >= 3 && r3 < 7).toBe(true);
   });
 });
 
