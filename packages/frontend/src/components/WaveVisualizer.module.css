@@ -1,0 +1,33 @@
+@keyframes resize {
+  0% { transform: scaleY(0); animation-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1); }
+  50% { transform: scaleY(1); animation-timing-function: cubic-bezier(0.4, 0.0, 1, 1); }
+  100% { transform: scaleY(0); }
+}
+
+.path-00 {
+  animation: resize 0.5s both;
+}
+.path-01 {
+  animation: resize 0.5s 0.07s both;
+}
+.path-02 {
+  animation: resize 0.5s 0.12s both;
+}
+.path-10 {
+  animation: resize 0.46s both;
+}
+.path-11 {
+  animation: resize 0.46s 0.07s both;
+}
+.path-12 {
+  animation: resize 0.46s 0.12s both;
+}
+.path-20 {
+  animation: resize 0.6s both;
+}
+.path-21 {
+  animation: resize 0.6s 0.07s both;
+}
+.path-22 {
+  animation: resize 0.6s 0.12s both;
+}
