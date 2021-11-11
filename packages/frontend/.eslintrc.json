@@ -37,6 +37,17 @@
       }
     ],
     "react/require-default-props": "off",
-    "sort-keys": "error"
+    "no-underscore-dangle": ["error", { "allow": ["class_"] }],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": ["camelCase", "PascalCase", "UPPER_CASE"],
+        "filter": {
+          "regex": "class_",
+          "match": false
+        }
+      }
+    ]
   }
 }
