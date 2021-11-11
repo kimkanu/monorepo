@@ -4,3 +4,9 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+import failOnConsole from 'jest-fail-on-console';
+
+failOnConsole({
+  shouldFailOnWarn: false,
+});
