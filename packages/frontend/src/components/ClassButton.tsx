@@ -1,4 +1,4 @@
-import { Circle12Filled, Star16Filled } from '@fluentui/react-icons';
+import { Circle16Filled, Star16Filled } from '@fluentui/react-icons';
 
 import React from 'react';
 
@@ -14,13 +14,13 @@ interface Props {
 const ClassButton: React.FC<Styled<Props>> = ({
   courseName, live, my, background,
 }) => (
-  <div>
+  <li>
     <button type="button" className={mergeClassNames('rounded-lg w-full h-48 sm:flex font-semibold items-center shadow-class hover:shadow-class-hover', background)}>
       <div>
         {
           live && (
             <div className="text-emph text-white text-left ml-5 mt-5">
-              <Circle12Filled className="animate-pulse mr-2 ml-0.5 -mb-0.5 inline-block" />
+              <Circle16Filled className="animate-pulse mr-2 -mb-0.5 inline-block" />
               <div className="inline-block"> Live </div>
             </div>
           )
@@ -40,7 +40,7 @@ const ClassButton: React.FC<Styled<Props>> = ({
         </div>
       </div>
     </button>
-  </div>
+  </li>
 );
 
 export default ClassButton;
