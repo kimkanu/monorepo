@@ -97,7 +97,7 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "@team-10/(.*)": "<rootDir>/../$1"
+      "@team-10/lib(.*)": "<rootDir>/../lib/src/$1"
     }
   }
 }
