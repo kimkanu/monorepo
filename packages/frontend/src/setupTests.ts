@@ -10,3 +10,11 @@ import failOnConsole from 'jest-fail-on-console';
 failOnConsole({
   shouldFailOnWarn: false,
 });
+
+export default {
+  moduleDirectories: [
+    'node_modules',
+    '../../node_modules',
+    '../lib',
+  ],
+};
