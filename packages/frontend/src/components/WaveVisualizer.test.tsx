@@ -12,6 +12,6 @@ test('Should be rendered successfully with lots of paths.', async () => {
     await new Promise((r) => setTimeout(r, 2000));
     const paths = container.getElementsByTagNameNS('http://www.w3.org/2000/svg', 'path');
 
-    expect(paths.length > 10).toBe(true);
+    expect(paths.length > 5).toBe(true);
   });
 });
