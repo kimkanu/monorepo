@@ -22,6 +22,7 @@ services:
     links:
       - "backend"
     volumes:
+      - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
   backend:
     profiles:
@@ -50,6 +51,7 @@ services:
       AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
     command: yarn workspace @team-10/backend run ${NODE_ENV}
     volumes:
+      - ./packages/lib/:/app/packages/lib/
       - ./packages/backend/:/app/packages/backend/
   postgres:
     image: postgres:10.4

@@ -1,0 +1,22 @@
+{
+  "name": "@team-10/lib",
+  "version": "0.0.1",
+  "description": "Common library",
+  "author": "Team 10",
+  "homepage": "https://github.com/kimkanu/monorepo#readme",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/kimkanu/monorepo/issues"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
+    "eslint-config-airbnb": "^19.0.0",
+    "eslint-config-airbnb-typescript": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3"
+  }
+}
