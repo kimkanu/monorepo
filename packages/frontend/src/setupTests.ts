@@ -12,19 +12,16 @@ failOnConsole({
 });
 
 export default {
-  moduleDirectories: [
-    'node_modules',
-    '../../node_modules',
+  modulePaths: [
+    '<rootDir>',
     '../lib',
   ],
-  moduleNameMapper: {
-    '@team-10/lib/(.*)$': '../lib/dist/$1',
-  },
   moduleFileExtensions: [
     'js',
     'jsx',
     'json',
     'node',
     'ts',
+    'tsx',
   ],
 };
