@@ -17,4 +17,14 @@ export default {
     '../../node_modules',
     '../lib',
   ],
+  moduleNameMapper: {
+    '@team-10/lib/(.*)$': '../lib/dist/$1',
+  },
+  moduleFileExtensions: [
+    'js',
+    'jsx',
+    'json',
+    'node',
+    'ts',
+  ],
 };
