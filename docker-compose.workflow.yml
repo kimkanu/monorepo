@@ -8,5 +8,6 @@ services:
       NODE_ENV: test
     command: yarn workspace @team-10/frontend run test:workflow
     volumes:
+      - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
       - ./coverage/:/app/coverage/:Z

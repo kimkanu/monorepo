@@ -1,4 +1,4 @@
-FROM node:lts
+FROM keonwoo/cs492c:default
 ARG FRONTEND_PORT
 
 # Copy yarn packages
@@ -8,13 +8,14 @@ COPY .yarnrc.yml .
 COPY package.json .
 COPY .yarn/ ./.yarn/
 
+WORKDIR /app/packages/lib
+COPY ./packages/lib/package.json .
+
 WORKDIR /app/packages/frontend
 COPY ./packages/frontend/package.json .
 
 WORKDIR /app
-RUN chown -R node:node .
 
-USER node
 RUN yarn set version berry
 RUN yarn install
 

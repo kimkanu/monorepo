@@ -23,14 +23,15 @@
     "typescript": "^4.4.4"
   },
   "scripts": {
-    "development": "nodemon",
-    "production": "ts-node src/index.ts",
+    "development": "yarn install && nodemon",
+    "production": "yarn install && ts-node src/index.ts",
     "dev": "yarn development",
     "prod": "yarn production",
     "lint": "eslint --fix .",
     "commit": "yarn lint && cd ../.. && git add yarn.lock && cz"
   },
   "dependencies": {
+    "@team-10/lib": "workspace:^",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.2",

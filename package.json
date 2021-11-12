@@ -30,6 +30,7 @@
     "commit": "cz"
   },
   "workspaces": [
+    "packages/lib",
     "packages/frontend",
     "packages/backend"
   ],
