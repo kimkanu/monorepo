@@ -35,7 +35,7 @@ const CreateJoinPage: React.FC = () => {
             placeholder="Classroom ID"
             value={joinClassId}
             onChange={onChangeClassId}
-            className="bg-gray-200 placeholder-gray-500 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
+            className="bg-gray-200 placeholder-gray-500 placeholder-sans text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
             onKeyPress={(e) => {
               if (e.key === 'Enter' && !!e.currentTarget.value && joinNextInputRef.current) {
                 joinNextInputRef.current.focus();
@@ -48,11 +48,12 @@ const CreateJoinPage: React.FC = () => {
             <LockClosed20Regular className="stroke-current" />
           </div>
           <input
+            type="password"
             ref={joinNextInputRef}
             placeholder="Password"
             value={joinPassword}
             onChange={onChangePassword}
-            className="bg-gray-200 placeholder-gray-500 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
+            className="bg-gray-200 placeholder-gray-500 placeholder-sans text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
             onKeyPress={(e) => {
               if (e.key === 'Enter' && !!e.currentTarget.value && joinButtonRef.current) {
                 joinButtonRef.current.focus();
@@ -91,7 +92,7 @@ const CreateJoinPage: React.FC = () => {
             placeholder="Class Name"
             value={createClassName}
             onChange={onChangeClassName}
-            className="bg-gray-200 placeholder-gray-500 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
+            className="bg-gray-200 placeholder-gray-500 placeholder-sans text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
             onKeyPress={(e) => {
               if (e.key === 'Enter' && !!e.currentTarget.value && createButtonRef.current) {
                 createButtonRef.current.focus();
