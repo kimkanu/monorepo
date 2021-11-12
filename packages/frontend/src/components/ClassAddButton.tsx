@@ -2,14 +2,14 @@ import React from 'react';
 
 import { useSetRecoilState } from 'recoil';
 
-import createJoinState from '../recoil/dialog';
+import JoinCreateState from '../recoil/dialog';
 
-import CreateJoinPage from './CreateJoinPage';
+import JoinCreateContent from './JoinCreateContent';
 
 const ClassAddButton: React.FC = (
 ) => {
-  const setPage = useSetRecoilState(createJoinState.atom);
-  const setPageVisible = useSetRecoilState(createJoinState.visible);
+  const setDialog = useSetRecoilState(JoinCreateState.atom);
+  const setDialogVisible = useSetRecoilState(JoinCreateState.visible);
 
   return (
     <div>
@@ -17,10 +17,10 @@ const ClassAddButton: React.FC = (
         type="button"
         className="justify-center group rounded-lg w-full h-48 bg-gray-300 sm:flex items-center hover:shadow-class-hover"
         onClick={() => {
-          setPage({
+          setDialog({
             visible: true,
-            element: <CreateJoinPage />,
-            onClose: () => setPageVisible(false),
+            element: <JoinCreateContent />,
+            onClose: () => setDialogVisible(false),
           });
         }}
       >

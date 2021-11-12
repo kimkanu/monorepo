@@ -8,7 +8,7 @@ import React from 'react';
 import useInput from '../hooks/useInput';
 import { mergeClassNames } from '../utils/style';
 
-const CreateJoinPage: React.FC = () => {
+const JoinCreateContent: React.FC = () => {
   const joinNextInputRef = React.useRef<HTMLInputElement>(null);
   const joinButtonRef = React.useRef<HTMLButtonElement>(null);
   const createButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -123,4 +123,4 @@ const CreateJoinPage: React.FC = () => {
   );
 };
 
-export default CreateJoinPage;
+export default JoinCreateContent;
