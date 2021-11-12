@@ -12,6 +12,7 @@ __metadata:
     commitizen: ^4.2.4
     cz-conventional-changelog: 3.3.0
     lerna: ^4.0.0
+    socket.io-stream: ^0.9.1
   languageName: unknown
   linkType: soft
 
