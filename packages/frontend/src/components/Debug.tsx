@@ -1,11 +1,63 @@
-import React from 'react';
+/* istanbul ignore file */
 
-const Debug: React.FC = ({ children }) => (
-  process.env.NODE_ENV === 'production' ? null : (
-    <div className="absolute right-4 top-4 rounded-lg bg-white bg-opacity-95 z-debug px-8 py-6 shadow-xl">
-      {children}
-    </div>
-  )
-);
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { useSocket } from 'socket.io-react-hook';
+
+import useScreenType from '../hooks/useScreenType';
+import classState from '../recoil/class';
+import ScreenType from '../types/screen';
+import { conditionalClassName } from '../utils/style';
+
+import DebugWrapper from './DebugWrapper';
+
+const Debug: React.FC = () => {
+  const screenType = useScreenType();
+  const [class_, setClass] = useRecoilState(classState.atom);
+
+  const { connected } = useSocket(
+    '/',
+    process.env.NODE_ENV === 'production' || !process.env.REACT_APP_PROXY_URL
+      ? undefined
+      : {
+        host: process.env.REACT_APP_PROXY_URL.replace(/https?:\/\//g, ''),
+      },
+  );
+
+  return (
+    <DebugWrapper>
+      <span className="bold text-blue-500">
+        {connected ? 'Connected!' : 'Disconnected.'}
+      </span>
+      <br />
+      {/* Tailwind screen prefix에 대한 workaround (이슈 #49 참조) */}
+      <span
+        className={conditionalClassName({
+          desktop: 'text-blue-500',
+          mobileLandscape: 'text-green-500',
+          mobilePortrait: 'text-red-500',
+        })(screenType)}
+      >
+        Screen type:
+        {' '}
+        {ScreenType[screenType]}
+      </span>
+      <br />
+      <button
+        type="button"
+        onClick={() => {
+          setClass(class_ ? null : {
+            id: 'SAM-PLE-CLS',
+            name: 'Sample Class',
+            videoId: 'Zyi9QUB-fyo',
+          });
+        }}
+      >
+        {class_ ? 'End class' : 'Start class'}
+      </button>
+    </DebugWrapper>
+  );
+};
 
 export default Debug;

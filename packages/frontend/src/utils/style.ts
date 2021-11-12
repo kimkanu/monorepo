@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ScreenType from '../types/screen';
+
 export function mergeClassNames(...classNames: (string | null | undefined)[]): string {
   return classNames.filter((c) => !!c).join(' ');
 }
@@ -16,3 +18,36 @@ export type Styled<T> = T & {
   style?: React.CSSProperties;
   className?: string;
 };
+
+type ScreenTypeKeys =
+  | 'mobile'
+  | 'mobilePortrait'
+  | 'mobileLandscape'
+  | 'desktop'
+  | 'portrait'; // MobilePortrait + Desktop
+
+type ClassNames = {
+  [keys in ScreenTypeKeys]: string | null;
+};
+export function conditionalClassName(classNames: Partial<ClassNames>) {
+  return (screenType: ScreenType) => mergeClassNames(
+    screenType === ScreenType.MobilePortrait ? classNames.mobilePortrait : null,
+    screenType === ScreenType.MobileLandscape ? classNames.mobileLandscape : null,
+    screenType === ScreenType.Desktop ? classNames.desktop : null,
+    screenType !== ScreenType.Desktop ? classNames.mobile : null,
+    screenType !== ScreenType.MobileLandscape ? classNames.portrait : null,
+  );
+}
+
+type Styles = {
+  [keys in ScreenTypeKeys]: React.CSSProperties;
+};
+export function conditionalStyle(styles: Partial<Styles>) {
+  return (screenType: ScreenType) => mergeStyles(
+    screenType === ScreenType.MobilePortrait ? styles.mobilePortrait : null,
+    screenType === ScreenType.MobileLandscape ? styles.mobileLandscape : null,
+    screenType === ScreenType.Desktop ? styles.desktop : null,
+    screenType !== ScreenType.Desktop ? styles.mobile : null,
+    screenType !== ScreenType.MobileLandscape ? styles.portrait : null,
+  );
+}
