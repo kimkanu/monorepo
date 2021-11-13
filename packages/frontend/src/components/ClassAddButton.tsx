@@ -2,14 +2,14 @@ import React from 'react';
 
 import { useSetRecoilState } from 'recoil';
 
-import JoinCreateState from '../recoil/dialog';
+import dialogState from '../recoil/dialog';
 
 import JoinCreateContent from './JoinCreateContent';
 
 const ClassAddButton: React.FC = (
 ) => {
-  const setDialog = useSetRecoilState(JoinCreateState.atom);
-  const setDialogVisible = useSetRecoilState(JoinCreateState.visible);
+  const setDialog = useSetRecoilState(dialogState.atom);
+  const setDialogVisible = useSetRecoilState(dialogState.visible);
 
   return (
     <div>
