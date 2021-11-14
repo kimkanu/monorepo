@@ -7,16 +7,19 @@ services:
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     volumes:
-      - ./proxy/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./proxy/conf/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
       - ./proxy/certs:/etc/nginx/certs
     depends_on:
       - frontend-ssl
+      - backend
     networks:
       - mynetwork
     links:
       - frontend-ssl
+      - backend
     environment:
-      - "NGINX_HOST=${NGINX_HOST}"
+      NGINX_HOST: ${NGINX_HOST}
+      FRONTEND_PORT: ${FRONTEND_PORT}
   frontend:
     profiles:
       - development
