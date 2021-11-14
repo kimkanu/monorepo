@@ -1,5 +1,4 @@
 FROM keonwoo/cs492c:default
-ARG FRONTEND_PORT
 
 # Copy yarn packages
 WORKDIR /app
@@ -18,5 +17,3 @@ WORKDIR /app
 
 RUN yarn set version berry
 RUN yarn install
-
-EXPOSE ${FRONTEND_PORT}
