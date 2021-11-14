@@ -1,5 +1,25 @@
 version: "3"
 services:
+  proxy:
+    profiles:
+      - development:ssl
+    image: nginx:1.19.10-alpine
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    volumes:
+      - ./proxy/conf/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
+      - ./proxy/certs:/etc/nginx/certs
+    depends_on:
+      - frontend-ssl
+      - backend
+    networks:
+      - mynetwork
+    links:
+      - frontend-ssl
+      - backend
+    environment:
+      NGINX_HOST: ${NGINX_HOST}
+      FRONTEND_PORT: ${FRONTEND_PORT}
   frontend:
     profiles:
       - development
@@ -20,13 +40,35 @@ services:
       REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
     command: yarn workspace @team-10/frontend run ${NODE_ENV}
     links:
-      - "backend"
+      - backend
+    volumes:
+      - ./packages/lib/:/app/packages/lib/
+      - ./packages/frontend/:/app/packages/frontend/
+  frontend-ssl:
+    profiles:
+      - development:ssl
+    build:
+      context: .
+      dockerfile: ./packages/frontend/Dockerfile
+    ports:
+      - ${FRONTEND_PORT}
+    networks:
+      - mynetwork
+    environment:
+      CHOKIDAR_USEPOLLING: 1
+      PORT: ${FRONTEND_PORT}
+      NODE_ENV: ${NODE_ENV}
+      REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
+    command: yarn workspace @team-10/frontend run ${NODE_ENV}
+    links:
+      - backend
     volumes:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
   backend:
     profiles:
       - development
+      - development:ssl
       - production
       - test:backend
     build:
@@ -57,6 +99,7 @@ services:
     image: postgres:10.4
     profiles:
       - development
+      - development:ssl
       - production
       - test:frontend
     ports:
@@ -70,3 +113,6 @@ services:
 
 networks:
   mynetwork:
+
+volumes:
+  letsencrypt:
