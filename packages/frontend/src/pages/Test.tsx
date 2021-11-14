@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import { consoleLogHi } from '@team-10/lib';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -19,6 +20,10 @@ interface Props {
 }
 
 const Test: React.FC<Props> = ({ name }) => {
+  React.useEffect(() => {
+    consoleLogHi();
+  }, []);
+
   if (name === '') {
     return (
       <div className="w-full h-full max-w-sm flex flex-col justify-center items-center mx-auto gap-4">

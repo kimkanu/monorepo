@@ -1,5 +1,6 @@
 import http from 'http';
 
+import { consoleLogHi } from '@team-10/lib';
 import cors from 'cors';
 import express, { Express } from 'express';
 import session from 'express-session';
@@ -111,6 +112,7 @@ export default class Server {
   listen() {
     this.http.listen(this.port, () => {
       // eslint-disable-next-line no-console
+      consoleLogHi();
       console.log('The backend server started.');
     });
   }

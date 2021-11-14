@@ -12,6 +12,7 @@
     "@react-hook/resize-observer": "^1.2.4",
     "@react-hook/window-size": "^3.0.7",
     "@tailwindcss/aspect-ratio": "^0.3.0",
+    "@team-10/lib": "workspace:^",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -50,8 +51,8 @@
     "youtube-player": "^5.5.2"
   },
   "scripts": {
-    "development": "craco start",
-    "production": "craco build",
+    "development": "yarn install && craco start",
+    "production": "yarn install && craco build",
     "dev": "yarn development",
     "prod": "yarn production",
     "test": "craco test --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"coverage/frontend/\"",
@@ -93,5 +94,10 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "postcss": "^7",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@2.2.17"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "@team-10/lib(.*)$": "<rootDir>/../lib/src/$1"
+    }
   }
 }

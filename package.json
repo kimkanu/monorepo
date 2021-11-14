@@ -12,6 +12,7 @@
   },
   "scripts": {
     "development": "docker-compose --profile development up",
+    "development:ssl": "docker-compose --profile development:ssl up",
     "development:frontend": "docker-compose --profile development up -d && docker-compose logs -f frontend",
     "development:backend": "docker-compose --profile development up -d && docker-compose logs -f backend",
     "build:development": "docker-compose --profile development build",
@@ -19,6 +20,7 @@
     "build:production": "yarn workspace @team-10/frontend run production && mv packages/frontend/build packages/backend/public || move packages/frontend/build packages/backend/public && docker-compose --env-file .env.production --profile production build",
     "test": "yarn workspaces foreach run test",
     "dev": "yarn development",
+    "dev:s": "yarn development:ssl",
     "dev:f": "yarn development:frontend",
     "dev:b": "yarn development:backend",
     "build:dev": "yarn build:development",
@@ -30,6 +32,7 @@
     "commit": "cz"
   },
   "workspaces": [
+    "packages/lib",
     "packages/frontend",
     "packages/backend"
   ],
