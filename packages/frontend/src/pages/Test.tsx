@@ -7,12 +7,14 @@ import TempButton from '../components/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
 import DropdownTest from '../components/test/DropdownTest';
 import SocketStreamTest from '../components/test/SocketStreamTest';
+import ToastTest from '../components/test/ToastTest';
 
 /** 여기에 테스트할 컴포넌트를 넣어주세요! `pathname: ['설명', 컴포넌트]` 형식 */
 const componentsToTest: Record<string, [string, React.ReactElement]> = {
   dropdown: ['Dropdown and Dialog', <DropdownTest />],
   'audio-visualizer': ['Audio Visualizer', <AudioVisualizerTest />],
   'socket-stream': ['Socket Stream', <SocketStreamTest />],
+  toast: ['Toasts', <ToastTest />],
 };
 
 interface Props {
