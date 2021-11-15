@@ -1,0 +1,27 @@
+@keyframes resize {
+  0% {
+    @apply py-2 opacity-0 transform-none max-h-0 mt-2;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  9.5% {
+    @apply py-2 opacity-100 transform-none mt-2;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  17% {
+    @apply py-2 opacity-100 transform-none max-h-32 mt-2;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  94% {
+    @apply py-2 opacity-100 transform-none max-h-32 mt-2;
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+  100% {
+    @apply py-2 opacity-0 max-h-80 mt-2;
+    transform: scale(0.4) translateY(-5px);
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+
+.toastItem {
+  animation: resize 5s both;
+}

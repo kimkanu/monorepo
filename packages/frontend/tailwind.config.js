@@ -17,6 +17,7 @@ const violet = {
 };
 
 module.exports = {
+  plugins: [require('@tailwindcss/forms')],
   purge: ['./src/**/*.{ts,tsx}', './public/index.html'],
   darkMode: false,
   theme: {
@@ -43,10 +44,13 @@ module.exports = {
         900: '#112D95',
       },
       red: {
+        100: '#FFBBC7',
+        300: '#FF6972',
         500: '#F5323C',
         700: '#CC0418',
         900: '#98011A',
       },
+      yellow: colors.yellow,
       green: {
         100: '#A7E6C8',
         300: '#44D28E',
