@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import {
   NumberSymbol20Regular, LockClosed20Regular,
   QrCode28Regular, Book20Regular,
