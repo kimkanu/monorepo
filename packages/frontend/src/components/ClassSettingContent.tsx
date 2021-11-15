@@ -16,7 +16,7 @@ const ClassSettingContent: React.FC<Props> = ({
   userType, courseName, classId, originClassPassword,
 }) => {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const [ClassPassword, setClassPassword] = useInput(originClassPassword);
+  const [ClassPassword, onChangeClassPassword] = useInput(originClassPassword);
 
   return (
     <div>
@@ -27,38 +27,36 @@ const ClassSettingContent: React.FC<Props> = ({
         <h2 className="text-sect font-bold mb-8">
           ClassInformation
         </h2>
-        <div className="relative w-full h-12 mb-4">
+        <div className="relative w-full h-12 mb-4 bg-gray-200 text-emph font-mono pr-5 pl-14 rounded-full items-center">
           <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
             <Book20Regular className="stroke-current" />
           </div>
-          <span
-            className="bg-gray-200 placeholder-gray-500 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
-          >
-            {courseName}
-          </span>
+          <div className="flex w-full h-full items-center">
+            <span>{courseName}</span>
+          </div>
         </div>
-        <div className="relative w-full h-12 mb-4">
+        <div className="relative w-full h-12 mb-4 bg-gray-200 text-emph font-mono pr-5 pl-14 rounded-full items-center">
           <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
             <NumberSymbol20Regular className="stroke-current" />
           </div>
-          <span
-            className="bg-gray-200 placeholder-gray-500 text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
-          >
-            {classId}
-          </span>
+          <div className="flex w-full h-full items-center">
+            <span>{classId}</span>
+          </div>
         </div>
         {
           userType === 'Instructor' && (
             <form method="post">
-              <div className="relative w-full h-12 mb-4">
-                <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
+              <div className="relative w-full h-12 mb-4 inline-flex">
+                <div className="text-gray-700 mr-4 z-10 absolute left-5 top-3.5 select-none pointer-events-none">
                   <LockClosed20Regular className="stroke-current" />
                 </div>
                 <input
                   type="text"
                   placeholder="Password"
                   value={ClassPassword}
-                  className="bg-gray-200 placeholder-gray-500 placeholder-sans text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
+                  onChange={onChangeClassPassword}
+                  className="relative bg-gray-200 placeholder-gray-500 placeholder-sans text-emph
+                    w-full h-full pr-5 pl-14 rounded-full font-mono"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter' && !!e.currentTarget.value && buttonRef.current) {
                       buttonRef.current.focus();
@@ -70,7 +68,7 @@ const ClassSettingContent: React.FC<Props> = ({
                   type="submit"
                   className={
                     mergeClassNames(
-                      'w-full h-12 rounded-full outline-none flex items-center justify-center text-emph font-bold',
+                      'absolute right-0 z-5 w-2/5 h-12 rounded-full outline-none flex items-center justify-center text-emph font-bold',
                       ClassPassword ? `bg-primary-500 hover:bg-primary-500 focus:bg-primary-500 active:bg-primary-700
                       text-white
                       shadow-button hover:shadow-button-hover focus:shadow-button-hover active:shadow-button shadow-color-primary
@@ -88,13 +86,13 @@ const ClassSettingContent: React.FC<Props> = ({
           )
         }
       </section>
-      <section className="mt-14">
+      <section className="mt-14 mb-8">
         <h2 className="text-sect font-bold mb-8">
           Class Management
         </h2>
         <button
           type="submit"
-          className="w-2/5 h-12 rounded-full
+          className="w-full h-12 rounded-full
             outline-none
             flex items-center justify-center
             bg-primary-500 hover:bg-primary-500 focus:bg-primary-500 active:bg-primary-700
