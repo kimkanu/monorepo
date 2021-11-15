@@ -28,4 +28,10 @@ button {
   .shadow-color-neutral {
     --shadow-color: rgba(17, 24, 39, 0.25);
   }
+  .placeholder-sans::placeholder{
+    @apply font-sans;
+  }
+  .placeholder-mono::placeholder{
+    @apply font-mono;
+  }
 }
