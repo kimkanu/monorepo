@@ -12,7 +12,7 @@
   },
   "scripts": {
     "development": "docker-compose --profile development up",
-    "development:ssl": "docker-compose --profile development:ssl up",
+    "development:ssl": "node bin/generateSSL.js && docker-compose --profile development:ssl up",
     "development:frontend": "docker-compose --profile development up -d && docker-compose logs -f frontend",
     "development:backend": "docker-compose --profile development up -d && docker-compose logs -f backend",
     "build:development": "docker-compose --profile development build",

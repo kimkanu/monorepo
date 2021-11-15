@@ -24,5 +24,5 @@
       "../lib/src/typing"
     ]
   },
-  "include": ["src", "../lib/src/typing"]
+  "include": ["src", "../lib/src"]
 }
