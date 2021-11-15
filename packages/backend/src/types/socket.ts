@@ -1,7 +1,5 @@
 import http from 'http';
 
-import { SocketVoice } from '@team-10/lib';
-
 import { Socket } from 'socket.io';
 import { EventsMap, DefaultEventsMap } from 'socket.io/dist/typed-events';
 

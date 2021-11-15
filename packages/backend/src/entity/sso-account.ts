@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -16,6 +17,7 @@ export default class SSOAccount extends BaseEntity {
   @ManyToOne(() => User, (user) => user.ssoAccounts, {
     cascade: true,
   })
+  @JoinTable()
   user: User;
 
   @Column({ nullable: false })

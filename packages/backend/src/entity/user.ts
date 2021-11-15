@@ -4,7 +4,10 @@ import {
   Column,
   PrimaryGeneratedColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
+
+import Classroom from './classroom';
 
 import SSOAccount from './sso-account';
 
@@ -12,6 +15,9 @@ import SSOAccount from './sso-account';
 export default class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ unique: true })
+  stringId: string;
 
   @OneToMany(() => SSOAccount, (ssoAccount) => ssoAccount.user)
   ssoAccounts: SSOAccount[];
@@ -21,4 +27,13 @@ export default class User extends BaseEntity {
 
   @Column({ nullable: true })
   profileImage: string;
+
+  @Column({ default: false })
+  initialized: boolean;
+
+  @ManyToMany(() => Classroom, (classroom) => classroom.members)
+  classrooms: Classroom[];
+
+  @OneToMany(() => Classroom, (classroom) => classroom.instructor)
+  myClassrooms: Classroom[];
 }

@@ -5,6 +5,7 @@ import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import useSocket from '../../hooks/useSocket';
+import toastState, { ToastType } from '../../recoil/toast';
 import { randomInt } from '../../utils/math';
 
 interface Props {
@@ -68,6 +69,8 @@ const AudioPlayer: React.FC<Props> = ({ queue }) => {
 };
 
 const SocketStreamTest: React.FC = () => {
+  const setToast = useSetRecoilState(toastState.new);
+
   const [isButtonPressed, setButtonPressed] = React.useState(false);
   const [audioPlayers, setAudioPlayers] = React.useState<React.ReactElement[]>([]);
 
@@ -84,27 +87,46 @@ const SocketStreamTest: React.FC = () => {
         } else {
           setSpeakingStatus('none');
           setButtonPressed(false);
+          setToast({
+            sentAt: new Date(),
+            type: ToastType.ERROR,
+            message: `음성 채팅 권한을 얻는 데에 실패했습니다. ${SocketVoice.permissionDeniedReasonAsMessage(response.reason)}`,
+          });
         }
       });
     }
   }, [speakingStatus]);
 
-  const pressButton = () => {
+  const pressButton = React.useCallback(() => {
     setButtonPressed(true);
 
-    socket.emit('StateChange', {
-      classHash: 'SAM-PLE-CLS',
-      speaking: true,
-    });
-    setSpeakingStatus('requesting');
-  };
+    if (speakingStatus === 'none') {
+      socket.emit('StateChange', {
+        classroomHash: 'BAL-BAT-KIP',
+        speaking: true,
+      });
+      setSpeakingStatus('requesting');
+    }
+  }, [speakingStatus]);
+
   const releaseButton = () => {
     setButtonPressed(false);
+
+    if (speakingStatus !== 'none') {
+      socket.emit('StateChange', {
+        classroomHash: 'BAL-BAT-KIP',
+        speaking: false,
+      });
+      setSpeakingStatus('none');
+    }
   };
   // setAudioPlayers((a) => [...a, <AudioPlayer key={generateKey()} queue={[]} />]);
 
   return (
-    <>
+    <div className="flex justify-center items-center">
+      {speakingStatus}
+      <br />
+      {isButtonPressed ? 'pressed' : 'not pressed'}
       <button
         type="button"
         className="color-white bg-pink-500 disabled:bg-gray-500 select-none p-16 rounded-full"
@@ -122,7 +144,7 @@ const SocketStreamTest: React.FC = () => {
           {audioPlayers}
         </li>
       </ol>
-    </>
+    </div>
   );
 };
 
@@ -248,7 +270,7 @@ const SocketStreamTest: React.FC = () => {
 //     data.arrayBuffer().then((audioSegment) => {
 //       console.log('ava', audioSegment);
 //       socket.emit('StreamSend', {
-//         classHash: 'SAM-PLE-CLS',
+//         classroomHash: 'BAL-BAT-KIP',
 //         audioSegment,
 //         requestId,
 //       } as SocketVoice.Request.StreamSend);
@@ -275,14 +297,14 @@ const SocketStreamTest: React.FC = () => {
 //       }
 //       console.log('resume recording');
 //       socket.emit('StateChange', {
-//         classHash: 'SAM-PLE-CLS',
+//         classroomHash: 'BAL-BAT-KIP',
 //         speaking: true,
 //       } as SocketVoice.Request.StateChange);
 //       setRequestId((r) => r + 1);
 //     } else {
 //       pauseRecording();
 //       socket.emit('StateChange', {
-//         classHash: 'SAM-PLE-CLS',
+//         classroomHash: 'BAL-BAT-KIP',
 //         speaking: false,
 //       } as SocketVoice.Request.StateChange);
 //       setRequestId((r) => r + 1);

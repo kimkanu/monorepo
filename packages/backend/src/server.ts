@@ -11,6 +11,7 @@ import { Server as IOServer, Socket } from 'socket.io';
 import { createConnection } from 'typeorm';
 import { TypeormStore } from 'typeorm-store';
 
+import Classroom from './entity/classroom';
 import Session from './entity/session';
 import SSOAccount from './entity/sso-account';
 import User from './entity/user';
@@ -18,6 +19,9 @@ import initializePassport from './passport';
 import mainRouter from './routes';
 import frontendRouter from './routes/frontend';
 import Room from './types/room';
+import { generateClassroomHash } from './utils/classroom';
+
+const DROP_SCHEMA = false;
 
 /** Class representing a server stack. */
 export default class Server {
@@ -57,16 +61,20 @@ export default class Server {
       type: 'postgres',
       url: process.env.DATABASE_URL,
       synchronize: true,
-      entities: [Session, User, SSOAccount],
+      dropSchema: DROP_SCHEMA,
+      entities: ['src/entity/**/*.ts'],
     });
-    const repository = connection.getRepository(Session);
+    const sessionRepository = connection.getRepository(Session);
+    const ssoAccountRepository = connection.getRepository(SSOAccount);
+    const classroomRepository = connection.getRepository(Classroom);
+    const userRepository = connection.getRepository(User);
 
     const sessionMiddleware = session({
       name: 'SID',
       resave: false,
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET!,
-      store: new TypeormStore({ repository }),
+      store: new TypeormStore({ repository: sessionRepository }),
       cookie: {
         sameSite: false,
         httpOnly: false,
@@ -107,6 +115,33 @@ export default class Server {
     this.io.use(wrap(sessionMiddleware));
     this.io.use(wrap(passport.initialize()));
     this.io.use(wrap(passport.session()));
+
+    // Construct test data
+    if (DROP_SCHEMA) {
+      console.log('=========== Constructing Test Data ===========');
+
+      const user = new User();
+      user.stringId = 'naver:NzYgpUnFPklAHLIrLBw5ic7PvJy64SFpLmPiMWfz4Go';
+      user.displayName = 'uto****';
+      user.profileImage = 'https://phinf.pstatic.net/contact/20191025_133/1572004399046UqQgO_PNG/image.png';
+      await userRepository.save(user);
+
+      const ssoAccount = new SSOAccount();
+      ssoAccount.provider = 'naver';
+      ssoAccount.providerId = 'NzYgpUnFPklAHLIrLBw5ic7PvJy64SFpLmPiMWfz4Go';
+      ssoAccount.user = user;
+      await ssoAccountRepository.save(ssoAccount);
+
+      const testClassroom = new Classroom();
+      testClassroom.hash = generateClassroomHash();
+      testClassroom.name = 'Test Classroom';
+      testClassroom.instructor = user;
+      testClassroom.members = [user];
+      testClassroom.histories = [];
+      await classroomRepository.save(testClassroom);
+    }
+
+    console.log(await classroomRepository.find());
   }
 
   listen() {

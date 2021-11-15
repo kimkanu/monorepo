@@ -1,4 +1,4 @@
-import { ClassHash, DateNumber, NonceResponse } from './common';
+import { ClassroomHash, DateNumber, NonceResponse } from './common';
 
 export namespace SocketVoice {
   export namespace Events {
@@ -32,7 +32,7 @@ export namespace SocketVoice {
 
   /* Request to use or stop using voice chat */
   export interface StateChangeRequest {
-    classHash: ClassHash;
+    classroomHash: ClassroomHash;
     speaking: boolean;
   }
   export type StateChangeResponse =
@@ -48,21 +48,31 @@ export namespace SocketVoice {
   }
   export const PermissionDeniedReason = {
     UNAUTHORIZED: -1 as -1,
+    NOT_MEMBER: -2 as -2,
     SOMEONE_IS_SPEAKING: 0 as 0,
   };
+  export function permissionDeniedReasonAsMessage(
+    reason: typeof PermissionDeniedReason[keyof typeof PermissionDeniedReason],
+  ): string {
+    return {
+      [PermissionDeniedReason.UNAUTHORIZED]: '현재 로그아웃 상태입니다.',
+      [PermissionDeniedReason.NOT_MEMBER]: '이 수업의 학생이 아닙니다.',
+      [PermissionDeniedReason.SOMEONE_IS_SPEAKING]: '누군가 이미 이야기하고 있습니다.',
+    }[reason];
+  }
 
   /* Be broadcasted and subscribe voice chat state changes */
   export type StateChangeBroadcast =
     | StateChangeStartBroadcast
     | StateChangeEndBroadcast;
   export interface StateChangeStartBroadcast extends NonceResponse<'StateChangeBroadcast'> {
-    classHash: ClassHash;
+    classroomHash: ClassroomHash;
     userId: string;
     speaking: true;
     sentAt: DateNumber;
   }
   export interface StateChangeEndBroadcast extends NonceResponse<'StateChangeBroadcast'> {
-    classHash: ClassHash;
+    classroomHash: ClassroomHash;
     userId: string;
     speaking: false;
     reason: typeof StateChangeEndReason[keyof typeof StateChangeEndReason];
@@ -78,7 +88,7 @@ export namespace SocketVoice {
   /* Send audio segment while talking */
   export interface StreamSendRequest {
     requestId: number;
-    classHash: ClassHash;
+    classroomHash: ClassroomHash;
     audioSegment: ArrayBuffer;
   }
   export type StreamSendResponse =
