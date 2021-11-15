@@ -9,11 +9,13 @@ import { useRecoilValue } from 'recoil';
 import classState from '../recoil/class';
 import dialogState from '../recoil/dialog';
 import dropdownState from '../recoil/dropdown';
+import toastState from '../recoil/toast';
 
 import Debug from './Debug';
 import Dialog from './Dialog';
 import Dropdown from './Dropdown';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
+import ToastDisplay from './ToastDisplay';
 import YTPlayer from './YTPlayer';
 import YTWrapper from './YTWrapper';
 
@@ -21,6 +23,7 @@ const Global: React.FC = () => {
   const class_ = useRecoilValue(classState.atom);
   const dropdown = useRecoilValue(dropdownState.atom);
   const dialog = useRecoilValue(dialogState.atom);
+  const toasts = useRecoilValue(toastState.atom);
 
   const location = useLocation();
   const inClass = /^\/classes\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
@@ -54,6 +57,8 @@ const Global: React.FC = () => {
       >
         <YTPlayer videoId={class_?.videoId} />
       </YTWrapper>
+
+      <ToastDisplay toasts={toasts} />
     </>
   );
 };
