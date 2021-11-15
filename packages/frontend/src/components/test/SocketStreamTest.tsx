@@ -85,7 +85,7 @@ const SocketStreamTest: React.FC = () => {
           setSpeakingStatus('none');
           setButtonPressed(false);
         }
-      })
+      });
     }
   }, [speakingStatus]);
 
