@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 import { ArrowCounterclockwise20Regular, SpinnerIos20Regular } from '@fluentui/react-icons';
 import React from 'react';
+import { useRecoilState } from 'recoil';
 
+import themeState from '../../recoil/theme';
 import { mergeClassNames } from '../../utils/style';
 import Button from '../Button';
 
@@ -55,16 +57,23 @@ const CheckboxInput: React.FC<RadioInputProps> = ({
   </label>
 );
 
-const ButtonTest: React.FC = (
-) => {
+const ButtonTest: React.FC = () => {
+  const [theme, setTheme] = useRecoilState(themeState.atom);
   const [color, setColor] = React.useState<'primary' | 'destructive' | 'neutral'>('primary');
   const [icon, setIcon] = React.useState<number>(0);
   const [height, setHeight] = React.useState<36 | 48 | 56>(48);
   const [disabled, setDisabled] = React.useState(false);
   const [full, setFull] = React.useState(false);
   const [text, setText] = React.useState(false);
+
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
+      <div className="flex gap-8 w-fit">
+        <RadioInput inputClassName="text-violet-700" labelClassName="hover:bg-violet-100" checked={theme === 'violet'} text="Violet" onChange={() => setTheme('violet')} />
+        <RadioInput inputClassName="text-pink-700" labelClassName="hover:bg-pink-100" checked={theme === 'pink'} text="Pink" onChange={() => setTheme('pink')} />
+        <RadioInput inputClassName="text-green-700" labelClassName="hover:bg-green-100" checked={theme === 'green'} text="Green" onChange={() => setTheme('green')} />
+        <RadioInput inputClassName="text-blue-700" labelClassName="hover:bg-blue-100" checked={theme === 'blue'} text="Blue" onChange={() => setTheme('blue')} />
+      </div>
       <div className="flex gap-8 w-fit">
         <RadioInput inputClassName="text-primary-700" labelClassName="hover:bg-primary-100" checked={color === 'primary'} text="Primary" onChange={() => setColor('primary')} />
         <RadioInput inputClassName="text-red-700" labelClassName="hover:bg-red-100" checked={color === 'destructive'} text="Destructive" onChange={() => setColor('destructive')} />
