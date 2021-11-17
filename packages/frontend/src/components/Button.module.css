@@ -1,3 +1,4 @@
 .icon > * {
   @apply stroke-current;
+  stroke-width: 1.5;
 }
