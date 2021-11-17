@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 import TempButton from '../components/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
+import ButtonTest from '../components/test/ButtonTest';
 import DropdownTest from '../components/test/DropdownTest';
 import JoinCreatePageTest from '../components/test/JoinCreatePageTest';
 import ToastTest from '../components/test/ToastTest';
@@ -15,6 +16,7 @@ const componentsToTest: Record<string, [string, React.ReactElement]> = {
   'audio-visualizer': ['Audio Visualizer', <AudioVisualizerTest />],
   toast: ['Toasts', <ToastTest />],
   joincreate: ['Join/Create Class', <JoinCreatePageTest />],
+  buttons: ['Buttons', <ButtonTest />],
 };
 
 interface Props {

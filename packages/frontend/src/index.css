@@ -19,7 +19,7 @@ button {
   .shadow-color-primary {
     --shadow-color: rgba(145, 84, 245, 0.5);
   }
-  .shadow-color-red {
+  .shadow-color-destructive {
     --shadow-color: rgba(245, 50, 60, 0.5);
   }
   .shadow-color-positive {
@@ -28,10 +28,10 @@ button {
   .shadow-color-neutral {
     --shadow-color: rgba(17, 24, 39, 0.25);
   }
-  .placeholder-sans::placeholder{
+  .placeholder-sans::placeholder {
     @apply font-sans;
   }
-  .placeholder-mono::placeholder{
+  .placeholder-mono::placeholder {
     @apply font-mono;
   }
 }
