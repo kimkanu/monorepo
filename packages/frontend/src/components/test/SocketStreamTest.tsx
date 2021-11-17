@@ -13,8 +13,10 @@ import { arrayBufferToString, concatArrayBuffer } from '../../utils/arrayBuffer'
 import { mergeClassNames } from '../../utils/style';
 import VoiceBuffer from '../../utils/VoiceBuffer';
 
+// XXX: Chrome의 MediaRecorder 성능이 FF보다 약간 안 좋은 것 같네요 왜인진 모르겠지만
 const isOpusSupported = window.MediaRecorder
-  && window.MediaRecorder.isTypeSupported('audio/webm;codecs=opus');
+  && window.MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+  && navigator.userAgent.toLowerCase().includes('firefox');
 if (!isOpusSupported) {
   window.MediaRecorder = AudioRecorder;
   AudioRecorder.encoder = mpegEncoder;
@@ -71,7 +73,7 @@ const SocketStreamTest: React.FC = () => {
   const [nextSequenceIndex, setNextSequenceIndex] = React.useState<number>(0);
 
   // 잘못된 sequence index를 바로잡기 위해 임시 저장되는 audio data
-  const [voicesRequesting] = React.useState<SocketVoice.Voice[]>([]);
+  const [voicesRequestingPermission] = React.useState<SocketVoice.Voice[]>([]);
 
   // 잘못된 sequence index를 바로잡기 위해 임시 저장되는 audio data
   const [
@@ -102,7 +104,7 @@ const SocketStreamTest: React.FC = () => {
   type WrappedState = {
     isSpeaking: typeof isSpeaking;
     sequenceIndex: typeof sequenceIndex;
-    voicesRequesting: typeof voicesRequesting;
+    voicesRequestingPermission: typeof voicesRequestingPermission;
     voicesWrongSequenceIndex: typeof voicesWrongSequenceIndex;
     nextSequenceIndex: typeof nextSequenceIndex;
     timeoutsWrongSequenceIndex: typeof timeoutsWrongSequenceIndex;
@@ -110,7 +112,7 @@ const SocketStreamTest: React.FC = () => {
   const [stateWrapper] = React.useState<WrappedState>({
     isSpeaking,
     sequenceIndex,
-    voicesRequesting,
+    voicesRequestingPermission,
     voicesWrongSequenceIndex,
     nextSequenceIndex,
     timeoutsWrongSequenceIndex,
@@ -152,18 +154,18 @@ const SocketStreamTest: React.FC = () => {
               {
                 type,
                 buffer: concatArrayBuffer([
-                  ...stateWrapper.voicesRequesting.map(({ buffer: b }) => b),
+                  ...stateWrapper.voicesRequestingPermission.map(({ buffer: b }) => b),
                   buffer,
                 ]),
               },
             ]
             : [
-              ...stateWrapper.voicesRequesting,
+              ...stateWrapper.voicesRequestingPermission,
               { type, buffer },
             ],
           sequenceIndex: stateWrapper.sequenceIndex,
         });
-        stateWrapper.voicesRequesting = [];
+        stateWrapper.voicesRequestingPermission = [];
         stateWrapper.sequenceIndex += 1;
 
         socket.once('StreamSend', (response) => {
@@ -179,7 +181,7 @@ const SocketStreamTest: React.FC = () => {
           }
         });
       } else if (stateWrapper.isSpeaking === 'requesting') {
-        stateWrapper.voicesRequesting.push({ type, buffer });
+        stateWrapper.voicesRequestingPermission.push({ type, buffer });
       }
     });
   };

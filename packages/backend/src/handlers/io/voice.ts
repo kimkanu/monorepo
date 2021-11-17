@@ -122,8 +122,7 @@ const ioVoiceHandler = (
     socket.on('StreamSend', async ({ voices, classroomHash, sequenceIndex }) => {
       initializeClass(classroomHash);
 
-      console.log('StreamSend', classroomHash);
-      console.log('Speaker', state[classroomHash].speaker);
+      console.log('StreamSend', sequenceIndex);
 
       // 로그인 상태가 아닐 시
       if (!socket.request.user) {
