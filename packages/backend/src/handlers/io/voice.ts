@@ -122,8 +122,6 @@ const ioVoiceHandler = (
     socket.on('StreamSend', async ({ voices, classroomHash, sequenceIndex }) => {
       initializeClass(classroomHash);
 
-      console.log('StreamSend', sequenceIndex);
-
       // 로그인 상태가 아닐 시
       if (!socket.request.user) {
         socket.emit('StreamSend', {
@@ -154,6 +152,8 @@ const ioVoiceHandler = (
         console.log('NOT_SPEAKER');
         return;
       }
+
+      console.log('StreamSend', sequenceIndex, voices.map((voice) => voice.buffer.byteLength).reduce((a, b) => a + b, 0));
 
       // TODO: 노이즈 제거 및 음성 변조 등
       socket.emit('StreamSend', {

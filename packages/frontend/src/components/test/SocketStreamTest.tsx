@@ -15,8 +15,7 @@ import VoiceBuffer from '../../utils/VoiceBuffer';
 
 // XXX: Chrome의 MediaRecorder 성능이 FF보다 약간 안 좋은 것 같네요 왜인진 모르겠지만
 const isOpusSupported = window.MediaRecorder
-  && window.MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-  && navigator.userAgent.toLowerCase().includes('firefox');
+  && window.MediaRecorder.isTypeSupported('audio/webm;codecs=opus');
 if (!isOpusSupported) {
   window.MediaRecorder = AudioRecorder;
   AudioRecorder.encoder = mpegEncoder;
@@ -147,6 +146,7 @@ const SocketStreamTest: React.FC = () => {
 
     data.arrayBuffer().then((buffer) => {
       if (stateWrapper.isSpeaking === 'speaking') {
+        console.log(type);
         socket.emit('StreamSend', {
           classroomHash: 'BAL-BAT-KIP', // TODO
           voices: type === 'opus'
