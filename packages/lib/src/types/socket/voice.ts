@@ -1,4 +1,4 @@
-import { ClassroomHash, DateNumber, NonceResponse } from './common';
+import { ClassroomHash, DateNumber } from './common';
 
 export namespace SocketVoice {
   export namespace Events {
@@ -38,11 +38,11 @@ export namespace SocketVoice {
   export type StateChangeResponse =
     | StateChangeGrantedResponse
     | StateChangeDeniedResponse;
-  export interface StateChangeGrantedResponse extends NonceResponse<'StateChange'> {
+  export interface StateChangeGrantedResponse {
     success: true;
     speaking: boolean;
   }
-  export interface StateChangeDeniedResponse extends NonceResponse<'StateChange'> {
+  export interface StateChangeDeniedResponse {
     success: false;
     reason: typeof PermissionDeniedReason[keyof typeof PermissionDeniedReason];
   }
@@ -56,7 +56,7 @@ export namespace SocketVoice {
   ): string {
     return {
       [PermissionDeniedReason.UNAUTHORIZED]: '현재 로그아웃 상태입니다.',
-      [PermissionDeniedReason.NOT_MEMBER]: '이 수업의 학생이 아닙니다.',
+      [PermissionDeniedReason.NOT_MEMBER]: '이 수업을 가르치거나 듣는 사람이 아닙니다.',
       [PermissionDeniedReason.SOMEONE_IS_SPEAKING]: '누군가 이미 이야기하고 있습니다.',
     }[reason];
   }
@@ -65,13 +65,13 @@ export namespace SocketVoice {
   export type StateChangeBroadcast =
     | StateChangeStartBroadcast
     | StateChangeEndBroadcast;
-  export interface StateChangeStartBroadcast extends NonceResponse<'StateChangeBroadcast'> {
+  export interface StateChangeStartBroadcast {
     classroomHash: ClassroomHash;
     userId: string;
     speaking: true;
     sentAt: DateNumber;
   }
-  export interface StateChangeEndBroadcast extends NonceResponse<'StateChangeBroadcast'> {
+  export interface StateChangeEndBroadcast {
     classroomHash: ClassroomHash;
     userId: string;
     speaking: false;
@@ -80,37 +80,61 @@ export namespace SocketVoice {
   }
   export const StateChangeEndReason = {
     NORMAL: 0 as 0,
+    SESSION_EXPIRED: -1 as -1,
     CONNECTION_LOST: -2 as -2,
-    LEFT: -3 as -3,
-    INTERRUPTED_BY_INSTRUCTOR: -4 as -4,
+    INTERRUPTED_BY_INSTRUCTOR: -3 as -3,
   };
+  export function stateChangeEndReasonAsMessage(
+    reason: typeof StateChangeEndReason[keyof typeof StateChangeEndReason],
+  ): string {
+    return {
+      [StateChangeEndReason.NORMAL]: '말하기가 정상적으로 종료되었습니다.',
+      [StateChangeEndReason.SESSION_EXPIRED]: '세션이 만료되었습니다.',
+      [StateChangeEndReason.CONNECTION_LOST]: '말씀하시는 분의 접속이 끊겼습니다.',
+      [StateChangeEndReason.INTERRUPTED_BY_INSTRUCTOR]: '강의자에 의해 말하기가 종료되었습니다.',
+    }[reason];
+  }
 
-  /* Send audio segment while talking */
+  /* Send voices while talking */
   export interface StreamSendRequest {
-    requestId: number;
     classroomHash: ClassroomHash;
-    audioSegment: ArrayBuffer;
+    voices: Voice[];
+    sequenceIndex: number;
   }
   export type StreamSendResponse =
   | StreamSendGrantedResponse
   | StreamSendDeniedResponse;
-  export interface StreamSendGrantedResponse extends NonceResponse<'StreamSend'> {
-    requestId: number;
+  export interface StreamSendGrantedResponse {
     success: true;
+    sequenceIndex: number;
   }
-  export interface StreamSendDeniedResponse extends NonceResponse<'StreamSend'> {
-    requestId: number;
+  export interface StreamSendDeniedResponse {
     success: false;
     reason: typeof StreamSendDeniedReason[keyof typeof StreamSendDeniedReason];
   }
   export const StreamSendDeniedReason = {
     UNAUTHORIZED: -1 as -1,
-    NOT_ALLOWED: -5 as -5,
+    NOT_MEMBER: -2 as -2,
+    NOT_SPEAKER: -5 as -5,
   };
+  export function streamSendDeniedReasonAsMessage(
+    reason: typeof StreamSendDeniedReason[keyof typeof StreamSendDeniedReason],
+  ): string {
+    return {
+      [StreamSendDeniedReason.UNAUTHORIZED]: '현재 로그아웃 상태입니다.',
+      [StreamSendDeniedReason.NOT_MEMBER]: '이 수업을 가르치거나 듣는 사람이 아닙니다.',
+      [StreamSendDeniedReason.NOT_SPEAKER]: '말하기 권한이 없습니다.',
+    }[reason];
+  }
 
-  /* Received audio segments */
-  export interface StreamReceiveBroadcast extends NonceResponse<'StreamReceiveBroadcast'> {
+  /* Received voices */
+  export interface StreamReceiveBroadcast {
     speakerId: string;
-    audioSegment: ArrayBuffer;
+    voices: Voice[];
+    sequenceIndex: number;
+  }
+  export interface Voice {
+    type: 'opus' | 'mpeg';
+    buffer: ArrayBuffer;
   }
 }
