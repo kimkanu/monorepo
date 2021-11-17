@@ -19,14 +19,14 @@ const App: React.FC = () => {
     <Router>
       <Global />
       <Layout className={`theme-${theme}`}>
-        <Route exact path="/tests/" component={() => <Test name="" />} />
+        <Route exact path="/tests/" render={() => <Test name="" />} />
         <Route
           path="/tests/:name"
-          component={({ match }: RouteComponentProps<{ name: string }>) => (
+          render={({ match }: RouteComponentProps<{ name: string }>) => (
             <Test name={match.params.name} />
           )}
         />
-        <Route path="/classes/:id" component={() => <Class />} />
+        <Route path="/classes/:id" render={() => <Class />} />
       </Layout>
     </Router>
   );
