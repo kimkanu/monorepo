@@ -70,10 +70,10 @@ const Button: React.FC<Styled<Props>> = ({
         className="select-none pointer-events-none flex justify-center"
         style={{
           marginRight: text ? { 36: 10, 48: 12, 56: 16 }[height] : 0,
-          width: { 36: 20, 48: 24, 56: 32 }[height],
+          width: { 36: 20, 48: 24, 56: 28 }[height],
         }}
       >
-        <div style={{ transform: `scale(${{ 36: 20, 48: 24, 56: 32 }[height] * 5}%)` }} className={styles.icon}>
+        <div style={{ transform: `scale(${{ 36: 20, 48: 24, 56: 28 }[height] * 5}%)` }} className={styles.icon}>
           {icon}
         </div>
       </div>
