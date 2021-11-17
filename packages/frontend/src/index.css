@@ -16,22 +16,60 @@ button {
 }
 
 @layer utilities {
-  .shadow-color-primary {
+  .theme-violet .shadow-color-primary {
     --shadow-color: rgba(145, 84, 245, 0.5);
   }
-  .shadow-color-red {
-    --shadow-color: rgba(245, 50, 60, 0.5);
+  .theme-pink .shadow-color-primary {
+    --shadow-color: rgba(255, 100, 146, 0.5);
   }
-  .shadow-color-positive {
+  .theme-green .shadow-color-primary {
+    --shadow-color: rgba(24, 178, 104, 0.5);
+  }
+  .theme-blue .shadow-color-primary {
     --shadow-color: rgba(78, 116, 252, 0.5);
+  }
+  .shadow-color-destructive {
+    --shadow-color: rgba(245, 50, 60, 0.5);
   }
   .shadow-color-neutral {
     --shadow-color: rgba(17, 24, 39, 0.25);
   }
-  .placeholder-sans::placeholder{
+  .placeholder-sans::placeholder {
     @apply font-sans;
   }
-  .placeholder-mono::placeholder{
+  .placeholder-mono::placeholder {
     @apply font-mono;
   }
+}
+
+.theme-violet {
+  --primary-color-100: #DAC5FE;
+  --primary-color-300: #A876FA;
+  --primary-color-500: #9154F5;
+  --primary-color-700: #7732E6;
+  --primary-color-900: #512B8E;
+}
+
+.theme-pink {
+  --primary-color-100: #FFDCE6;
+  --primary-color-300: #FF8AAD;
+  --primary-color-500: #FF6492;
+  --primary-color-700: #E04A77;
+  --primary-color-900: #AE2951;
+}
+
+.theme-green {
+  --primary-color-100: #A7E6C8;
+  --primary-color-300: #44D28E;
+  --primary-color-500: #18B268;
+  --primary-color-700: #138850;
+  --primary-color-900: #105E39;
+}
+
+.theme-blue {
+  --primary-color-100: #C6D3FE;
+  --primary-color-300: #7C98FC;
+  --primary-color-500: #4E74FC;
+  --primary-color-700: #2D56EC;
+  --primary-color-900: #112D95;
 }
