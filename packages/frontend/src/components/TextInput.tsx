@@ -45,8 +45,13 @@ const TextInput: React.FC<Styled<Props>> = ({
   containerClassName,
 }) => {
   const buttonWrapperRef = React.useRef<HTMLDivElement>(null);
+  const [buttonWidth, setButtonWidth] = React.useState(0);
 
-  const paddingRightButton = button ? buttonWrapperRef.current?.clientWidth ?? 0 : 0;
+  React.useEffect(() => {
+    setButtonWidth(button ? buttonWrapperRef.current?.clientWidth ?? 0 : 0);
+  }, [button, validator, buttonWrapperRef.current, buttonWrapperRef.current?.clientWidth]);
+
+  const paddingRightButton = buttonWidth;
   const paddingRightValidation = validator ? 28 : 0;
   const paddingRight = 20 + paddingRightValidation + paddingRightButton;
 
