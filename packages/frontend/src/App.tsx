@@ -26,7 +26,7 @@ const App: React.FC = () => {
             <Test name={match.params.name} />
           )}
         />
-        <Route path="/classes/:id" render={() => <Class />} />
+        <Route path="/classes/:id" render={() => <Classroom />} />
       </Layout>
     </Router>
   );
