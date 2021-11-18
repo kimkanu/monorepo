@@ -7,7 +7,7 @@ interface ClassInfo {
   courseName: string;
   live: boolean;
   my: boolean;
-  background: string;
+  background?: React.CSSProperties;
 }
 
 interface Props {
