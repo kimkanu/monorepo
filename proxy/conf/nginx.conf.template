@@ -1,6 +1,8 @@
 server {
     server_name         ${NGINX_HOST};
     listen              ${FRONTEND_PORT} ssl;
+    access_log          off;
+    error_log           /dev/null;
 
     ssl_certificate /etc/nginx/certs/ssl.crt;
     ssl_certificate_key /etc/nginx/certs/ssl.key;

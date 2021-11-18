@@ -39,6 +39,11 @@ button {
   }
   .placeholder-mono::placeholder {
     @apply font-mono;
+    letter-spacing: -0.05em;
+  }
+
+  .font-mono {
+    letter-spacing: -0.05em;
   }
 }
 

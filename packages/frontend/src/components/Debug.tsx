@@ -6,7 +6,7 @@ import { useRecoilState } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
 import useScreenType from '../hooks/useScreenType';
-import classState from '../recoil/class';
+import classroomState from '../recoil/classroom';
 import ScreenType from '../types/screen';
 import { conditionalClassName } from '../utils/style';
 
@@ -14,7 +14,7 @@ import DebugWrapper from './DebugWrapper';
 
 const Debug: React.FC = () => {
   const screenType = useScreenType();
-  const [class_, setClass] = useRecoilState(classState.atom);
+  const [classroom, setClassroom] = useRecoilState(classroomState.atom);
 
   const { connected } = useSocket(
     '/',
@@ -47,14 +47,14 @@ const Debug: React.FC = () => {
       <button
         type="button"
         onClick={() => {
-          setClass(class_ ? null : {
+          setClassroom(classroom ? null : {
             id: 'SAM-PLE-CLS',
             name: 'Sample Class',
             videoId: 'Zyi9QUB-fyo',
           });
         }}
       >
-        {class_ ? 'End class' : 'Start class'}
+        {classroom ? 'End class' : 'Start class'}
       </button>
     </DebugWrapper>
   );
