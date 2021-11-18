@@ -66,7 +66,7 @@ const Button: React.FC<Styled<Props>> = ({
         paddingRight: { 36: 16, 48: 26, 56: 32 }[height],
       } : null,
     )}
-    onClick={onClick}
+    onClick={disabled ? undefined : onClick}
   >
     {icon && (
       <div
