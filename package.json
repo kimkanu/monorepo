@@ -49,16 +49,13 @@
   "packageManager": "yarn@3.1.0",
   "lint-staged": {
     "packages/frontend/**/*.+(js|jsx|ts|tsx)": [
-      "yarn workspace @team-10/frontend eslint --fix",
-      "yarn workspace @team-10/frontend test --bail --findRelatedTests --forceExit --detectOpenHandles --coverage --coverageDirectory \"../../coverage/frontend/\""
+      "yarn workspace @team-10/frontend eslint --fix"
     ],
     "packages/backend/**/*.+(js|jsx|ts|tsx)": [
-      "yarn workspace @team-10/backend eslint --fix",
-      "yarn workspace @team-10/backend test --bail --findRelatedTests --forceExit --detectOpenHandles --coverage --coverageDirectory \"../../coverage/backend/\""
+      "yarn workspace @team-10/backend eslint --fix"
     ],
     "packages/lib/**/*.+(js|jsx|ts|tsx)": [
-      "yarn workspace @team-10/lib eslint --fix",
-      "yarn workspace @team-10/lib test --bail --findRelatedTests --forceExit --detectOpenHandles --coverage --coverageDirectory \"../../coverage/lib/\""
+      "yarn workspace @team-10/lib eslint --fix"
     ],
     "**/*.+(json|css)": [
       "yarn prettier"
