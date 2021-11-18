@@ -1,4 +1,4 @@
-FROM keonwoo/cs492c:default
+FROM node:lts
 
 USER root
 
