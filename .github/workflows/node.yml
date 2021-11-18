@@ -31,20 +31,6 @@ jobs:
           yarn workspace @team-10/backend run eslint --fix $B_DIFF
           yarn workspace @team-10/frontend run eslint --fix $F_DIFF
 
-      - name: Add and commit if any changes happened
-        uses: EndBug/add-and-commit@v7
-        with:
-          # The arguments for the `git add` command (see the paragraph below for more info)
-          add: 'packages'
-
-          # The name of the user that will be displayed as the author of the commit.
-          author_name: ESLint (GitHub Workflows)
-
-          # The message for the commit.
-          message: 'Commit from Linter'
-
-          branch: "pr_previews"
-
       - name: Build containers
         run: docker-compose -f "docker-compose.workflow.yml" build
 
