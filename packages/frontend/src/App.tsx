@@ -12,6 +12,7 @@ import Class from './pages/Class';
 import Test from './pages/Test';
 import themeState from './recoil/theme';
 
+
 const App: React.FC = () => {
   const theme = useRecoilValue(themeState.atom);
 
