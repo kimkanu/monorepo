@@ -6,26 +6,29 @@ import styles from './Button.module.css';
 
 interface Props {
   type: 'primary' | 'destructive' | 'neutral';
-  disabled: boolean;
+  disabled?: boolean;
   text?: string;
   width: 'full' | 'fit-content';
-  height: 36 | 48 | 56;
+  height?: 36 | 48 | 56;
   icon?: React.ReactElement | null; // of `20Regular`
   onClick?: React.MouseEventHandler;
+  ref_?: React.RefObject<HTMLButtonElement>;
 }
 
 const Button: React.FC<Styled<Props>> = ({
   type,
-  disabled,
+  disabled = false,
   text,
   width,
-  height,
+  height = 48,
   icon,
   onClick,
+  ref_,
   className,
   style,
 }) => (
   <button
+    ref={ref_}
     type="button"
     className={mergeClassNames(
       'rounded-full outline-none flex items-center justify-center font-bold transition-button duration-button',
