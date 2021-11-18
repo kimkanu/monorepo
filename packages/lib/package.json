@@ -11,6 +11,8 @@
     "production": "tsc --declaration",
     "dev": "yarn development",
     "prod": "yarn production",
+    "lint": "eslint --fix .",
+    "commit": "cd ../.. && yarn lint-staged && git add yarn.lock && cz",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {

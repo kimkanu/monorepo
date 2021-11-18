@@ -22,11 +22,11 @@ jobs:
       - name: Build containers
         run: docker-compose -f "docker-compose.workflow.yml" build
 
-      - name: Run ESLint
-        run: yarn lint
+      - name: Run yarn install
+        run: yarn install
 
-      - name: Run Prettier
-        run: yarn prettier
+      - name: Run lint-staged
+        run: yarn lint-staged
 
       - name: Add and commit if any changes happened
         uses: EndBug/add-and-commit@v7
