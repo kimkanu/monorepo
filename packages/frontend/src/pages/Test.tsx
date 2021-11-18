@@ -7,6 +7,7 @@ import TempButton from '../components/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
 import ButtonTest from '../components/test/ButtonTest';
 import DropdownTest from '../components/test/DropdownTest';
+import SocketStreamTest from '../components/test/SocketStreamTest';
 import JoinCreatePageTest from '../components/test/JoinCreatePageTest';
 import TextInputTest from '../components/test/TextInputTest';
 import ToastTest from '../components/test/ToastTest';
@@ -15,6 +16,7 @@ import ToastTest from '../components/test/ToastTest';
 const componentsToTest: Record<string, [string, React.ReactElement]> = {
   dropdown: ['Dropdown and Dialog', <DropdownTest />],
   'audio-visualizer': ['Audio Visualizer', <AudioVisualizerTest />],
+  'socket-stream': ['Socket Stream', <SocketStreamTest />],
   toast: ['Toasts', <ToastTest />],
   joincreate: ['Join/Create Class', <JoinCreatePageTest />],
   buttons: ['Buttons', <ButtonTest />],

@@ -151,8 +151,8 @@ module.exports = {
   },
   variants: {
     extend: {
-      backgroundColor: ['active'],
-      boxShadow: ['active'],
+      backgroundColor: ['active', 'disabled'],
+      boxShadow: ['active', 'disabled'],
     },
   },
 };

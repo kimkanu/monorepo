@@ -17,7 +17,12 @@
     "noEmit": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "typeRoots": [
+      "./node_modules/@types",
+      "../../node_modules/@types",
+      "../lib/src/typing"
+    ]
   },
-  "include": ["src"]
+  "include": ["src", "../lib/src"]
 }

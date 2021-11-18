@@ -10,7 +10,7 @@ const VIDEO_ID = 'Zyi9QUB-fyo';
 test('If videoId is not set, it should be disappeared when minimized.', () => {
   const { container } = render(
     <RecoilRoot>
-      <YTWrapper className="___TEST___" isPresent={false} inClass={false}>
+      <YTWrapper className="___TEST___" isPresent={false} inClassroom={false}>
         <YTPlayer />
       </YTWrapper>
     </RecoilRoot>,
@@ -26,7 +26,7 @@ test('If videoId is not set, it should be disappeared when minimized.', () => {
 test('If videoId is set, it should not be disappeared when minimized.', async () => {
   const { container } = render(
     <RecoilRoot>
-      <YTWrapper className="___TEST___" isPresent inClass={false}>
+      <YTWrapper className="___TEST___" isPresent inClassroom={false}>
         <YTPlayer videoId={VIDEO_ID} />
       </YTWrapper>
     </RecoilRoot>,
