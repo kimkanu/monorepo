@@ -6,8 +6,9 @@ services:
       dockerfile: ./packages/lib/Dockerfile.workflow
     environment:
       NODE_ENV: test
-    command: yarn workspace @team-10/lib run test:workflow
+    command: bash -c 'yarn install && yarn workspace @team-10/lib run test:workflow'
     volumes:
+      - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
       - ./coverage/:/app/coverage/:Z
       - ./.yarn/:/app/.yarn/:Z
@@ -17,8 +18,9 @@ services:
       dockerfile: ./packages/backend/Dockerfile.workflow
     environment:
       NODE_ENV: test
-    command: yarn workspace @team-10/backend run test:workflow
+    command: 'yarn install && yarn workspace @team-10/backend run test:workflow'
     volumes:
+      - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
       - ./packages/backend/:/app/packages/backend/
       - ./coverage/:/app/coverage/:Z
@@ -29,8 +31,9 @@ services:
       dockerfile: ./packages/frontend/Dockerfile.workflow
     environment:
       NODE_ENV: test
-    command: yarn workspace @team-10/frontend run test:workflow
+    command: 'yarn install && yarn workspace @team-10/frontend run test:workflow'
     volumes:
+      - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
       - ./coverage/:/app/coverage/:Z

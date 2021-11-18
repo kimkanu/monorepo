@@ -52,6 +52,7 @@
     "typeorm-store": "^2.0.0"
   },
   "jest": {
+    "preset": "ts-jest",
     "testEnvironment": "node",
     "moduleNameMapper": {
       "@team-10/lib(.*)$": "<rootDir>/../lib/src/$1"
