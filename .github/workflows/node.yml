@@ -43,6 +43,9 @@ jobs:
           # The message for the commit.
           message: 'Commit from Linter'
 
+      - name: Build containers
+        run: docker-compose -f "docker-compose.workflow.yml" build
+
       - name: Test lib
         run: docker-compose -f "docker-compose.workflow.yml" up --exit-code-from lib lib
 
