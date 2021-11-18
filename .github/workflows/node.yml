@@ -43,6 +43,8 @@ jobs:
           # The message for the commit.
           message: 'Commit from Linter'
 
+          branch: "pr_previews"
+
       - name: Build containers
         run: docker-compose -f "docker-compose.workflow.yml" build
 
