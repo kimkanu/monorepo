@@ -40,15 +40,6 @@ jobs:
           # The message for the commit.
           message: 'Commit from Linter'
 
-      - name: Test lib
-        run: docker-compose -f "docker-compose.workflow.yml" up --exit-code-from lib lib
-
-      - name: Test backend
-        run: docker-compose -f "docker-compose.workflow.yml" up --exit-code-from backend backend
-
-      - name: Test frontend
-        run: docker-compose -f "docker-compose.workflow.yml" up --exit-code-from frontend frontend
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
