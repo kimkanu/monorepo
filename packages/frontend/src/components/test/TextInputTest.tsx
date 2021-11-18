@@ -48,7 +48,7 @@ function generateClassroomHash(): string {
   return `${generateSyllable()}-${generateSyllable()}-${generateSyllable()}`;
 }
 
-const TextInputText: React.FC = () => {
+const TextInputTest: React.FC = () => {
   const [icon, setIcon] = React.useState(0);
   const [text, setText] = React.useState('');
 
@@ -111,4 +111,4 @@ const TextInputText: React.FC = () => {
   );
 };
 
-export default TextInputText;
+export default TextInputTest;
