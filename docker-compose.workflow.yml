@@ -1,5 +1,26 @@
 version: "3"
 services:
+  lib:
+    build:
+      context: .
+      dockerfile: ./packages/lib/Dockerfile.workflow
+    environment:
+      NODE_ENV: test
+    command: yarn workspace @team-10/lib run test:workflow
+    volumes:
+      - ./packages/lib/:/app/packages/lib/
+      - ./coverage/:/app/coverage/:Z
+  backend:
+    build:
+      context: .
+      dockerfile: ./packages/backend/Dockerfile.workflow
+    environment:
+      NODE_ENV: test
+    command: yarn workspace @team-10/backend run test:workflow
+    volumes:
+      - ./packages/lib/:/app/packages/lib/
+      - ./packages/backend/:/app/packages/backend/
+      - ./coverage/:/app/coverage/:Z
   frontend:
     build:
       context: .

@@ -48,8 +48,17 @@
   },
   "packageManager": "yarn@3.1.0",
   "lint-staged": {
-    "**/*.+(js|jsx|ts|tsx)": [
-      "yarn lint"
+    "packages/frontend/**/*.+(js|jsx|ts|tsx)": [
+      "yarn workspace @team-10/frontend eslint --fix",
+      "yarn workspace @team-10/frontend test --bail --findRelatedTests"
+    ],
+    "packages/backend/**/*.+(js|jsx|ts|tsx)": [
+      "yarn workspace @team-10/backend eslint --fix",
+      "yarn workspace @team-10/backend test --bail --findRelatedTests"
+    ],
+    "packages/lib/**/*.+(js|jsx|ts|tsx)": [
+      "yarn workspace @team-10/lib eslint --fix",
+      "yarn workspace @team-10/lib test --bail --findRelatedTests"
     ],
     "**/*.+(json|css)": [
       "yarn prettier"
