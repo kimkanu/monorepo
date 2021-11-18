@@ -9,6 +9,7 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/express-session": "^1.17.4",
+    "@types/jest": "^27.0.2",
     "@types/morgan": "^1.9.3",
     "@types/passport": "^1.0.7",
     "@types/passport-oauth2": "^1.4.11",
@@ -18,9 +19,11 @@
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-typescript": "^14.0.1",
     "eslint-plugin-import": "^2.25.2",
+    "jest": "26.6.0",
     "nodemon": "^2.0.14",
+    "ts-jest": "^26.4.2",
     "ts-node": "^10.3.0",
-    "typescript": "^4.4.4"
+    "typescript": "^4.5.2"
   },
   "scripts": {
     "development": "yarn install && nodemon",
@@ -28,7 +31,9 @@
     "dev": "yarn development",
     "prod": "yarn production",
     "lint": "eslint --fix .",
-    "commit": "yarn lint && cd ../.. && git add yarn.lock && cz"
+    "commit": "cd ../.. && yarn lint-staged && git add yarn.lock && yarn cz",
+    "test": "jest --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"coverage/backend/\"",
+    "test:workflow": "jest --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"../../coverage/backend/\""
   },
   "dependencies": {
     "@team-10/lib": "workspace:^",
@@ -45,5 +50,12 @@
     "socket.io": "^4.3.1",
     "typeorm": "^0.2.38",
     "typeorm-store": "^2.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "@team-10/lib(.*)$": "<rootDir>/../lib/src/$1"
+    }
   }
 }
