@@ -22,6 +22,21 @@ jobs:
       - name: Build containers
         run: docker-compose -f "docker-compose.workflow.yml" build
 
+      - name: Run linter
+        run: yarn workspaces foreach run lint
+
+      - name: Add and commit if any changes happened
+        uses: EndBug/add-and-commit@v7
+        with:
+          # The arguments for the `git add` command (see the paragraph below for more info)
+          add: 'packages'
+
+          # The name of the user that will be displayed as the author of the commit.
+          author_name: ESLint (GitHub Workflows)
+
+          # The message for the commit.
+          message: 'Commit from Linter'
+
       - name: Test frontend
         run: docker-compose -f "docker-compose.workflow.yml" up --exit-code-from frontend frontend
 
