@@ -32,7 +32,7 @@
     "stop": "docker-compose stop",
     "down": "docker-compose down",
     "build:common": "docker build -t keonwoo/cs492c:default -f Dockerfile.workflow . && docker push keonwoo/cs492c:default",
-    "commit": "yarn lint-staged && cz",
+    "commit": "yarn lint-staged && yarn cz",
     "prettier": "prettier --ignore-path .gitignore \"**/*.+(json|css)\" --write",
     "lint": "yarn workspaces foreach run lint"
   },
