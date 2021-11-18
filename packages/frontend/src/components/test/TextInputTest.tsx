@@ -95,7 +95,7 @@ const TextInputText: React.FC = () => {
           ) : icon === 2 ? (
             <Button
               ref_={buttonRef}
-              icon={<Send20Regular />}
+              icon={<Send20Regular className="block" style={{ transform: 'translateX(1px)' }} />}
               type="primary"
               width="fit-content"
               onClick={() => setText('')}

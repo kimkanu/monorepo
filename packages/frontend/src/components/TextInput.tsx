@@ -3,6 +3,7 @@ import React from 'react';
 
 import { mergeClassNames, mergeStyles, Styled } from '../utils/style';
 
+import buttonStyles from './Button.module.css';
 import styles from './TextInput.module.css';
 
 interface Props {
@@ -65,6 +66,7 @@ const TextInput: React.FC<Styled<Props>> = ({
         'relative w-full h-12',
         isValid ? styles.focusWithin : styles.focusWithinInvalid,
         isValid ? 'text-gray-500' : 'text-red-300',
+        buttonStyles.input,
       )}
     >
       {icon && (
