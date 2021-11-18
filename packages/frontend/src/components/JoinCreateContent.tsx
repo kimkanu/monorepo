@@ -4,16 +4,21 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
-import useInput from '../hooks/useInput';
-import { mergeClassNames } from '../utils/style';
+import Button from './Button';
+import TextInput from './TextInput';
 
-const JoinCreateContent: React.FC = () => {
+interface Props {
+  handleCreate: (courseName: string) => void;
+  onClose: () => void;
+}
+
+const JoinCreateContent: React.FC<Props> = ({ handleCreate, onClose }) => {
   const joinNextInputRef = React.useRef<HTMLInputElement>(null);
   const joinButtonRef = React.useRef<HTMLButtonElement>(null);
   const createButtonRef = React.useRef<HTMLButtonElement>(null);
-  const [joinClassId, onChangeClassId] = useInput('');
-  const [joinPassword, onChangePassword] = useInput('');
-  const [createClassName, onChangeClassName] = useInput('');
+  const [joinClassId, setClassId] = React.useState('');
+  const [joinPassword, setPassword] = React.useState('');
+  const [createCourseName, setCourseName] = React.useState('');
 
   return (
     <div>
@@ -27,96 +32,69 @@ const JoinCreateContent: React.FC = () => {
           </button>
         </div>
         <div className="relative w-full h-12 mb-4">
-          <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
-            <NumberSymbol20Regular className="stroke-current" />
-          </div>
-          <input
-            placeholder="Classroom ID"
+          <TextInput
             value={joinClassId}
-            onChange={onChangeClassId}
-            className="bg-gray-200 placeholder-gray-500 placeholder-sans text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && !!e.currentTarget.value && joinNextInputRef.current) {
-                joinNextInputRef.current.focus();
-              }
-            }}
+            onInput={setClassId}
+            icon={<NumberSymbol20Regular />}
+            type="text"
+            name="joinClassId"
+            font="mono"
+            placeholderText="Classromm ID"
+            align="left"
+            nextRef={joinNextInputRef}
           />
         </div>
         <div className="relative w-full h-12 mb-4">
-          <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
-            <LockClosed20Regular className="stroke-current" />
-          </div>
-          <input
-            type="password"
-            ref={joinNextInputRef}
-            placeholder="Password"
+          <TextInput
             value={joinPassword}
-            onChange={onChangePassword}
-            className="bg-gray-200 placeholder-gray-500 placeholder-sans text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && !!e.currentTarget.value && joinButtonRef.current) {
-                joinButtonRef.current.focus();
-              }
-            }}
+            onInput={setPassword}
+            icon={<LockClosed20Regular />}
+            type="password"
+            name="joinPassword"
+            font="mono"
+            placeholderText="Password"
+            align="left"
+            nextRef={joinButtonRef}
           />
         </div>
-        <button
-          ref={joinButtonRef}
-          type="submit"
-          className={
-            mergeClassNames(
-              'w-full h-12 rounded-full outline-none flex items-center justify-center text-emph font-bold',
-              joinClassId && joinPassword ? `bg-primary-500 hover:bg-primary-500 focus:bg-primary-500 active:bg-primary-700
-              text-white
-              shadow-button hover:shadow-button-hover focus:shadow-button-hover active:shadow-button shadow-color-primary
-              transition-button duration-button` : 'bg-gray-200 pointer-events-none',
-            )
-          }
-          onClick={(e) => {
-            e.currentTarget.blur();
-          }}
-        >
-          <span>Join</span>
-        </button>
+        <Button
+          type="primary"
+          disabled={(joinClassId === '') && (joinPassword === '')}
+          text="Join"
+          width="full"
+          height={48}
+          ref_={joinButtonRef}
+        />
       </section>
       <section className="mt-14">
         <h2 className="text-sect font-bold mb-8">
           Create Class
         </h2>
         <div className="relative w-full h-12 mb-4">
-          <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
-            <Book20Regular className="stroke-current" />
-          </div>
-          <input
-            placeholder="Class Name"
-            value={createClassName}
-            onChange={onChangeClassName}
-            className="bg-gray-200 placeholder-gray-500 placeholder-sans text-emph w-full h-full pr-5 pl-14 rounded-full font-mono"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && !!e.currentTarget.value && createButtonRef.current) {
-                createButtonRef.current.focus();
-              }
-            }}
+          <TextInput
+            value={createCourseName}
+            onInput={setCourseName}
+            icon={<Book20Regular />}
+            type="text"
+            name="createCourseName"
+            font="mono"
+            placeholderText="Class Name"
+            align="left"
+            nextRef={createButtonRef}
           />
         </div>
-        <button
-          ref={createButtonRef}
-          type="submit"
-          className={
-            mergeClassNames(
-              'w-full h-12 rounded-full outline-none flex items-center justify-center text-emph font-bold',
-              createClassName ? `bg-primary-500 hover:bg-primary-500 focus:bg-primary-500 active:bg-primary-700
-              text-white
-              shadow-button hover:shadow-button-hover focus:shadow-button-hover active:shadow-button shadow-color-primary
-              transition-button duration-button` : 'bg-gray-200 pointer-events-none',
-            )
-          }
-          onClick={(e) => {
-            e.currentTarget.blur();
+        <Button
+          type="primary"
+          disabled={createCourseName === ''}
+          text="Create"
+          width="full"
+          height={48}
+          ref_={createButtonRef}
+          onClick={() => {
+            handleCreate(createCourseName);
+            onClose();
           }}
-        >
-          <span>Create</span>
-        </button>
+        />
       </section>
     </div>
   );
