@@ -3,7 +3,7 @@ import language from '../assets/language.png';
 import notification from '../assets/notification.png';
 import profile from '../assets/profile.png';
 
-export default function Header(props: PropsWithChildren<{}>) {
+const Header: React.FC = ({ children }) => {
     const [offset, setOffset] = useState<number | undefined>(undefined);
     const [height, setHeight] = useState<number>(0);
     const [style, setStyle] = useState<CSSProperties>({});
@@ -45,9 +45,11 @@ export default function Header(props: PropsWithChildren<{}>) {
                         <img src={profile} alt="profile" style={{ height: "20px", width: "20px" }}/>
                     </button>
                 </div>
-                {props.children}
+                {children}
             </div>
             <div style={{ visibility: 'hidden', height }} />
         </>
     );
 }
+
+export default Header;
