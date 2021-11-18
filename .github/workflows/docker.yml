@@ -25,8 +25,15 @@ jobs:
       - name: Run yarn install
         run: yarn install
 
-      - name: Run lint-staged
-        run: yarn lint-staged
+      - name: Run ESLint
+        run: '
+          L_DIFF=$(git diff --name-only --diff-filter=b $(git merge-base HEAD main) -- 'packages/lib/**/*.js' 'packages/lib/**/*.jsx' 'packages/lib/**/*.ts' 'packages/lib/**/*.tsx' | sed "s/packages\/lib\///g")
+          B_DIFF=$(git diff --name-only --diff-filter=b $(git merge-base HEAD main) -- 'packages/backend/**/*.js' 'packages/backend/**/*.jsx' 'packages/backend/**/*.ts' 'packages/backend/**/*.tsx' | sed "s/packages\/backend\///g")
+          F_DIFF=$(git diff --name-only --diff-filter=b $(git merge-base HEAD main) -- 'packages/frontend/**/*.js' 'packages/frontend/**/*.jsx' 'packages/frontend/**/*.ts' 'packages/frontend/**/*.tsx' | sed "s/packages\/frontend\///g")
+          yarn workspace @team-10/lib run eslint --fix $L_DIFF
+          yarn workspace @team-10/backend run eslint --fix $B_DIFF
+          yarn workspace @team-10/frontend run eslint --fix $F_DIFF
+        '
 
       - name: Add and commit if any changes happened
         uses: EndBug/add-and-commit@v7
