@@ -60,11 +60,17 @@ module.exports = {
       },
       violet,
       pink,
-      primary: violet,
+      primary: {
+        100: 'var(--primary-color-100)',
+        300: 'var(--primary-color-300)',
+        500: 'var(--primary-color-500)',
+        700: 'var(--primary-color-700)',
+        900: 'var(--primary-color-900)',
+      },
     },
     fontFamily: {
       sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', '애플 SD 산돌고딕 Neo', 'Apple SD Gothic Neo', 'Noto Sans CJK KR', 'Noto Sans KR', 'Noto Sans', '본고딕', 'Source Han Sans', '나눔바른고딕', 'NanumBarunGothic', '나눔바른고딕OTF', 'NanumBarunGothicOTF', '맑은 고딕', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum', '돋움', 'sans-serif'],
-      mono: ['IBM Plex Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
+      mono: ['JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', '애플 SD 산돌고딕 Neo', 'Apple SD Gothic Neo', 'Noto Sans CJK KR', 'Noto Sans KR', 'Noto Sans', '본고딕', 'Source Han Sans', '나눔바른고딕', 'NanumBarunGothic', '나눔바른고딕OTF', 'NanumBarunGothicOTF', '맑은 고딕', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum', '돋움', 'sans-serif', 'monospace'],
     },
     fontSize: {
       code: ['.8125rem', {

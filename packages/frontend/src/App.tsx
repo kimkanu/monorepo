@@ -4,26 +4,32 @@ import {
   Route,
   RouteComponentProps,
 } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 import Global from './components/Global';
 import Layout from './components/Layout';
 import Classroom from './pages/Classroom';
 import Test from './pages/Test';
+import themeState from './recoil/theme';
 
-const App: React.FC = () => (
-  <Router>
-    <Global />
-    <Layout>
-      <Route exact path="/tests/" component={() => <Test name="" />} />
-      <Route
-        path="/tests/:name"
-        component={({ match }: RouteComponentProps<{ name: string }>) => (
-          <Test name={match.params.name} />
-        )}
-      />
-      <Route path="/classrooms/:id" component={() => <Classroom />} />
-    </Layout>
-  </Router>
-);
+const App: React.FC = () => {
+  const theme = useRecoilValue(themeState.atom);
+
+  return (
+    <Router>
+      <Global />
+      <Layout className={`theme-${theme}`}>
+        <Route exact path="/tests/" render={() => <Test name="" />} />
+        <Route
+          path="/tests/:name"
+          render={({ match }: RouteComponentProps<{ name: string }>) => (
+            <Test name={match.params.name} />
+          )}
+        />
+        <Route path="/classes/:id" render={() => <Class />} />
+      </Layout>
+    </Router>
+  );
+};
 
 export default App;
