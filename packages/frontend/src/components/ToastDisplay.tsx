@@ -54,7 +54,8 @@ interface Props {
 
 const ToastDisplay: React.FC<Props> = ({ toasts }) => (
   <div
-    className="w-full h-fit max-w-md fixed z-toast flex flex-col-reverse top-2 right-4 pointer-events-none select-none"
+    className="h-fit max-w-md fixed z-toast flex flex-col-reverse top-2 right-4 pointer-events-none select-none"
+    style={{ width: 'calc(100% - 32px)' }}
   >
     {toasts.map((toast) => (
       <ToastItem key={toast.sentAt.getTime()} toast={toast} />
