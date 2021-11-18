@@ -3,10 +3,10 @@ services:
   lib:
     build:
       context: .
-      dockerfile: ./packages/lib/Dockerfile.workflow
+      dockerfile: ./Dockerfile.workflow
     environment:
       NODE_ENV: test
-    command: bash -c 'yarn install && yarn workspace @team-10/lib run test:workflow'
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && yarn workspace @team-10/lib run test:workflow'
     volumes:
       - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
@@ -14,10 +14,10 @@ services:
   backend:
     build:
       context: .
-      dockerfile: ./packages/backend/Dockerfile.workflow
+      dockerfile: ./Dockerfile.workflow
     environment:
       NODE_ENV: test
-    command: 'yarn install && yarn workspace @team-10/backend run test:workflow'
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && yarn workspace @team-10/backend run test:workflow'
     volumes:
       - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
@@ -26,10 +26,10 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./packages/frontend/Dockerfile.workflow
+      dockerfile: ./Dockerfile.workflow
     environment:
       NODE_ENV: test
-    command: 'yarn install && yarn workspace @team-10/frontend run test:workflow'
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && yarn workspace @team-10/frontend run test:workflow'
     volumes:
       - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
