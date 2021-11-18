@@ -19,7 +19,7 @@
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-typescript": "^14.0.1",
     "eslint-plugin-import": "^2.25.2",
-    "jest": "^27.3.1",
+    "jest": "26.6.0",
     "nodemon": "^2.0.14",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.3.0",
@@ -52,6 +52,7 @@
     "typeorm-store": "^2.0.0"
   },
   "jest": {
+    "preset": "ts-jest",
     "testEnvironment": "node",
     "moduleNameMapper": {
       "@team-10/lib(.*)$": "<rootDir>/../lib/src/$1"
