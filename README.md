@@ -1,6 +1,6 @@
 # CS492C Front End Development Project
 
-[![codecov](https://codecov.io/gh/2021-fall-cs492c-team-10/monorepo/branch/main/graph/badge.svg)](https://codecov.io/gh/2021-fall-cs492c-team-10/monorepo) ![example workflow](https://github.com/2021-fall-cs492c-team-10/monorepo/actions/workflows/docker.yml/badge.svg)
+[![codecov](https://codecov.io/gh/2021-fall-cs492c-team-10/monorepo/branch/main/graph/badge.svg)](https://codecov.io/gh/2021-fall-cs492c-team-10/monorepo) ![example workflow](https://github.com/2021-fall-cs492c-team-10/monorepo/actions/workflows/node.yml/badge.svg)
 
 ### **블렌디드 러닝을 위한 그룹 웹앱 개발**
 2021년도 봄학기 KAIST 전산학특강 프로젝트
