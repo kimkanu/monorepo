@@ -7,8 +7,8 @@ import TempButton from '../components/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
 import ButtonTest from '../components/test/ButtonTest';
 import DropdownTest from '../components/test/DropdownTest';
-import SocketStreamTest from '../components/test/SocketStreamTest';
 import JoinCreatePageTest from '../components/test/JoinCreatePageTest';
+import SocketStreamTest from '../components/test/SocketStreamTest';
 import TextInputTest from '../components/test/TextInputTest';
 import ToastTest from '../components/test/ToastTest';
 
