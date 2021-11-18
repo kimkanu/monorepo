@@ -16,7 +16,8 @@
 /* Mobile Portrait */
 
 .minMobilePortrait {
-  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: var(--pip-width--mobile);
   height: var(--pip-height--mobile);
   transform: translate(
@@ -27,7 +28,8 @@
 }
 
 .maxMobilePortrait {
-  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: 100vw;
   height: 56.25vw;
   transform: translate(calc(100vw - 100%), var(--header-height));
@@ -56,7 +58,8 @@
 /* Mobile Landscape */
 
 .minMobileLandscape {
-  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: var(--pip-width--mobile);
   height: var(--pip-height--mobile);
   transform: translate(
@@ -67,7 +70,8 @@
 }
 
 .maxMobileLandscape {
-  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: 100vw;
   height: calc(100 * var(--wh));
   transform: translate(calc(100vw - 100%), calc(100 * var(--wh) - 100%));
@@ -96,7 +100,8 @@
 /* Desktop */
 
 .minDesktop {
-  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: var(--pip-width--desktop);
   height: var(--pip-height--desktop);
   transform: translate(
@@ -107,7 +112,8 @@
 }
 
 .maxDesktop {
-  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
   width: calc(100vw - var(--chat-section-width--desktop));
   height: calc(100 * var(--wh) - var(--header-height) - var(--footer-height));
   transform: translate(

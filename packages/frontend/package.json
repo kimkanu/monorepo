@@ -61,7 +61,7 @@
     "test": "craco test --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"coverage/frontend/\"",
     "test:workflow": "craco test --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"../../coverage/frontend/\"",
     "lint": "eslint --fix .",
-    "commit": "yarn lint && cd ../.. && git add yarn.lock && cz"
+    "commit": "cd ../.. && yarn lint-staged && git add yarn.lock && yarn cz"
   },
   "eslintConfig": {
     "extends": [

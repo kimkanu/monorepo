@@ -1,0 +1,59 @@
+name: test@node-14.18.1
+
+on:
+  push:
+    branches:
+    - main
+    - features/**
+    - dependabot/**
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  node:
+    timeout-minutes: 30
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Run yarn install
+        run: yarn install
+
+      - name: Run ESLint
+        run: '
+          L_DIFF=$(git diff --name-only --diff-filter=b $(git merge-base HEAD main) -- 'packages/lib/**/*.js' 'packages/lib/**/*.jsx' 'packages/lib/**/*.ts' 'packages/lib/**/*.tsx' | sed "s/packages\/lib\///g")
+          B_DIFF=$(git diff --name-only --diff-filter=b $(git merge-base HEAD main) -- 'packages/backend/**/*.js' 'packages/backend/**/*.jsx' 'packages/backend/**/*.ts' 'packages/backend/**/*.tsx' | sed "s/packages\/backend\///g")
+          F_DIFF=$(git diff --name-only --diff-filter=b $(git merge-base HEAD main) -- 'packages/frontend/**/*.js' 'packages/frontend/**/*.jsx' 'packages/frontend/**/*.ts' 'packages/frontend/**/*.tsx' | sed "s/packages\/frontend\///g")
+          yarn workspace @team-10/lib run eslint --fix $L_DIFF
+          yarn workspace @team-10/backend run eslint --fix $B_DIFF
+          yarn workspace @team-10/frontend run eslint --fix $F_DIFF
+        '
+
+      - name: Add and commit if any changes happened
+        uses: EndBug/add-and-commit@v7
+        with:
+          # The arguments for the `git add` command (see the paragraph below for more info)
+          add: 'packages'
+
+          # The name of the user that will be displayed as the author of the commit.
+          author_name: ESLint (GitHub Workflows)
+
+          # The message for the commit.
+          message: 'Commit from Linter'
+
+      - name: Check coverage existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage"
+
+      - name: Upload coverage to Codecov
+        if: steps.check_files.outputs.files_exists == 'true'
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage/
+          fail_ci_if_error: true
