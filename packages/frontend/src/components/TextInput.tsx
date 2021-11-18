@@ -19,7 +19,7 @@ interface Props {
   button?: React.ReactElement; // of height 48
   onSubmit?: (value: string) => void;
   validator?: (value: string) => boolean;
-  nextRef?: React.RefObject<HTMLInputElement> | React.MutableRefObject<HTMLButtonElement>;
+  nextRef?: React.RefObject<HTMLInputElement> | React.RefObject<HTMLButtonElement>;
   containerStyle?: React.CSSProperties;
   containerClassName?: string;
 }
@@ -124,7 +124,7 @@ const TextInput: React.FC<Styled<Props>> = ({
             styles.icon,
           )}
           style={{
-            right: 20 + paddingRightButton,
+            right: button ? 12 + paddingRightButton : 20,
           }}
         >
           {isValid ? <Checkmark20Regular /> : <Dismiss20Regular />}

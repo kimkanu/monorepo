@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable max-len */
 /* istanbul ignore file */
 import {
@@ -5,6 +6,7 @@ import {
   NumberSymbol20Regular,
   Mail20Regular,
   Password24Regular,
+  Send20Regular,
 } from '@fluentui/react-icons';
 import React from 'react';
 
@@ -90,7 +92,18 @@ const TextInputText: React.FC = () => {
               text="Reset"
               onClick={() => setText(generateClassroomHash())}
             />
+          ) : icon === 2 ? (
+            <Button
+              ref_={buttonRef}
+              icon={<Send20Regular />}
+              type="primary"
+              width="fit-content"
+              onClick={() => setText('')}
+              disabled={!emailValidator(text)}
+            />
           ) : undefined}
+          nextRef={icon === 2 ? buttonRef : undefined}
+          name={icon === 2 ? 'email' : undefined}
           validator={icon !== 2 ? undefined : emailValidator}
         />
       </div>
