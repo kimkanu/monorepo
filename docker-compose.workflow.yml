@@ -11,7 +11,6 @@ services:
       - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
       - ./coverage/:/app/coverage/:Z
-      - ./.yarn/:/app/.yarn/:Z
   backend:
     build:
       context: .
@@ -24,7 +23,6 @@ services:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/backend/:/app/packages/backend/
       - ./coverage/:/app/coverage/:Z
-      - ./.yarn/:/app/.yarn/:Z
   frontend:
     build:
       context: .
@@ -37,4 +35,3 @@ services:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
       - ./coverage/:/app/coverage/:Z
-      - ./.yarn/:/app/.yarn/:Z
