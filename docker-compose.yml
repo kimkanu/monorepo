@@ -44,6 +44,7 @@ services:
     volumes:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
+      - ./.yarn/:/app/.yarn/:Z
   frontend-ssl:
     profiles:
       - development:ssl
@@ -65,6 +66,7 @@ services:
     volumes:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
+      - ./.yarn/:/app/.yarn/:Z
   backend:
     profiles:
       - development
@@ -95,6 +97,7 @@ services:
     volumes:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/backend/:/app/packages/backend/
+      - ./.yarn/:/app/.yarn/:Z
   postgres:
     image: postgres:10.4
     profiles:

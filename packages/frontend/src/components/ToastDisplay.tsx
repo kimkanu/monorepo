@@ -20,7 +20,7 @@ const ToastItem: React.FC<{ toast: Toast }> = ({ toast }) => (
           [ToastType.WARN]: 'bg-yellow-500',
           [ToastType.ERROR]: 'bg-red-500',
         }[toast.type],
-        'w-1 rounded-full mx-2',
+        'w-1 rounded-full mr-4',
       )}
     />
     <div
@@ -54,7 +54,8 @@ interface Props {
 
 const ToastDisplay: React.FC<Props> = ({ toasts }) => (
   <div
-    className="w-full h-fit max-w-md fixed z-toast flex flex-col-reverse top-2 right-4"
+    className="h-fit max-w-md fixed z-toast flex flex-col-reverse top-2 right-4 pointer-events-none select-none"
+    style={{ width: 'calc(100% - 32px)' }}
   >
     {toasts.map((toast) => (
       <ToastItem key={toast.sentAt.getTime()} toast={toast} />

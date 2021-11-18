@@ -8,11 +8,14 @@
   "devDependencies": {
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
-    "lerna": "^4.0.0"
+    "husky": "^7.0.4",
+    "lerna": "^4.0.0",
+    "lint-staged": "^12.0.2",
+    "prettier": "^2.4.1"
   },
   "scripts": {
     "development": "docker-compose --profile development up",
-    "development:ssl": "docker-compose --profile development:ssl up",
+    "development:ssl": "node bin/generateSSL.js && docker-compose --profile development:ssl up",
     "development:frontend": "docker-compose --profile development up -d && docker-compose logs -f frontend",
     "development:backend": "docker-compose --profile development up -d && docker-compose logs -f backend",
     "build:development": "docker-compose --profile development build",
@@ -29,7 +32,9 @@
     "stop": "docker-compose stop",
     "down": "docker-compose down",
     "build:common": "docker build -t keonwoo/cs492c:default -f Dockerfile.workflow . && docker push keonwoo/cs492c:default",
-    "commit": "cz"
+    "commit": "yarn lint-staged && yarn cz",
+    "prettier": "prettier --ignore-path .gitignore \"**/*.+(json|css)\" --write",
+    "lint": "yarn workspaces foreach run lint"
   },
   "workspaces": [
     "packages/lib",
@@ -42,7 +47,18 @@
     }
   },
   "packageManager": "yarn@3.1.0",
-  "dependencies": {
-    "@tailwindcss/forms": "^0.3.4"
+  "lint-staged": {
+    "packages/frontend/**/*.+(js|jsx|ts|tsx)": [
+      "yarn workspace @team-10/frontend eslint --fix"
+    ],
+    "packages/backend/**/*.+(js|jsx|ts|tsx)": [
+      "yarn workspace @team-10/backend eslint --fix"
+    ],
+    "packages/lib/**/*.+(js|jsx|ts|tsx)": [
+      "yarn workspace @team-10/lib eslint --fix"
+    ],
+    "**/*.+(json|css)": [
+      "yarn prettier"
+    ]
   }
 }

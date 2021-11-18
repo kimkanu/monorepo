@@ -1,0 +1,10 @@
+.icon > * {
+  @apply stroke-current;
+  stroke-width: 1;
+}
+.focusWithin:focus-within {
+  color: rgba(63, 63, 70);
+}
+.focusWithinInvalid:focus-within {
+  color: #f5323c;
+}

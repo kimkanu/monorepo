@@ -2,3 +2,10 @@
   @apply stroke-current;
   stroke-width: 1.5;
 }
+
+.disabled {
+  @apply bg-gray-200 text-gray-500;
+}
+.input .disabled {
+  @apply bg-red-100 text-red-500;
+}

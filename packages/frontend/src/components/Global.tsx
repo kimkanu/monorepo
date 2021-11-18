@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import classState from '../recoil/class';
+import classroomState from '../recoil/classroom';
 import dialogState from '../recoil/dialog';
 import dropdownState from '../recoil/dropdown';
 import toastState from '../recoil/toast';
@@ -20,13 +20,13 @@ import YTPlayer from './YTPlayer';
 import YTWrapper from './YTWrapper';
 
 const Global: React.FC = () => {
-  const class_ = useRecoilValue(classState.atom);
+  const classroom = useRecoilValue(classroomState.atom);
   const dropdown = useRecoilValue(dropdownState.atom);
   const dialog = useRecoilValue(dialogState.atom);
   const toasts = useRecoilValue(toastState.atom);
 
   const location = useLocation();
-  const inClass = /^\/classes\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
+  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
 
   const history = useHistory();
 
@@ -47,15 +47,15 @@ const Global: React.FC = () => {
       </Dialog>
 
       <YTWrapper
-        isPresent={!!class_?.videoId}
-        inClass={inClass}
+        isPresent={!!classroom?.videoId}
+        inClassroom={inClassroom}
         onClick={() => {
-          if (class_?.id) {
-            history.push(`/classes/${class_.id.toLowerCase()}`);
+          if (classroom?.id) {
+            history.push(`/classes/${classroom.id.toLowerCase()}`);
           }
         }}
       >
-        <YTPlayer videoId={class_?.videoId} />
+        <YTPlayer videoId={classroom?.videoId} />
       </YTWrapper>
 
       <ToastDisplay toasts={toasts} />

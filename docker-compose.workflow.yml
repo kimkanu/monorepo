@@ -1,13 +1,37 @@
 version: "3"
 services:
+  lib:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.workflow
+    environment:
+      NODE_ENV: test
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && yarn workspace @team-10/lib run test:workflow'
+    volumes:
+      - ./.yarn/:/app/.yarn/
+      - ./packages/lib/:/app/packages/lib/
+      - ./coverage/:/app/coverage/:Z
+  backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.workflow
+    environment:
+      NODE_ENV: test
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && yarn workspace @team-10/backend run test:workflow'
+    volumes:
+      - ./.yarn/:/app/.yarn/
+      - ./packages/lib/:/app/packages/lib/
+      - ./packages/backend/:/app/packages/backend/
+      - ./coverage/:/app/coverage/:Z
   frontend:
     build:
       context: .
-      dockerfile: ./packages/frontend/Dockerfile.workflow
+      dockerfile: ./Dockerfile.workflow
     environment:
       NODE_ENV: test
-    command: yarn workspace @team-10/frontend run test:workflow
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && yarn workspace @team-10/frontend run test:workflow'
     volumes:
+      - ./.yarn/:/app/.yarn/
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
       - ./coverage/:/app/coverage/:Z

@@ -4,17 +4,20 @@ import { Strategy as NaverStrategy, Profile as NaverProfile } from 'passport-nav
 import PassportOauth2 from 'passport-oauth2';
 import { Connection } from 'typeorm';
 
+import Classroom from './entity/classroom';
 import SSOAccount from './entity/sso-account';
-
 import User from './entity/user';
 
 export default (connection: Connection) => {
   const userRepository = connection.getRepository(User);
   const ssoAccountRepository = connection.getRepository(SSOAccount);
 
-  passport.serializeUser((req, user, done) => {
-    done(null, user);
-  });
+  passport.serializeUser(
+    (req: Request, user: Express.User, done: (err: any, id: number) => void) => {
+      done(null, user.id);
+    },
+  );
+
   passport.deserializeUser((id: string, done) => {
     userRepository.findOne(id).then((user) => {
       if (!user) {
@@ -47,22 +50,25 @@ export default (connection: Connection) => {
         },
       },
     }).then(async (ssoAccount) => {
+      let user: User;
       if (!ssoAccount) {
-        const user = new User();
+        user = new User();
+        user.stringId = `${profile.provider}:${profile.id}`;
         user.displayName = profile.nickname!;
         user.profileImage = profile.profileImage ?? null!;
+        user.initialized = false;
         await userRepository.save(user);
 
         const newSSOAccount = new SSOAccount();
-        newSSOAccount.provider = 'naver';
+        newSSOAccount.provider = profile.provider;
         newSSOAccount.providerId = profile.id;
         newSSOAccount.user = user;
         await ssoAccountRepository.save(newSSOAccount);
-
-        return done(null, user);
+      } else {
+        user = ssoAccount.user;
       }
 
-      return done(null, ssoAccount.user);
+      return done(null, user);
     }).catch((error) => {
       console.error(error);
       done(error, undefined);

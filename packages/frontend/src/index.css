@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
+html,
+body,
+#root {
   @apply m-0 p-0 font-sans shadow-color-neutral text-gray-900 w-full h-full overflow-hidden;
 }
 
@@ -39,37 +41,42 @@ button {
   }
   .placeholder-mono::placeholder {
     @apply font-mono;
+    letter-spacing: -0.05em;
+  }
+
+  .font-mono {
+    letter-spacing: -0.05em;
   }
 }
 
 .theme-violet {
-  --primary-color-100: #DAC5FE;
-  --primary-color-300: #A876FA;
-  --primary-color-500: #9154F5;
-  --primary-color-700: #7732E6;
-  --primary-color-900: #512B8E;
+  --primary-color-100: #dac5fe;
+  --primary-color-300: #a876fa;
+  --primary-color-500: #9154f5;
+  --primary-color-700: #7732e6;
+  --primary-color-900: #512b8e;
 }
 
 .theme-pink {
-  --primary-color-100: #FFDCE6;
-  --primary-color-300: #FF8AAD;
-  --primary-color-500: #FF6492;
-  --primary-color-700: #E04A77;
-  --primary-color-900: #AE2951;
+  --primary-color-100: #ffdce6;
+  --primary-color-300: #ff8aad;
+  --primary-color-500: #ff6492;
+  --primary-color-700: #e04a77;
+  --primary-color-900: #ae2951;
 }
 
 .theme-green {
-  --primary-color-100: #A7E6C8;
-  --primary-color-300: #44D28E;
-  --primary-color-500: #18B268;
+  --primary-color-100: #a7e6c8;
+  --primary-color-300: #44d28e;
+  --primary-color-500: #18b268;
   --primary-color-700: #138850;
-  --primary-color-900: #105E39;
+  --primary-color-900: #105e39;
 }
 
 .theme-blue {
-  --primary-color-100: #C6D3FE;
-  --primary-color-300: #7C98FC;
-  --primary-color-500: #4E74FC;
-  --primary-color-700: #2D56EC;
-  --primary-color-900: #112D95;
+  --primary-color-100: #c6d3fe;
+  --primary-color-300: #7c98fc;
+  --primary-color-500: #4e74fc;
+  --primary-color-700: #2d56ec;
+  --primary-color-900: #112d95;
 }

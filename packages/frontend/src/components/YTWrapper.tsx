@@ -27,41 +27,41 @@ const YTMaximizationHint: React.FC<YTMaximizationHintProps> = ({ onClick }) => (
 
 interface Props {
   isPresent: boolean;
-  inClass: boolean;
+  inClassroom: boolean;
   onClick?: React.MouseEventHandler;
 }
 
 const YTWrapper: React.FC<Styled<Props>> = ({
-  onClick, inClass, isPresent, style, className, children,
+  onClick, inClassroom, isPresent, style, className, children,
 }) => {
   const TIMEOUT = 400;
 
-  const [initialInClass, setInitialInClass] = React.useState(inClass);
+  const [initialInClassroom, setInitialInClassroom] = React.useState(inClassroom);
   const nodeRef = React.useRef<HTMLDivElement>(null);
 
   const screenType = useScreenType();
   const screenTypeName = ScreenType[screenType];
 
   // The following two `useEffect`s deal with delayed changes of
-  // `inClass` variable, which is stored in `initialInClass`.
-  // When the transition is completed, `initialInClass` is set
-  // to be the same with `inClass`.
+  // `inClassroom` variable, which is stored in `initialInClassroom`.
+  // When the transition is completed, `initialInClassroom` is set
+  // to be the same with `inClassroom`.
   // It is necessary to define the initial state of the player.
   // Refer to Line 78.
   React.useEffect(() => {
-    setInitialInClass(inClass);
+    setInitialInClassroom(inClassroom);
   }, [screenType]);
 
   React.useEffect(() => {
     const timeout = setTimeout(() => {
-      setInitialInClass(inClass);
+      setInitialInClassroom(inClassroom);
     }, TIMEOUT);
     return () => clearTimeout(timeout);
-  }, [inClass]);
+  }, [inClassroom]);
 
   return (
     <CSSTransition
-      in={inClass}
+      in={inClassroom}
       timeout={TIMEOUT}
       nodeRef={nodeRef}
       classNames={{
@@ -78,13 +78,13 @@ const YTWrapper: React.FC<Styled<Props>> = ({
         style={style}
         className={mergeClassNames(
           'relative overflow-hidden z-layout-2',
-          inClass ? 'shadow-none' : 'shadow-button hover:shadow-button-hover',
-          isPresent || inClass ? null : 'opacity-0 pointer-events-none select-none',
+          inClassroom ? 'shadow-none' : 'shadow-button hover:shadow-button-hover',
+          isPresent || inClassroom ? null : 'opacity-0 pointer-events-none select-none',
           className,
-          styles[`${initialInClass ? 'max' : 'min'}${screenTypeName}`],
+          styles[`${initialInClassroom ? 'max' : 'min'}${screenTypeName}`],
         )}
       >
-        {!inClass && <YTMaximizationHint onClick={onClick} />}
+        {!inClassroom && <YTMaximizationHint onClick={onClick} />}
         {children}
       </div>
     </CSSTransition>

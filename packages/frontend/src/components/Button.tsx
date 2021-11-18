@@ -6,26 +6,29 @@ import styles from './Button.module.css';
 
 interface Props {
   type: 'primary' | 'destructive' | 'neutral';
-  disabled: boolean;
+  disabled?: boolean;
   text?: string;
   width: 'full' | 'fit-content';
-  height: 36 | 48 | 56;
+  height?: 36 | 48 | 56;
   icon?: React.ReactElement | null; // of `20Regular`
   onClick?: React.MouseEventHandler;
+  ref_?: React.RefObject<HTMLButtonElement>;
 }
 
 const Button: React.FC<Styled<Props>> = ({
   type,
-  disabled,
+  disabled = false,
   text,
   width,
-  height,
+  height = 48,
   icon,
   onClick,
+  ref_,
   className,
   style,
 }) => (
   <button
+    ref={ref_}
     type="button"
     className={mergeClassNames(
       'rounded-full outline-none flex items-center justify-center font-bold transition-button duration-button',
@@ -45,7 +48,7 @@ const Button: React.FC<Styled<Props>> = ({
         56: 'h-14 text-sub',
       }[height],
       disabled
-        ? 'bg-gray-200 text-gray-500'
+        ? styles.disabled
         : {
           primary: 'text-white bg-primary-500 hover:bg-primary-500 focus:bg-primary-500 active:bg-primary-700 shadow-color-primary',
           destructive: 'text-white bg-red-500 hover:bg-red-500 focus:bg-red-500 active:bg-red-700 shadow-color-destructive',
@@ -63,7 +66,7 @@ const Button: React.FC<Styled<Props>> = ({
         paddingRight: { 36: 16, 48: 26, 56: 32 }[height],
       } : null,
     )}
-    onClick={onClick}
+    onClick={disabled ? undefined : onClick}
   >
     {icon && (
       <div

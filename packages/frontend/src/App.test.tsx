@@ -41,4 +41,6 @@ test('Renders `Connected!` message.', () => {
   render(<RecoilRoot><App /></RecoilRoot>);
   const linkElement = screen.getByText(/Connected!/i);
   expect(linkElement).toBeInTheDocument();
+
+  expect('Lint-staged test').toBe('Lint-staged test');
 });
