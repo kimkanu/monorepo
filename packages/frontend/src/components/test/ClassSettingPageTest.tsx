@@ -18,7 +18,7 @@ const ClassSettingPageTest: React.FC = () => {
         onClick={() => {
           setDialog({
             visible: true,
-            element: <ClassSettingContent userType="Student" originCourseName="CS412" classId="ABC-DEF" />,
+            element: <ClassSettingContent isInstructor={false} originCourseName="CS412" classId="ABC-DEF" />,
             onClose: () => setDialogVisible(false),
           });
         }}
@@ -29,7 +29,7 @@ const ClassSettingPageTest: React.FC = () => {
         onClick={() => {
           setDialog({
             visible: true,
-            element: <ClassSettingContent userType="Instructor" originCourseName="CS412" classId="ABC-DEF" originClassPassword="123456" />,
+            element: <ClassSettingContent isInstructor originCourseName="CS412" classId="ABC-DEF" originClassPassword="123456" />,
             onClose: () => setDialogVisible(false),
           });
         }}

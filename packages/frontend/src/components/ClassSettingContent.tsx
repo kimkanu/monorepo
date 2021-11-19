@@ -4,33 +4,40 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
+import { randomInt } from '../utils/math';
+
 import Button from './Button';
 
 import TextInput from './TextInput';
 
-function getRandPassword(): string {
-  let password = '';
-  for (let i = 0; i < 6; i += 1) {
-    const n = Math.floor(Math.random() * 10);
-    password += n.toString();
-  }
-  return password;
-}
+// function getRandPassword(): string {
+//   let password = '';
+//   for (let i = 0; i < 6; i += 1) {
+//     const n = Math.floor(Math.random() * 10);
+//     password += n.toString();
+//   }
+//   return password;
+// }
+const getRandomPassword = () => `${randomInt(1e6)}`.padStart(6, '0');
+
 interface Props {
-  userType: string;
+  isInstructor: boolean;
   originCourseName: string;
   classId: string;
   originClassPassword?: string;
 }
 const ClassSettingContent: React.FC<Props> = ({
-  userType, originCourseName, classId, originClassPassword,
+  isInstructor, originCourseName, classId, originClassPassword,
 }) => {
-  const [ClassPassword, setClassPassword] = React.useState(originClassPassword);
+  const [classPassword, setClassPassword] = React.useState(originClassPassword);
   const [courseName, setCourseName] = React.useState(originCourseName);
-  function resetPassword(): React.MouseEventHandler {
-    const newPassword = getRandPassword();
-    return () => { setClassPassword(newPassword); };
-  }
+
+  // function resetPassword(): React.MouseEventHandler {
+  //   const newPassword = getRandomPassword();
+  //   return () => { setClassPassword(newPassword); };
+  // }
+  const resetPassword = () => { setClassPassword(getRandomPassword); };
+
   return (
     <div>
       <section className="mt-4">
@@ -51,22 +58,24 @@ const ClassSettingContent: React.FC<Props> = ({
             align="left"
           />
         </div>
-        <div className="relative w-full h-12 mb-4 bg-gray-200 text-emph font-mono pr-5 pl-14 rounded-full items-center">
-          <div className="text-gray-700 mr-4 absolute left-5 top-3.5 select-none pointer-events-none">
-            <NumberSymbol20Regular className="stroke-current" />
-          </div>
-          <div className="flex w-full h-full items-center">
-            <span>{classId}</span>
-          </div>
+        <div className="relative w-full h-12 mb-4">
+          <TextInput
+            value={classId}
+            icon={<NumberSymbol20Regular />}
+            name="classId"
+            font="mono"
+            align="left"
+            readOnly
+          />
         </div>
         {
-          userType === 'Instructor' && (
+          isInstructor && (
             <div className="inline-flex relative w-full h-12 mb-4 bg-gray-200 text-emph font-mono pr-5 pl-14 rounded-full items-center">
               <div className="text-gray-700 mr-4 z-10 absolute left-5 top-3.5 select-none pointer-events-none">
                 <LockClosed20Regular className="stroke-current" />
               </div>
               <div className="relative flex w-full h-full items-center">
-                <span>{ClassPassword}</span>
+                <span>{classPassword}</span>
               </div>
               <Button
                 type="destructive"
@@ -76,7 +85,7 @@ const ClassSettingContent: React.FC<Props> = ({
                 text="Reset"
                 icon={<ArrowCounterclockwise20Regular className="z-10" />}
                 className="absolute right-0 z-5 w-2/5 font-sans"
-                onClick={resetPassword()}
+                onClick={resetPassword}
               />
             </div>
           )
@@ -93,7 +102,7 @@ const ClassSettingContent: React.FC<Props> = ({
           height={48}
           className="font-sans"
           text={
-            userType === 'Instructor'
+            isInstructor
               ? 'Remove the Class'
               : 'Leave the Class'
           }
