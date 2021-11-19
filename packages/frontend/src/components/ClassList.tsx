@@ -15,7 +15,7 @@ interface Props {
 }
 
 const ClassList: React.FC<Props> = ({ classInfos }) => (
-  <ul className="grid grid-cols-1 sm:grid-cols-3 gap-8 m-8">
+  <ul className="grid grid-cols-1 sm:grid-cols-3 gap-8">
     {classInfos.map((classInfo) => (
       <ClassButton
         key={classInfo.courseName}
