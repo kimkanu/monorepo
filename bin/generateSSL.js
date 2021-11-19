@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env.ssl' });
 
 const fs = require('fs');
 const execSync = require('child_process').execSync;
