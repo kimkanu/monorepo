@@ -33,12 +33,12 @@ const ClassSettingContent: React.FC<Props> = ({
   }
   return (
     <div>
-      <section>
-        <h1 className="text-sect font-bold mb-8">
+      <section className="mt-4">
+        <h1 className="text-sect font-bold mb-12">
           Settings
         </h1>
-        <h2 className="text-sub font-bold mb-7">
-          ClassInformation
+        <h2 className="text-sub font-bold mb-6">
+          Class Information
         </h2>
         <div className="relative w-full h-12 mb-4">
           <TextInput
@@ -75,14 +75,14 @@ const ClassSettingContent: React.FC<Props> = ({
                 height={48}
                 text="Reset"
                 icon={<ArrowCounterclockwise20Regular className="z-10" />}
-                className="absolute right-0 z-5 w-2/5"
+                className="absolute right-0 z-5 w-2/5 font-sans"
                 onClick={resetPassword()}
               />
             </div>
           )
         }
       </section>
-      <section className="mt-12 mb-10">
+      <section className="mt-10 mb-4">
         <h2 className="text-sub font-bold mb-6">
           Class Management
         </h2>
@@ -91,6 +91,7 @@ const ClassSettingContent: React.FC<Props> = ({
           disabled={false}
           width="full"
           height={48}
+          className="font-sans"
           text={
             userType === 'Instructor'
               ? 'Remove the Class'
