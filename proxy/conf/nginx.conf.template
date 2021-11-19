@@ -14,6 +14,6 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
 
-        proxy_pass http://frontend-ssl:${FRONTEND_PORT};
+        proxy_pass http://app-ssl:${FRONTEND_PORT};
     }
 }
