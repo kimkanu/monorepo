@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import TempButton from '../components/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
 import ButtonTest from '../components/test/ButtonTest';
+import ClassSettingPageTest from '../components/test/ClassSettingPageTest';
 import DropdownTest from '../components/test/DropdownTest';
 import JoinCreatePageTest from '../components/test/JoinCreatePageTest';
 import SocketStreamTest from '../components/test/SocketStreamTest';
@@ -20,6 +21,7 @@ const componentsToTest: Record<string, [string, React.ReactElement]> = {
   toast: ['Toasts', <ToastTest />],
   joincreate: ['Join/Create Class', <JoinCreatePageTest />],
   buttons: ['Buttons', <ButtonTest />],
+  classsetting: ['class setting', <ClassSettingPageTest />],
   'text-input': ['Text Input', <TextInputTest />],
 };
 
