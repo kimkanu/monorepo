@@ -136,6 +136,7 @@ module.exports = {
         layout: 60,
         'layout-1': 61,
         'layout-2': 62,
+        'layout-3': 63,
         'dropdown-mobile': 70,
         'dropdown-mobile-1': 71,
         'dropdown-mobile-2': 72,
