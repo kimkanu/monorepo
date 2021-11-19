@@ -65,26 +65,24 @@ const ClassSettingContent: React.FC<Props> = ({
         </div>
         {
           userType === 'Instructor' && (
-            <form method="post">
-              <div className="inline-flex relative w-full h-12 mb-4 bg-gray-200 text-emph font-mono pr-5 pl-14 rounded-full items-center">
-                <div className="text-gray-700 mr-4 z-10 absolute left-5 top-3.5 select-none pointer-events-none">
-                  <LockClosed20Regular className="stroke-current" />
-                </div>
-                <div className="relative flex w-full h-full items-center">
-                  <span>{ClassPassword}</span>
-                </div>
-                <Button
-                  type="destructive"
-                  disabled={false}
-                  width="fit-content"
-                  height={48}
-                  text="Reset"
-                  icon={<ArrowCounterclockwise20Regular className="z-10" />}
-                  className="absolute right-0 z-5 w-2/5"
-                  onClick={resetPassword()}
-                />
+            <div className="inline-flex relative w-full h-12 mb-4 bg-gray-200 text-emph font-mono pr-5 pl-14 rounded-full items-center">
+              <div className="text-gray-700 mr-4 z-10 absolute left-5 top-3.5 select-none pointer-events-none">
+                <LockClosed20Regular className="stroke-current" />
               </div>
-            </form>
+              <div className="relative flex w-full h-full items-center">
+                <span>{ClassPassword}</span>
+              </div>
+              <Button
+                type="destructive"
+                disabled={false}
+                width="fit-content"
+                height={48}
+                text="Reset"
+                icon={<ArrowCounterclockwise20Regular className="z-10" />}
+                className="absolute right-0 z-5 w-2/5"
+                onClick={resetPassword()}
+              />
+            </div>
           )
         }
       </section>
