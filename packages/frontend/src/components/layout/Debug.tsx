@@ -48,9 +48,11 @@ const Debug: React.FC = () => {
         type="button"
         onClick={() => {
           setClassroom(classroom ? null : {
-            id: 'SAM-PLE-CLS',
+            hash: 'SAM-PEL-KAS',
             name: 'Sample Class',
             videoId: 'Zyi9QUB-fyo',
+            isLive: true,
+            isMine: true,
           });
         }}
       >

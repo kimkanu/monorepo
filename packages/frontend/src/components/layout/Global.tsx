@@ -51,8 +51,8 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
         isPresent={!!classroom?.videoId}
         inClassroom={inClassroom}
         onClick={() => {
-          if (classroom?.id) {
-            history.push(`/classrooms/${classroom.id.toLowerCase()}`);
+          if (classroom?.hash) {
+            history.push(`/classrooms/${classroom.hash}`);
           }
         }}
       >
