@@ -24,7 +24,7 @@ module.exports = {
     boxShadow: {
       button: '0 3px 8px var(--shadow-color)',
       'button-hover': '0 6px 16px var(--shadow-color)',
-      class: '0 6px 12px var(--shadow-color)',
+      class: '0 4px 12px var(--shadow-color)',
       'class-hover': '0 8px 24px var(--shadow-color)',
       'dropdown-desktop': '0px 6px 24px var(--shadow-color)',
       'dropdown-mobile': '0px -6px 24px var(--shadow-color)',
