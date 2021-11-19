@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import React from 'react';
 
-import ClassList from '../ClassList';
+import ClassList from '../classroom/ClassList';
 
 interface ClassInfo {
   courseName: string;

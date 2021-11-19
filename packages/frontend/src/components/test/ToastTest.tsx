@@ -5,7 +5,7 @@ import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import toastState, { ToastType } from '../../recoil/toast';
-import TempButton from '../TempButton';
+import TempButton from '../buttons/TempButton';
 
 const ToastTest: React.FC = () => {
   const [toastType, setToastType] = React.useState<ToastType>(ToastType.INFO);

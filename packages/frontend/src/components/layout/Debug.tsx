@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
-import useScreenType from '../hooks/useScreenType';
-import classroomState from '../recoil/classroom';
-import ScreenType from '../types/screen';
-import { conditionalClassName } from '../utils/style';
+import useScreenType from '../../hooks/useScreenType';
+import classroomState from '../../recoil/classroom';
+import ScreenType from '../../types/screen';
+import { conditionalClassName } from '../../utils/style';
 
 import DebugWrapper from './DebugWrapper';
 

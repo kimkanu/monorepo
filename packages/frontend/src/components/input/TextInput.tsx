@@ -1,9 +1,9 @@
 import { Checkmark20Regular, Dismiss20Regular } from '@fluentui/react-icons';
 import React from 'react';
 
-import { mergeClassNames, mergeStyles, Styled } from '../utils/style';
+import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
+import buttonStyles from '../buttons/Button.module.css';
 
-import buttonStyles from './Button.module.css';
 import styles from './TextInput.module.css';
 
 interface Props {

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import React from 'react';
 
-import WaveVisualizer from '../WaveVisualizer';
+import WaveVisualizer from '../voice/WaveVisualizer';
 
 const AudioVisualizerTest: React.FC = () => {
   const [amp, setAmp] = React.useState(100);

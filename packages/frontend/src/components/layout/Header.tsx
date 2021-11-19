@@ -9,14 +9,13 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import useScreenType from '../hooks/useScreenType';
-import classroomState from '../recoil/classroom';
-import dialogState from '../recoil/dialog';
-import dropdownState from '../recoil/dropdown';
-import ScreenType from '../types/screen';
-import { mergeClassNames } from '../utils/style';
-
-import AmbientButton from './AmbientButton';
+import useScreenType from '../../hooks/useScreenType';
+import classroomState from '../../recoil/classroom';
+import dialogState from '../../recoil/dialog';
+import dropdownState from '../../recoil/dropdown';
+import ScreenType from '../../types/screen';
+import { mergeClassNames } from '../../utils/style';
+import AmbientButton from '../buttons/AmbientButton';
 
 interface Props {
   onMenu?: (menu: 'members' | 'settings' | 'language' | 'notifications' | 'profile') => void;

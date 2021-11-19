@@ -2,7 +2,7 @@ import { useWindowSize } from '@react-hook/window-size';
 import React from 'react';
 import { useRecoilState } from 'recoil';
 
-import screenSizeState from '../recoil/screenSize';
+import screenSizeState from '../../recoil/screenSize';
 
 // Height change가 이 값을 넘지 않으면 키보드로 간주되지 않습니다.
 const HEIGHT_THRESHOLD = 160;
