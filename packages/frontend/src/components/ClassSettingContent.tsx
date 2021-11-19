@@ -10,14 +10,6 @@ import Button from './Button';
 
 import TextInput from './TextInput';
 
-// function getRandPassword(): string {
-//   let password = '';
-//   for (let i = 0; i < 6; i += 1) {
-//     const n = Math.floor(Math.random() * 10);
-//     password += n.toString();
-//   }
-//   return password;
-// }
 const getRandomPassword = () => `${randomInt(1e6)}`.padStart(6, '0');
 
 interface Props {
@@ -32,10 +24,6 @@ const ClassSettingContent: React.FC<Props> = ({
   const [classPassword, setClassPassword] = React.useState(originClassPassword);
   const [courseName, setCourseName] = React.useState(originCourseName);
 
-  // function resetPassword(): React.MouseEventHandler {
-  //   const newPassword = getRandomPassword();
-  //   return () => { setClassPassword(newPassword); };
-  // }
   const resetPassword = () => { setClassPassword(getRandomPassword); };
 
   return (
