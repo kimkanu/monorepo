@@ -26,6 +26,7 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     networks:
       - mynetwork
     environment:
@@ -53,6 +54,7 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - ${FRONTEND_PORT}
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     networks:
       - mynetwork
     environment:
