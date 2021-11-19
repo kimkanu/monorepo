@@ -1,7 +1,7 @@
 import React from 'react';
 
-import ClassList from '../components/ClassList';
-import ContentPadding from '../components/ContentPadding';
+import ClassList from '../components/classroom/ClassList';
+import ContentPadding from '../components/layout/ContentPadding';
 
 const classInfos = [
   {

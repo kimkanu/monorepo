@@ -1,11 +1,10 @@
 import React from 'react';
 
-import { random, randomInt, range } from '../utils/math';
-
+import { random, randomInt, range } from '../../utils/math';
 import {
   Curve,
   generateCurve, getBezierCurveSum,
-} from '../utils/waveVisualizer';
+} from '../../utils/waveVisualizer';
 
 import styles from './WaveVisualizer.module.css';
 

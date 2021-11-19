@@ -4,9 +4,9 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
-import AmbientButton from './AmbientButton';
-import Button from './Button';
-import TextInput from './TextInput';
+import AmbientButton from '../buttons/AmbientButton';
+import Button from '../buttons/Button';
+import TextInput from '../input/TextInput';
 
 const JoinCreateContent: React.FC = () => {
   const passwordJoinRef = React.useRef<HTMLInputElement>(null);

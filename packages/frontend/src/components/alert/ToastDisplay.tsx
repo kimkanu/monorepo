@@ -1,8 +1,8 @@
 import { Info24Regular, Warning24Regular, ErrorCircle24Regular } from '@fluentui/react-icons';
 import React from 'react';
 
-import { Toast, ToastType } from '../recoil/toast';
-import { mergeClassNames } from '../utils/style';
+import { Toast, ToastType } from '../../recoil/toast';
+import { mergeClassNames } from '../../utils/style';
 
 import styles from './ToastDisplay.module.css';
 

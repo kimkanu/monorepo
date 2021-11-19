@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useSetRecoilState } from 'recoil';
 
-import dialogState from '../recoil/dialog';
+import dialogState from '../../recoil/dialog';
 
 import JoinCreateContent from './JoinCreateContent';
 

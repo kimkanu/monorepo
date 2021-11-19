@@ -5,7 +5,7 @@ import { useSetRecoilState } from 'recoil';
 
 import dialogState from '../../recoil/dialog';
 import dropdownState from '../../recoil/dropdown';
-import TempButton from '../TempButton';
+import TempButton from '../buttons/TempButton';
 
 const DialogContent: React.FC = () => {
   const nextInputRef = React.useRef<HTMLInputElement>(null);

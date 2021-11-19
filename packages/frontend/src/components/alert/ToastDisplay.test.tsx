@@ -1,8 +1,8 @@
 import { render, act, screen } from '@testing-library/react';
 import React from 'react';
 
-import { ToastType } from '../recoil/toast';
-import { randomInt, range } from '../utils/math';
+import { ToastType } from '../../recoil/toast';
+import { randomInt, range } from '../../utils/math';
 
 import ToastDisplay from './ToastDisplay';
 

@@ -7,8 +7,8 @@ import {
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import Global from './components/Global';
-import Layout from './components/Layout';
+import Global from './components/layout/Global';
+import Layout from './components/layout/Layout';
 import Classroom from './pages/Classroom';
 import Main from './pages/Main';
 import Test from './pages/Test';

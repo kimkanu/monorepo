@@ -1,10 +1,9 @@
 import React from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
-
 import { YouTubePlayer } from 'youtube-player/dist/types';
 
-import useSize from '../hooks/useSize';
-import { mergeClassNames, mergeStyles, Styled } from '../utils/style';
+import useSize from '../../hooks/useSize';
+import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
 
 import styles from './YTPlayer.module.css';
 

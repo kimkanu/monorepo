@@ -1,8 +1,7 @@
 import { Circle16Filled, Star16Filled } from '@fluentui/react-icons';
-
 import React from 'react';
 
-import { mergeClassNames, Styled } from '../utils/style';
+import { mergeClassNames, Styled } from '../../utils/style';
 
 interface Props {
   courseName: string;

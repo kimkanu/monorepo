@@ -2,9 +2,9 @@ import { FullScreenMaximize24Filled } from '@fluentui/react-icons';
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 
-import useScreenType from '../hooks/useScreenType';
-import ScreenType from '../types/screen';
-import { mergeClassNames, Styled } from '../utils/style';
+import useScreenType from '../../hooks/useScreenType';
+import ScreenType from '../../types/screen';
+import { mergeClassNames, Styled } from '../../utils/style';
 
 import styles from './YTWrapper.module.css';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { mergeClassNames, Styled } from '../utils/style';
+import { mergeClassNames, Styled } from '../../utils/style';
 
 import Header from './Header';
 
