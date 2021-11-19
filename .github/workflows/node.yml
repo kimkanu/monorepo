@@ -32,7 +32,7 @@ jobs:
           yarn workspace @team-10/frontend run eslint --fix $F_DIFF
 
       - name: Build containers
-        run: docker-compose -f "docker-compose.workflow.yml" build
+        run: docker build -t keonwoo/cs492c:test -f Dockerfile .
 
       - name: Test lib
         run: docker-compose -f "docker-compose.workflow.yml" up --exit-code-from lib lib
