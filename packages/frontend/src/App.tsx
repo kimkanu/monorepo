@@ -17,7 +17,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Global />
+      <Global className={`theme-${theme}`} />
       <Layout className={`theme-${theme}`}>
         <Route exact path="/tests/" render={() => <Test name="" />} />
         <Route
