@@ -9,3 +9,39 @@
 .input .disabled {
   @apply bg-red-100 text-red-500;
 }
+
+.primary {
+  @apply text-white;
+}
+.destructive {
+  @apply text-white;
+}
+.neutral {
+  @apply text-gray-800;
+}
+
+.pressed {
+  @apply shadow-button cursor-pointer;
+}
+.pressed.primary {
+  @apply bg-primary-700;
+}
+.pressed.destructive {
+  @apply bg-red-700;
+}
+.pressed.neutral {
+  @apply bg-gray-200;
+}
+
+.released {
+  @apply shadow-button hover:shadow-button-hover focus:shadow-button-hover active:shadow-button cursor-pointer;
+}
+.released.primary {
+  @apply bg-primary-500 hover:bg-primary-500 focus:bg-primary-500 active:bg-primary-700;
+}
+.released.destructive {
+  @apply bg-red-500 hover:bg-red-500 focus:bg-red-500 active:bg-red-700;
+}
+.released.neutral {
+  @apply bg-white hover:bg-white focus:bg-white active:bg-gray-200;
+}
