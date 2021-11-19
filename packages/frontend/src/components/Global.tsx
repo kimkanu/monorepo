@@ -31,7 +31,7 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const history = useHistory();
 
   return (
-    <>
+    <div className={className} style={style}>
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
 
@@ -59,7 +59,7 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
       </YTWrapper>
 
       <ToastDisplay toasts={toasts} />
-    </>
+    </div>
   );
 };
 
