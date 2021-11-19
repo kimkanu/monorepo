@@ -6,11 +6,8 @@ import dialogState from '../recoil/dialog';
 
 import JoinCreateContent from './JoinCreateContent';
 
-interface Props {
-  handleCreate: (courseName: string) => void;
-}
-
-const ClassAddButton: React.FC<Props> = ({ handleCreate }) => {
+const ClassAddButton: React.FC = (
+) => {
   const setDialog = useSetRecoilState(dialogState.atom);
   const setDialogVisible = useSetRecoilState(dialogState.visible);
 
@@ -22,10 +19,7 @@ const ClassAddButton: React.FC<Props> = ({ handleCreate }) => {
         onClick={() => {
           setDialog({
             visible: true,
-            element: <JoinCreateContent
-              handleCreate={handleCreate}
-              onClose={() => setDialogVisible(false)}
-            />,
+            element: <JoinCreateContent />,
             onClose: () => setDialogVisible(false),
           });
         }}

@@ -39,7 +39,7 @@ const JoinCreatePageTest: React.FC = (
   const [classinfos, setClass] = React.useState(classinfo);
   return (
     <div className="w-full h-full justify-center items-center">
-      <ClassList classInfos={classinfos} setClass={setClass} />
+      <ClassList classInfos={classinfos} />
     </div>
   );
 };
