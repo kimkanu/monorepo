@@ -10,6 +10,7 @@ import classroomState from '../recoil/classroom';
 import dialogState from '../recoil/dialog';
 import dropdownState from '../recoil/dropdown';
 import toastState from '../recoil/toast';
+import { Styled } from '../utils/style';
 
 import Debug from './Debug';
 import Dialog from './Dialog';
@@ -51,7 +52,7 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
         inClassroom={inClassroom}
         onClick={() => {
           if (classroom?.id) {
-            history.push(`/classes/${classroom.id.toLowerCase()}`);
+            history.push(`/classrooms/${classroom.id.toLowerCase()}`);
           }
         }}
       >
