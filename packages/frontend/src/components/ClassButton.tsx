@@ -8,18 +8,14 @@ interface Props {
   courseName: string;
   live: boolean;
   my: boolean;
-  background?: React.CSSProperties;
+  background: string;
 }
 
 const ClassButton: React.FC<Styled<Props>> = ({
-  courseName, live, my, className, background,
+  courseName, live, my, background,
 }) => (
   <li>
-    <button
-      type="button"
-      style={background}
-      className={mergeClassNames(className, 'rounded-lg w-full h-48 sm:flex font-semibold items-center shadow-class hover:shadow-class-hover bg-primary-500')}
-    >
+    <button type="button" className={mergeClassNames('rounded-lg w-full h-48 sm:flex font-semibold items-center shadow-class hover:shadow-class-hover', background)}>
       <div>
         {
           live && (
