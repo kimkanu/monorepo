@@ -19,7 +19,7 @@ import ToastDisplay from './ToastDisplay';
 import YTPlayer from './YTPlayer';
 import YTWrapper from './YTWrapper';
 
-const Global: React.FC = () => {
+const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const classroom = useRecoilValue(classroomState.atom);
   const dropdown = useRecoilValue(dropdownState.atom);
   const dialog = useRecoilValue(dialogState.atom);
