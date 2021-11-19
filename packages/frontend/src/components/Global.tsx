@@ -19,7 +19,7 @@ import ToastDisplay from './ToastDisplay';
 import YTPlayer from './YTPlayer';
 import YTWrapper from './YTWrapper';
 
-const Global: React.FC = () => {
+const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const classroom = useRecoilValue(classroomState.atom);
   const dropdown = useRecoilValue(dropdownState.atom);
   const dialog = useRecoilValue(dialogState.atom);
@@ -31,7 +31,7 @@ const Global: React.FC = () => {
   const history = useHistory();
 
   return (
-    <>
+    <div className={className} style={style}>
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
 
@@ -59,7 +59,7 @@ const Global: React.FC = () => {
       </YTWrapper>
 
       <ToastDisplay toasts={toasts} />
-    </>
+    </div>
   );
 };
 
