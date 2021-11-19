@@ -48,7 +48,7 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
     <>
       {/* Normal Header */}
       <div
-        className="w-100vw h-16 px-4 py-3 fixed top-0 items-center content-center flex justify-between z-layout"
+        className="w-100vw h-16 px-4 py-3 fixed top-0 items-center content-center flex justify-between z-layout bg-white"
         style={{
           height: 'calc(env(safe-area-inset-top, 0px) + 64px)',
           boxShadow: '0 0 16px 0 rgba(0, 0, 0, 0.25)',
