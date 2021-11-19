@@ -10,8 +10,8 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
-import Button from '../Button';
-import TextInput from '../TextInput';
+import Button from '../buttons/Button';
+import TextInput from '../input/TextInput';
 
 import { RadioInput } from './TestComponents';
 

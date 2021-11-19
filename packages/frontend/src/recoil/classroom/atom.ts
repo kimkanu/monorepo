@@ -1,12 +1,8 @@
 import { atom } from 'recoil';
 
-export interface ClassroomState {
-  id: string;
-  name: string;
-  videoId: string | null;
-}
+import { Classroom } from '../../types/classroom';
 
-const classroomAtom = atom<ClassroomState | null>({
+const classroomAtom = atom<Classroom | null>({
   key: 'classroomAtom',
   default: null,
 });

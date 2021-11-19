@@ -1,8 +1,8 @@
-/* istanbul ignore file */
 import React from 'react';
 
-import { Classroom } from '../../types/classroom';
-import ClassList from '../classroom/ClassList';
+import ClassList from '../components/classroom/ClassList';
+import ContentPadding from '../components/layout/ContentPadding';
+import { Classroom } from '../types/classroom';
 
 function generateClassroomHash(): string {
   const generateSyllable = (): string => {
@@ -17,7 +17,7 @@ function generateClassroomHash(): string {
   return `${generateSyllable()}-${generateSyllable()}-${generateSyllable()}`;
 }
 
-const initialClassrooms: Classroom[] = [
+const classrooms: Classroom[] = [
   {
     name: '전산학특강<FE개발>',
     isLive: true,
@@ -48,13 +48,10 @@ const initialClassrooms: Classroom[] = [
   },
 ];
 
-const JoinCreatePageTest: React.FC = () => {
-  const [classrooms] = React.useState(initialClassrooms);
-  return (
-    <div className="w-full h-full justify-center items-center">
-      <ClassList classrooms={classrooms} />
-    </div>
-  );
-};
+const Main: React.FC = () => (
+  <ContentPadding isFooterPresent>
+    <ClassList classrooms={classrooms} />
+  </ContentPadding>
+);
 
-export default JoinCreatePageTest;
+export default Main;

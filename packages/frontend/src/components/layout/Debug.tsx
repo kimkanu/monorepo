@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
-import useScreenType from '../hooks/useScreenType';
-import classroomState from '../recoil/classroom';
-import ScreenType from '../types/screen';
-import { conditionalClassName } from '../utils/style';
+import useScreenType from '../../hooks/useScreenType';
+import classroomState from '../../recoil/classroom';
+import ScreenType from '../../types/screen';
+import { conditionalClassName } from '../../utils/style';
 
 import DebugWrapper from './DebugWrapper';
 
@@ -48,9 +48,11 @@ const Debug: React.FC = () => {
         type="button"
         onClick={() => {
           setClassroom(classroom ? null : {
-            id: 'SAM-PLE-CLS',
+            hash: 'SAM-PEL-KAS',
             name: 'Sample Class',
             videoId: 'Zyi9QUB-fyo',
+            isLive: true,
+            isMine: true,
           });
         }}
       >

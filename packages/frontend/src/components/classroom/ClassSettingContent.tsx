@@ -4,11 +4,9 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
-import { randomInt } from '../utils/math';
-
-import Button from './Button';
-
-import TextInput from './TextInput';
+import { randomInt } from '../../utils/math';
+import Button from '../buttons/Button';
+import TextInput from '../input/TextInput';
 
 const getRandomPassword = () => `${randomInt(1e6)}`.padStart(6, '0');
 

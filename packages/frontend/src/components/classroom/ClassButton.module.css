@@ -1,0 +1,20 @@
+.background {
+  transition: filter 210ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.classButton:active .background {
+  filter: brightness(80%);
+}
+
+.classButton {
+  transition: all 210ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(100%);
+}
+
+.classButton:hover {
+  transform: scale(104%);
+}
+
+.classButton:active {
+  transform: scale(100%);
+}

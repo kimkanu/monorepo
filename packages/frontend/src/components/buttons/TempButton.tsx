@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { mergeClassNames } from '../utils/style';
+import { mergeClassNames } from '../../utils/style';
 
 interface Props {
   width: 'fit' | 'full';

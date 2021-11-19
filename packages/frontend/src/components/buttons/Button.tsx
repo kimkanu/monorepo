@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { mergeClassNames, mergeStyles, Styled } from '../utils/style';
+import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
 
 import styles from './Button.module.css';
 
