@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 
 import SSOAccountList, { SSOAccount } from '../SSOAccountList';
+import UserProfile from '../UserProfile';
 
 const SSOAccountListTest: React.FC = () => {
   const [ssoAccounts, setSSOAccounts] = useState<SSOAccount[]>([
     { provider: 'naver' as 'naver', providerId: 'blender' },
     { provider: 'github' as 'github', providerId: 'learner' },
   ]);
+  const Nickname = '닉네임';
 
   const onRemove = (ssoAccount: SSOAccount) => {
     setSSOAccounts(
@@ -20,7 +22,14 @@ const SSOAccountListTest: React.FC = () => {
   };
 
   return (
-    <SSOAccountList ssoAccounts={ssoAccounts} onRemove={onRemove} />
+    <div>
+      <div className="mb-8">
+        <UserProfile prevNickname={Nickname} />
+      </div>
+      <div>
+        <SSOAccountList ssoAccounts={ssoAccounts} onRemove={onRemove} />
+      </div>
+    </div>
   );
 };
 
