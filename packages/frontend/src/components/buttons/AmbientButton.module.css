@@ -1,4 +1,4 @@
-.filledIcon > * {
+.icon > * {
   @apply stroke-current;
   stroke-width: 0.75;
 }
