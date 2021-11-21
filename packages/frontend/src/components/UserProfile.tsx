@@ -3,11 +3,11 @@ import {
 } from '@fluentui/react-icons';
 import React, { useState } from 'react';
 
+import profileIcon from '../utils/profileicon.jpg';
 import useInput from '../hooks/useInput';
 import { mergeClassNames } from '../utils/style';
 
 import Button from './Button';
-import profileIcon from './profileicon.jpg';
 
 interface Props {
   prevNickname : string;
