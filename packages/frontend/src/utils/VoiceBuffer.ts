@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { SocketVoice } from '@team-10/lib';
 
 import {

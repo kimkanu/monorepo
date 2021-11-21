@@ -55,8 +55,8 @@
     "youtube-player": "^5.5.2"
   },
   "scripts": {
-    "development": "yarn install && craco start",
-    "production": "yarn install && craco build",
+    "development": "craco start",
+    "production": "craco build",
     "dev": "yarn development",
     "prod": "yarn production",
     "test": "craco test --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"coverage/frontend/\"",

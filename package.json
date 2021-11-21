@@ -14,6 +14,11 @@
     "prettier": "^2.4.1"
   },
   "scripts": {
+    "development:ssl": "node bin/generateSSL.js && docker-compose --env-file .env.ssl --profile development:ssl up",
+    "dev:s": "yarn development:ssl",
+    "commit": "yarn lint-staged && yarn cz",
+    "prettier": "prettier --ignore-path .gitignore \"**/*.+(json|css)\" --write",
+    "lint": "yarn workspaces foreach run lint",
     "build": "yarn workspace @team-10/frontend run production && mv packages/frontend/build packages/backend/public"
   },
   "workspaces": [

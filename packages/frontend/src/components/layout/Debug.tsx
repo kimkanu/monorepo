@@ -15,6 +15,7 @@ import DebugWrapper from './DebugWrapper';
 
 const Debug: React.FC = () => {
   const screenType = useScreenType();
+
   const [classroom, setClassroom] = useRecoilState(classroomState.atom);
   const setLoading = useSetRecoilState(loadingState.atom);
 

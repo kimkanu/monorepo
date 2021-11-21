@@ -82,9 +82,9 @@ export default class Server {
       synchronize: true,
       dropSchema: DROP_SCHEMA,
       entities: ['src/entity/**/*.ts'],
-      ssl: {
+      ssl: process.env.NODE_ENV === 'production' ? {
         rejectUnauthorized: false,
-      },
+      } : undefined,
     });
     const sessionRepository = connection.getRepository(SessionEntity);
     const ssoAccountRepository = connection.getRepository(SSOAccountEntity);
@@ -98,8 +98,8 @@ export default class Server {
       secret: process.env.SESSION_SECRET!,
       store: new TypeormStore({ repository: sessionRepository }),
       cookie: {
-        sameSite: 'none',
-        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : undefined,
+        httpOnly: process.env.NODE_ENV === 'production',
         secure: process.env.NODE_ENV === 'production',
       },
     });
