@@ -1,8 +1,25 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {
+  useLocation, useHistory,
+} from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
-const Classroom: React.FC = () => (
-  <Link className="relative z-layout-2 text-red-500" to="/">Back</Link>
-);
+import classroomState from '../recoil/classroom';
+
+const Classroom: React.FC = () => {
+  const classroom = useRecoilValue(classroomState.atom);
+  const history = useHistory();
+
+  React.useEffect(() => {
+    if (classroom) {
+      history.replace(`/classrooms/${classroom.hash}`);
+    }
+  }, [classroom?.hash]);
+
+  return (
+    <>
+    </>
+  );
+};
 
 export default Classroom;

@@ -3,7 +3,7 @@ import { consoleLogHi } from '@team-10/lib';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import TempButton from '../components/TempButton';
+import TempButton from '../components/buttons/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
 import ButtonTest from '../components/test/ButtonTest';
 import ClassSettingPageTest from '../components/test/ClassSettingPageTest';

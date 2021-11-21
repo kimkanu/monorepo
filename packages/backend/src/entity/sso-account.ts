@@ -10,7 +10,7 @@ import {
 import User from './user';
 
 @Entity()
-export default class SSOAccount extends BaseEntity {
+export default class SSOAccountEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

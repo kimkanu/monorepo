@@ -17,7 +17,7 @@ export enum HistoryType {
 }
 
 @Entity()
-export default class History extends BaseEntity {
+export default class HistoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

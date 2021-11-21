@@ -24,7 +24,7 @@ module.exports = {
     boxShadow: {
       button: '0 3px 8px var(--shadow-color)',
       'button-hover': '0 6px 16px var(--shadow-color)',
-      class: '0 6px 12px var(--shadow-color)',
+      class: '0 4px 12px var(--shadow-color)',
       'class-hover': '0 8px 24px var(--shadow-color)',
       'dropdown-desktop': '0px 6px 24px var(--shadow-color)',
       'dropdown-mobile': '0px -6px 24px var(--shadow-color)',
@@ -69,8 +69,8 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', '애플 SD 산돌고딕 Neo', 'Apple SD Gothic Neo', 'Noto Sans CJK KR', 'Noto Sans KR', 'Noto Sans', '본고딕', 'Source Han Sans', '나눔바른고딕', 'NanumBarunGothic', '나눔바른고딕OTF', 'NanumBarunGothicOTF', '맑은 고딕', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum', '돋움', 'sans-serif'],
-      mono: ['JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', '애플 SD 산돌고딕 Neo', 'Apple SD Gothic Neo', 'Noto Sans CJK KR', 'Noto Sans KR', 'Noto Sans', '본고딕', 'Source Han Sans', '나눔바른고딕', 'NanumBarunGothic', '나눔바른고딕OTF', 'NanumBarunGothicOTF', '맑은 고딕', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum', '돋움', 'sans-serif', 'monospace'],
+      sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', '애플 SD 산돌고딕 Neo', 'Apple SD Gothic Neo', 'Noto Sans CJK KR', 'Noto Sans KR', 'Noto Sans', '본고딕', 'Source Han Sans', 'Noto Sans Korean', '나눔바른고딕', 'NanumBarunGothic', '나눔바른고딕OTF', 'NanumBarunGothicOTF', '맑은 고딕', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum', '돋움', 'sans-serif'],
+      mono: ['JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', '애플 SD 산돌고딕 Neo', 'Apple SD Gothic Neo', 'Noto Sans CJK KR', 'Noto Sans KR', 'Noto Sans', '본고딕', 'Source Han Sans', 'Noto Sans Korean', '나눔바른고딕', 'NanumBarunGothic', '나눔바른고딕OTF', 'NanumBarunGothicOTF', '맑은 고딕', 'Malgun Gothic', 'Helvetica Neue', 'Helvetica', 'Dotum', '돋움', 'sans-serif', 'monospace'],
     },
     fontSize: {
       code: ['.8125rem', {
@@ -136,6 +136,7 @@ module.exports = {
         layout: 60,
         'layout-1': 61,
         'layout-2': 62,
+        'layout-3': 63,
         'dropdown-mobile': 70,
         'dropdown-mobile-1': 71,
         'dropdown-mobile-2': 72,

@@ -2,7 +2,9 @@
 
 import 'reflect-metadata';
 
-import ioHandler from './handlers/io';
+import fs from 'fs';
+
+import ioHandler from './io';
 import Server from './server';
 
 if (!process.env.PORT) {
@@ -19,6 +21,11 @@ if (!process.env.DATABASE_URL) {
 if (!process.env.SESSION_SECRET) {
   console.error('The session secret is not given!');
   process.exit(1);
+}
+
+if (process.env.DYNO) {
+  console.log('This is on Heroku..!!');
+  fs.openSync('/tmp/app-initialized', 'w');
 }
 
 const server = new Server(port);
