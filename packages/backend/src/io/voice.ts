@@ -2,9 +2,9 @@ import { SocketVoice, ClassroomHash } from '@team-10/lib';
 import { Namespace } from 'socket.io';
 import { getConnection } from 'typeorm';
 
-import User from '../../entity/user';
-import Server from '../../server';
-import { UserSocket } from '../../types/socket';
+import UserEntity from '../entity/user';
+import Server from '../server';
+import { UserSocket } from '../types/socket';
 
 const ioVoiceHandler = (
   io: Namespace<SocketVoice.Events.Request, SocketVoice.Events.Response>,
@@ -16,7 +16,7 @@ const ioVoiceHandler = (
   };
 
   const connection = getConnection();
-  const userRepository = connection.getRepository(User);
+  const userRepository = connection.getRepository(UserEntity);
 
   const state: Record<ClassroomHash, ClassroomVoiceState> = {};
   const initializeClass = (classroomHash: ClassroomHash) => {

@@ -13,7 +13,7 @@ import History from './history';
 import User from './user';
 
 @Entity()
-export default class Classroom extends BaseEntity {
+export default class ClassroomEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
