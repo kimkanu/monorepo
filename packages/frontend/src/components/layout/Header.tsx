@@ -1,9 +1,11 @@
 import {
   Alert24Filled,
+  DoorArrowLeft24Regular,
   IosArrowLtr24Regular,
   Globe24Regular,
   Settings24Filled,
   People24Filled,
+  SpinnerIos20Regular,
 } from '@fluentui/react-icons';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -13,6 +15,7 @@ import useScreenType from '../../hooks/useScreenType';
 import classroomState from '../../recoil/classroom';
 import dialogState from '../../recoil/dialog';
 import dropdownState from '../../recoil/dropdown';
+import meState from '../../recoil/me';
 import ScreenType from '../../types/screen';
 import { mergeClassNames } from '../../utils/style';
 import AmbientButton from '../buttons/AmbientButton';
@@ -28,6 +31,7 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
   const history = useHistory();
   const setDropdown = useSetRecoilState(dropdownState.atom);
   const setDialog = useSetRecoilState(dialogState.atom);
+  const me = useRecoilValue(meState.atom);
 
   const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
   const isMobileLandscapeUIVisible = true; // TODO
@@ -118,6 +122,7 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
                   <span className="w-6 h-6">
                     <span className="inline-flex items-center w-10">
                       <Globe24Regular />
+                      {/* Downward Arrow */}
                       <svg className="ml-1" width="12.5" height="7.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 1L4.29289 4.29289C4.68342 4.68342 5.31658 4.68342 5.70711 4.29289L9 1" stroke="#46444A" strokeWidth="2" strokeLinecap="round" />
                       </svg>
@@ -127,12 +132,36 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
                 onClick={() => onMenu('language')}
               />
               <AmbientButton alt="Notifications" icon={<Alert24Filled />} filled onClick={() => onMenu('notifications')} />
-              <AmbientButton
-                alt="Account Settings"
-                icon={<img src="https://picsum.photos/128" alt="Profile" className="w-10 h-10 rounded-full overflow-hidden" />}
-                isImageIcon
-                onClick={() => onMenu('profile')}
-              />
+              {me.loading ? (
+                <AmbientButton
+                  alt="Account Settings (Logging in)"
+                  icon={<SpinnerIos20Regular className="animate-spin block" style={{ height: 20 }} />}
+                  onClick={() => onMenu('profile')}
+                />
+              ) : me.info ? (
+                <AmbientButton
+                  alt="Account Settings"
+                  icon={(
+                    <img
+                      src={me.info.profileImage}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full overflow-hidden object-cover object-center border-2 border-gray-200"
+                    />
+                  )}
+                  isImageIcon
+                  onClick={() => onMenu('profile')}
+                />
+              ) : (
+                <AmbientButton
+                  alt="Account Settings"
+                  icon={<DoorArrowLeft24Regular />}
+                  onClick={() => {
+                    if (location.pathname !== '/login') {
+                      history.push(`/login?redirect_uri=${location.pathname}`);
+                    }
+                  }}
+                />
+              )}
             </>
           )}
         </div>
