@@ -12,7 +12,7 @@
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
+import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -39,7 +39,7 @@ registerRoute(
     }
 
     // If this is a URL that starts with /_, skip.
-    if (url.pathname.startsWith('/_') || url.pathname.startsWith('/api/')) {
+    if (url.pathname.startsWith('/_')) {
       return false;
     }
 
@@ -80,3 +80,9 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+self.addEventListener('fetch', (event) => {
+  if (new URL(event.request.url).pathname.startsWith('/api/')) {
+    return false;
+  }
+  return true;
+});
