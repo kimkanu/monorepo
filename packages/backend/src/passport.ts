@@ -4,13 +4,13 @@ import { Strategy as NaverStrategy, Profile as NaverProfile } from 'passport-nav
 import PassportOauth2 from 'passport-oauth2';
 import { Connection } from 'typeorm';
 
-import Classroom from './entity/classroom';
-import SSOAccount from './entity/sso-account';
-import User from './entity/user';
+import ClassroomEntity from './entity/classroom';
+import SSOAccountEntity from './entity/sso-account';
+import UserEntity from './entity/user';
 
 export default (connection: Connection) => {
-  const userRepository = connection.getRepository(User);
-  const ssoAccountRepository = connection.getRepository(SSOAccount);
+  const userRepository = connection.getRepository(UserEntity);
+  const ssoAccountRepository = connection.getRepository(SSOAccountEntity);
 
   passport.serializeUser(
     (req: Request, user: Express.User, done: (err: any, id: number) => void) => {
@@ -50,16 +50,16 @@ export default (connection: Connection) => {
         },
       },
     }).then(async (ssoAccount) => {
-      let user: User;
+      let user: UserEntity;
       if (!ssoAccount) {
-        user = new User();
+        user = new UserEntity();
         user.stringId = `${profile.provider}:${profile.id}`;
         user.displayName = profile.nickname!;
         user.profileImage = profile.profileImage ?? null!;
         user.initialized = false;
         await userRepository.save(user);
 
-        const newSSOAccount = new SSOAccount();
+        const newSSOAccount = new SSOAccountEntity();
         newSSOAccount.provider = profile.provider;
         newSSOAccount.providerId = profile.id;
         newSSOAccount.user = user;
@@ -81,5 +81,13 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
   if (req.isAuthenticated()) {
     return next();
   }
-  return res.redirect('/api/auth/naver'); // TODO: support multiple SSO
+  req.session.redirectUri = req.path;
+  return res.redirect('/login');
+};
+
+export const isAuthenticatedOrFail = (req: Request, res: Response, next: NextFunction) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.sendStatus(401);
 };

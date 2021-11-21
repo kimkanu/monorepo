@@ -3604,6 +3604,7 @@ __metadata:
     "@wmik/use-media-recorder": ^1.2.1-beta.0
     audio-recorder-polyfill: ^0.4.1
     autoprefixer: ^9
+    cancelable-promise: ^4.2.1
     commitizen: ^4.2.4
     eslint: ^7.11.0
     eslint-config-airbnb: ^18.2.1
@@ -6456,6 +6457,13 @@ __metadata:
   version: 6.2.0
   resolution: "camelcase@npm:6.2.0"
   checksum: 8335cfd0ecc472eae685896a42afd8c9dacd193a91f569120b931c87deb053a1ba82102031b9b48a4dbc1d18066caeacf2e4ace8c3c7f0d02936d348dc0b5a87
+  languageName: node
+  linkType: hard
+
+"cancelable-promise@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "cancelable-promise@npm:4.2.1"
+  checksum: 7ed0a5effd046293bb8c956fac263eba5e4d49da11fd815eeaa10d221636aceb3c133e8ffba8cf9022126ce72ace5ea7528b4ae04c1a77fb0eec41cad77ec5a6
   languageName: node
   linkType: hard
 

@@ -11,17 +11,22 @@ import { Server as IOServer, Socket } from 'socket.io';
 import { createConnection } from 'typeorm';
 import { TypeormStore } from 'typeorm-store';
 
-import Classroom from './entity/classroom';
-import Session from './entity/session';
-import SSOAccount from './entity/sso-account';
-import User from './entity/user';
+import ClassroomEntity from './entity/classroom';
+import SessionEntity from './entity/session';
+import SSOAccountEntity from './entity/sso-account';
+import UserEntity from './entity/user';
+
+import ClassroomManager from './managers/classroom';
+import SocketManager from './managers/socket';
+
 import initializePassport from './passport';
+
 import mainRouter from './routes';
 import frontendRouter from './routes/frontend';
-import Room from './types/room';
+
 import { generateClassroomHash } from './utils/classroom';
 
-const DROP_SCHEMA = false;
+const DROP_SCHEMA = true;
 
 /** Class representing a server stack. */
 export default class Server {
@@ -37,8 +42,11 @@ export default class Server {
   /** Socket.io server instance. */
   io: IOServer;
 
-  /** The collection of rooms. */
-  rooms: Map<string, Room>;
+  /** Managers. */
+  managers: {
+    classroom: ClassroomManager;
+    socket: SocketManager;
+  };
 
   /**
    * Create a server stack.
@@ -51,6 +59,11 @@ export default class Server {
     this.app = app;
 
     this.http = http.createServer(app);
+
+    this.managers = {
+      classroom: new ClassroomManager(this),
+      socket: new SocketManager(this),
+    };
   }
 
   /**
@@ -64,10 +77,10 @@ export default class Server {
       dropSchema: DROP_SCHEMA,
       entities: ['src/entity/**/*.ts'],
     });
-    const sessionRepository = connection.getRepository(Session);
-    const ssoAccountRepository = connection.getRepository(SSOAccount);
-    const classroomRepository = connection.getRepository(Classroom);
-    const userRepository = connection.getRepository(User);
+    const sessionRepository = connection.getRepository(SessionEntity);
+    const ssoAccountRepository = connection.getRepository(SSOAccountEntity);
+    const classroomRepository = connection.getRepository(ClassroomEntity);
+    const userRepository = connection.getRepository(UserEntity);
 
     const sessionMiddleware = session({
       name: 'SID',
@@ -120,19 +133,19 @@ export default class Server {
     if (DROP_SCHEMA) {
       console.log('=========== Constructing Test Data ===========');
 
-      const user = new User();
+      const user = new UserEntity();
       user.stringId = 'naver:NzYgpUnFPklAHLIrLBw5ic7PvJy64SFpLmPiMWfz4Go';
       user.displayName = 'uto****';
       user.profileImage = 'https://phinf.pstatic.net/contact/20191025_133/1572004399046UqQgO_PNG/image.png';
       await userRepository.save(user);
 
-      const ssoAccount = new SSOAccount();
+      const ssoAccount = new SSOAccountEntity();
       ssoAccount.provider = 'naver';
       ssoAccount.providerId = 'NzYgpUnFPklAHLIrLBw5ic7PvJy64SFpLmPiMWfz4Go';
       ssoAccount.user = user;
       await ssoAccountRepository.save(ssoAccount);
 
-      const testClassroom = new Classroom();
+      const testClassroom = new ClassroomEntity();
       testClassroom.hash = generateClassroomHash();
       testClassroom.name = 'Test Classroom';
       testClassroom.instructor = user;

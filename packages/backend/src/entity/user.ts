@@ -12,7 +12,7 @@ import Classroom from './classroom';
 import SSOAccount from './sso-account';
 
 @Entity()
-export default class User extends BaseEntity {
+export default class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
