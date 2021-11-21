@@ -5,9 +5,14 @@ const router = Router();
 
 router.get(
   '/',
+  (req, res, next) => {
+    console.log('redirecturi', req.query.redirect_uri);
+    req.session.redirectUri = req.query.redirect_uri as string | undefined;
+    next();
+  },
   passport.authenticate('naver'),
   (req, res) => {
-    // authentication was successful.
+    console.log('redirecturi', req.session.redirectUri);
     res.redirect('/');
   },
 );
@@ -15,7 +20,7 @@ router.get(
 router.get(
   '/callback',
   passport.authenticate('naver', {
-    successRedirect: '/',
+    successRedirect: '/api/auth/success',
     failureRedirect: '/api/auth/failed',
   }),
 );

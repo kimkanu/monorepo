@@ -3,8 +3,8 @@ import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import dialogState from '../../recoil/dialog';
-import ClassSettingContent from '../ClassSettingContent';
-import TempButton from '../TempButton';
+import TempButton from '../buttons/TempButton';
+import ClassSettingContent from '../classroom/ClassSettingContent';
 
 const ClassSettingPageTest: React.FC = () => {
   const setDialog = useSetRecoilState(dialogState.atom);

@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 /* eslint-disable max-len */
 /* istanbul ignore file */
 import {
@@ -10,8 +9,8 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
-import Button from '../Button';
-import TextInput from '../TextInput';
+import Button from '../buttons/Button';
+import TextInput from '../input/TextInput';
 
 import { RadioInput } from './TestComponents';
 
@@ -38,7 +37,7 @@ function emailValidator(emailAddress: string) {
 function generateClassroomHash(): string {
   const generateSyllable = (): string => {
     const random = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-    const first = ['B', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'S', 'T', 'W'];
+    const first = ['B', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'S', 'T'];
     const second = ['A', 'E', 'I', 'O', 'U'];
     const third = ['K', 'L', 'M', 'N', 'P', 'S', 'T', 'Z'];
 
