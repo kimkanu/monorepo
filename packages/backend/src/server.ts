@@ -6,6 +6,7 @@ import express, { Express } from 'express';
 import session from 'express-session';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import multer from 'multer';
 import passport from 'passport';
 import { Server as IOServer, Socket } from 'socket.io';
 import { createConnection } from 'typeorm';
@@ -42,6 +43,9 @@ export default class Server {
   /** Socket.io server instance. */
   io: IOServer;
 
+  /** Multer upload */
+  upload: multer.Multer;
+
   /** Managers. */
   managers: {
     classroom: ClassroomManager;
@@ -64,6 +68,8 @@ export default class Server {
       classroom: new ClassroomManager(this),
       socket: new SocketManager(this),
     };
+
+    this.upload = multer();
   }
 
   /**
@@ -98,6 +104,7 @@ export default class Server {
     this.app.use(sessionMiddleware);
     this.app.use(morgan('short'));
     this.app.use(cors());
+    this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
     this.app.use(helmet({
       contentSecurityPolicy: {
@@ -111,7 +118,7 @@ export default class Server {
     this.app.use(passport.session());
     initializePassport(connection);
 
-    this.app.use('/api', mainRouter);
+    this.app.use('/api', mainRouter(this));
     this.app.use(frontendRouter);
 
     this.io = new IOServer(this.http, {
@@ -145,6 +152,18 @@ export default class Server {
       ssoAccount.user = user;
       await ssoAccountRepository.save(ssoAccount);
 
+      const user2 = new UserEntity();
+      user2.stringId = 'naver:asdasdlkasfalksclaskdlakdj';
+      user2.displayName = 'uto****';
+      user2.profileImage = 'https://phinf.pstatic.net/contact/20191025_133/1572004399046UqQgO_PNG/image.png';
+      await userRepository.save(user2);
+
+      const ssoAccount2 = new SSOAccountEntity();
+      ssoAccount2.provider = 'naver';
+      ssoAccount2.providerId = 'asdasdlkasfalksclaskdlakdj';
+      ssoAccount2.user = user2;
+      await ssoAccountRepository.save(ssoAccount2);
+
       const testClassroom = new ClassroomEntity();
       testClassroom.hash = generateClassroomHash();
       testClassroom.name = 'Test Classroom';
@@ -152,9 +171,17 @@ export default class Server {
       testClassroom.members = [user];
       testClassroom.histories = [];
       await classroomRepository.save(testClassroom);
+
+      const testClassroom2 = new ClassroomEntity();
+      testClassroom2.hash = generateClassroomHash();
+      testClassroom2.name = 'Test Classroom2';
+      testClassroom2.instructor = user2;
+      testClassroom2.members = [user, user2];
+      testClassroom2.histories = [];
+      await classroomRepository.save(testClassroom2);
     }
 
-    console.log(await classroomRepository.find());
+    console.log(await classroomRepository.find({ join: { alias: 'classroom', leftJoinAndSelect: { members: 'classroom.members' } } }));
   }
 
   listen() {

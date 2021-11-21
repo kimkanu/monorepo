@@ -1,9 +1,6 @@
 import { Router } from 'express';
 
-import Server from '../server';
-
-import auth from './auth';
-import users from './users';
+import Server from '../../../server';
 
 export default function generateRouter(server: Server) {
   const router = Router();
@@ -11,12 +8,9 @@ export default function generateRouter(server: Server) {
   router.get(
     '/',
     (req, res) => {
-      res.sendStatus(200);
+      res.redirect('/');
     },
   );
-
-  router.use('/auth', auth);
-  router.use('/users', users(server));
 
   return router;
 }

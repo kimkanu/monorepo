@@ -34,6 +34,7 @@
         "classes": true
       }
     ],
-    "import/no-cycle": "off"
+    "import/no-cycle": "off",
+    "consistent-return": "off"
   }
 }
