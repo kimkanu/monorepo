@@ -6,14 +6,14 @@ module.exports = function setupProxy(app) {
     '/api',
     createProxyMiddleware({
       changeOrigin: true,
-      target: 'http://backend:3566',
+      target: process.env.REACT_APP_PROXY_URL,
     }),
   );
   app.use(
     '/socket.io',
     createProxyMiddleware({
       changeOrigin: true,
-      target: 'http://backend:3566',
+      target: process.env.REACT_APP_PROXY_URL,
       ws: true,
     }),
   );

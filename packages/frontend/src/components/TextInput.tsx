@@ -21,6 +21,7 @@ interface Props {
   onSubmit?: (value: string) => void;
   validator?: (value: string) => boolean;
   nextRef?: React.RefObject<HTMLInputElement> | React.RefObject<HTMLButtonElement>;
+  ref_?: React.RefObject<HTMLInputElement>
   containerStyle?: React.CSSProperties;
   containerClassName?: string;
 }
@@ -40,6 +41,7 @@ const TextInput: React.FC<Styled<Props>> = ({
   onSubmit,
   validator,
   nextRef,
+  ref_,
   style,
   className,
   containerStyle,
@@ -79,6 +81,7 @@ const TextInput: React.FC<Styled<Props>> = ({
         </div>
       )}
       <input
+        ref={ref_}
         type={type}
         name={name ?? (type === 'password' ? 'password' : undefined)}
         autoComplete={autoComplete ?? (type === 'password' ? 'password' : undefined)}

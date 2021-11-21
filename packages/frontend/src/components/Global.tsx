@@ -10,6 +10,7 @@ import classroomState from '../recoil/classroom';
 import dialogState from '../recoil/dialog';
 import dropdownState from '../recoil/dropdown';
 import toastState from '../recoil/toast';
+import { Styled } from '../utils/style';
 
 import Debug from './Debug';
 import Dialog from './Dialog';
@@ -19,7 +20,7 @@ import ToastDisplay from './ToastDisplay';
 import YTPlayer from './YTPlayer';
 import YTWrapper from './YTWrapper';
 
-const Global: React.FC = () => {
+const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const classroom = useRecoilValue(classroomState.atom);
   const dropdown = useRecoilValue(dropdownState.atom);
   const dialog = useRecoilValue(dialogState.atom);
@@ -31,7 +32,7 @@ const Global: React.FC = () => {
   const history = useHistory();
 
   return (
-    <>
+    <div className={className} style={style}>
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
 
@@ -51,7 +52,7 @@ const Global: React.FC = () => {
         inClassroom={inClassroom}
         onClick={() => {
           if (classroom?.id) {
-            history.push(`/classes/${classroom.id.toLowerCase()}`);
+            history.push(`/classrooms/${classroom.id.toLowerCase()}`);
           }
         }}
       >
@@ -59,7 +60,7 @@ const Global: React.FC = () => {
       </YTWrapper>
 
       <ToastDisplay toasts={toasts} />
-    </>
+    </div>
   );
 };
 

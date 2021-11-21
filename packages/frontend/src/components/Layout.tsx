@@ -1,7 +1,8 @@
 import React from 'react';
 
-import Header from './Header';
 import { mergeClassNames, Styled } from '../utils/style';
+
+import Header from './Header';
 
 const Layout: React.FC<Styled<{}>> = ({ className, style, children }) => (
   <div style={style} className={mergeClassNames('w-full h-full bg-white absolute top-0', className)}>

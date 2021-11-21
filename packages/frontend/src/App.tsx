@@ -12,13 +12,12 @@ import Classroom from './pages/Classroom';
 import Test from './pages/Test';
 import themeState from './recoil/theme';
 
-
 const App: React.FC = () => {
   const theme = useRecoilValue(themeState.atom);
 
   return (
     <Router>
-      <Global />
+      <Global className={`theme-${theme}`} />
       <Layout className={`theme-${theme}`}>
         <Route exact path="/tests/" render={() => <Test name="" />} />
         <Route

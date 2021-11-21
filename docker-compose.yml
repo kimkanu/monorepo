@@ -10,92 +10,67 @@ services:
       - ./proxy/conf/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
       - ./proxy/certs:/etc/nginx/certs
     depends_on:
-      - frontend-ssl
-      - backend
+      - app-ssl
     networks:
       - mynetwork
     links:
-      - frontend-ssl
-      - backend
+      - app-ssl
     environment:
       NGINX_HOST: ${NGINX_HOST}
       FRONTEND_PORT: ${FRONTEND_PORT}
-  frontend:
+  app:
     profiles:
       - development
-      - test:frontend
     build:
       context: .
-      dockerfile: ./packages/frontend/Dockerfile
-    expose: 
-      - ${FRONTEND_PORT}
+      dockerfile: ./Dockerfile
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
-    networks:
-      - mynetwork
-    environment:
-      CHOKIDAR_USEPOLLING: 1
-      PORT: ${FRONTEND_PORT}
-      NODE_ENV: ${NODE_ENV}
-      REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
-    command: yarn workspace @team-10/frontend run ${NODE_ENV}
-    links:
-      - backend
-    volumes:
-      - ./packages/lib/:/app/packages/lib/
-      - ./packages/frontend/:/app/packages/frontend/
-      - ./.yarn/:/app/.yarn/:Z
-  frontend-ssl:
-    profiles:
-      - development:ssl
-    build:
-      context: .
-      dockerfile: ./packages/frontend/Dockerfile
-    ports:
-      - ${FRONTEND_PORT}
-    networks:
-      - mynetwork
-    environment:
-      CHOKIDAR_USEPOLLING: 1
-      PORT: ${FRONTEND_PORT}
-      NODE_ENV: ${NODE_ENV}
-      REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
-    command: yarn workspace @team-10/frontend run ${NODE_ENV}
-    links:
-      - backend
-    volumes:
-      - ./packages/lib/:/app/packages/lib/
-      - ./packages/frontend/:/app/packages/frontend/
-      - ./.yarn/:/app/.yarn/:Z
-  backend:
-    profiles:
-      - development
-      - development:ssl
-      - production
-      - test:backend
-    build:
-      context: .
-      dockerfile: ./packages/backend/Dockerfile
-    expose: 
-      - ${BACKEND_PORT}
-    ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     networks:
       - mynetwork
-    depends_on:
-      - postgres
     environment:
       CHOKIDAR_USEPOLLING: 1
-      PORT: ${BACKEND_PORT}
+      PORT: ${FRONTEND_PORT}
+      NODE_ENV: ${NODE_ENV}
+      REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
       DATABASE_URL: "pg://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME}"
       SESSION_SECRET: ${SESSION_SECRET}
-      NODE_ENV: ${NODE_ENV}
       AUTH_NAVER_CALLBACK_URL: "${AUTH_NAVER_CALLBACK_HOST}:${FRONTEND_PORT}/api/auth/naver/callback"
       AUTH_NAVER_CLIENT_ID: ${AUTH_NAVER_CLIENT_ID}
       AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
-    command: yarn workspace @team-10/backend run ${NODE_ENV}
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
     volumes:
       - ./packages/lib/:/app/packages/lib/
+      - ./packages/frontend/:/app/packages/frontend/
+      - ./packages/backend/:/app/packages/backend/
+      - ./.yarn/:/app/.yarn/:Z
+  app-ssl:
+    profiles:
+      - development:ssl
+      - production
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - ${FRONTEND_PORT}
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    networks:
+      - mynetwork
+    environment:
+      CHOKIDAR_USEPOLLING: 1
+      PORT: ${FRONTEND_PORT}
+      NODE_ENV: ${NODE_ENV}
+      REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
+      DATABASE_URL: "pg://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME}"
+      SESSION_SECRET: ${SESSION_SECRET}
+      AUTH_NAVER_CALLBACK_URL: "${AUTH_NAVER_CALLBACK_HOST}:${FRONTEND_PORT}/api/auth/naver/callback"
+      AUTH_NAVER_CLIENT_ID: ${AUTH_NAVER_CLIENT_ID}
+      AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
+    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
+    volumes:
+      - ./packages/lib/:/app/packages/lib/
+      - ./packages/frontend/:/app/packages/frontend/
       - ./packages/backend/:/app/packages/backend/
       - ./.yarn/:/app/.yarn/:Z
   postgres:
@@ -104,7 +79,6 @@ services:
       - development
       - development:ssl
       - production
-      - test:frontend
     ports:
       - "35432:5432"
     networks:
