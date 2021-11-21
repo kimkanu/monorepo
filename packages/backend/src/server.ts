@@ -98,12 +98,13 @@ export default class Server {
       secret: process.env.SESSION_SECRET!,
       store: new TypeormStore({ repository: sessionRepository }),
       cookie: {
-        sameSite: false,
-        httpOnly: false,
+        sameSite: 'none',
+        httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
       },
     });
 
+    this.app.set('trust proxy', 1);
     this.app.use(sessionMiddleware);
     this.app.use(morgan('short'));
     this.app.use(cors());
