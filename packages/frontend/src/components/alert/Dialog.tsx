@@ -22,6 +22,8 @@ const Dialog: React.FC<Styled<Props>> = ({
 
   const [initialVisible, setInitialVisible] = React.useState(visible);
 
+  const ref = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     setInitialVisible(initialVisible);
   }, [screenType]);
@@ -50,12 +52,14 @@ const Dialog: React.FC<Styled<Props>> = ({
         exitActive: styles.beingInvisible,
         exitDone: styles.invisible,
       }}
+      nodeRef={ref}
     >
       <div
+        ref={ref}
         role="button"
         tabIndex={0}
         className={mergeClassNames(
-          'absolute w-100vw h-100wh flex flex-col z-dialog cursor-default',
+          'absolute overflow-hidden top-0 left-0 w-100vw h-100wh flex flex-col z-dialog cursor-default',
           conditionalClassName({
             desktop: mergeClassNames('items-center justify-center', styles.desktop),
             mobile: mergeClassNames('items-center justify-end', styles.mobile),

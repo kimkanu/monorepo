@@ -7,7 +7,7 @@ import ClassList from '../classroom/ClassList';
 function generateClassroomHash(): string {
   const generateSyllable = (): string => {
     const random = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-    const first = ['B', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'S', 'T', 'W'];
+    const first = ['B', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'S', 'T'];
     const second = ['A', 'E', 'I', 'O', 'U'];
     const third = ['K', 'L', 'M', 'N', 'P', 'S', 'T', 'Z'];
 
