@@ -14,24 +14,8 @@
     "prettier": "^2.4.1"
   },
   "scripts": {
-    "development": "docker-compose --profile development up",
-    "development:ssl": "node bin/generateSSL.js && docker-compose --env-file .env.ssl --profile development:ssl up",
-    "development:frontend": "PORT=3567 REACT_APP_PROXY_URL=\"http://[::1]:3566\" yarn workspace @team-10/frontend run dev",
-    "build:development": "docker-compose --profile development build",
-    "production": "docker-compose --env-file .env.production --profile production up",
-    "build:production": "yarn workspace @team-10/frontend run production && mv packages/frontend/build packages/backend/public || move packages/frontend/build packages/backend/public && docker-compose --env-file .env.production --profile production build",
-    "test": "yarn workspaces foreach run test",
-    "dev": "yarn development",
-    "dev:s": "yarn development:ssl",
-    "dev:f": "yarn development:frontend",
-    "build:dev": "yarn build:development",
-    "prod": "yarn production",
-    "build:prod": "yarn build:production",
-    "stop": "docker-compose stop",
-    "down": "docker-compose down",
-    "commit": "yarn lint-staged && yarn cz",
-    "prettier": "prettier --ignore-path .gitignore \"**/*.+(json|css)\" --write",
-    "lint": "yarn workspaces foreach run lint"
+    "start": "yarn workspace @team-10/backend run production:heroku",
+    "build": "yarn workspace @team-10/frontend run production && mv packages/frontend/build packages/backend/public"
   },
   "workspaces": [
     "packages/lib",
