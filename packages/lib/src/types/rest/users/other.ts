@@ -11,5 +11,5 @@ export type UsersOtherGetResponse = Response<UserInfoOther, UserInfoOtherGetErro
 type UserInfoOtherGetError = {
   code: 'NONEXISTENT_USER';
   statusCode: 404;
-  extra: {};
+  extra: Record<string, never>;
 };

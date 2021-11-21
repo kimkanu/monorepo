@@ -1,4 +1,4 @@
-export type Provider = 'naver';
+export type Provider = 'naver' | 'github';
 
 export interface SSOAccountJSON {
   provider: Provider;

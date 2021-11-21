@@ -9,18 +9,18 @@ export interface UserInfoMeJSON extends UserInfoJSON {
   myClassrooms: ClassroomJSON[];
 }
 
-export interface UpdatableUserInfoJSON {
+export interface PatchableUserInfoJSON {
   stringId: string;
   displayName: string;
-  profileImage: ArrayBuffer; // Blob
+  profileImage: string;
 }
 
 // GET /users/me
 export type UsersMeGetResponse = Response<UserInfoMeJSON, never>;
 
 // PATCH /users/me
-export type UsersMeUpdateResponse = Response<Partial<UpdatableUserInfoJSON>, UsersUpdateGetError>;
-export type UsersUpdateGetError = {
+export type UsersMePatchResponse = Response<Partial<PatchableUserInfoJSON>, UsersMePatchError>;
+export type UsersMePatchError = {
   code: 'INVALID_INFORMATION';
   statusCode: 400;
   extra: {
@@ -30,6 +30,6 @@ export type UsersUpdateGetError = {
 };
 
 // DELETE /users/me
-export type UsersMeDeleteResponse = Response<{}, never>;
+export type UsersMeDeleteResponse = Response<Record<string, never>, never>;
 
 export * from './sso-accounts';

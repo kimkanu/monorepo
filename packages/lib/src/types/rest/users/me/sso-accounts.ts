@@ -10,26 +10,26 @@ export type UsersMeSSOAccountsProviderGetResponse
 export type UsersMeSSOAccountsProviderGetError = {
   code: 'UNSUPPORTED_PROVIDER';
   statusCode: 400;
-  extra: {};
+  extra: Record<string, never>;
 } | {
   code: 'NONEXISTENT_SSO_ACCOUNT';
   statusCode: 404;
-  extra: {};
+  extra: Record<string, never>;
 };
 
 // DELETE /users/me/sso-account/:provider
 export type UsersMeSSOAccountsProviderDeleteResponse
-  = Response<{}, UsersMeSSOAccountsProviderDeleteError>;
+  = Response<Record<string, never>, UsersMeSSOAccountsProviderDeleteError>;
 export type UsersMeSSOAccountsProviderDeleteError = {
   code: 'UNSUPPORTED_PROVIDER';
   statusCode: 400;
-  extra: {};
+  extra: Record<string, never>;
 } | {
   code: 'NONEXISTENT_SSO_ACCOUNT';
   statusCode: 400;
-  extra: {};
+  extra: Record<string, never>;
 } | {
   code: 'UNIQUE_SSO_ACCOUNT';
   statusCode: 400;
-  extra: {};
+  extra: Record<string, never>;
 };
