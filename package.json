@@ -14,7 +14,6 @@
     "prettier": "^2.4.1"
   },
   "scripts": {
-    "start": "yarn workspace @team-10/backend run production:heroku",
     "build": "yarn workspace @team-10/frontend run production && mv packages/frontend/build packages/backend/public"
   },
   "workspaces": [
