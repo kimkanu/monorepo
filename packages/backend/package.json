@@ -27,14 +27,7 @@
     "typescript": "^4.5.2"
   },
   "scripts": {
-    "development": "yarn install && nodemon",
-    "production": "yarn install && ts-node --files src/index.ts",
-    "dev": "yarn development",
-    "prod": "yarn production",
-    "lint": "eslint --fix .",
-    "commit": "cd ../.. && yarn lint-staged && git add yarn.lock && yarn cz",
-    "test": "jest --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"coverage/backend/\"",
-    "test:workflow": "jest --watchAll=false --forceExit --detectOpenHandles --coverage --coverageDirectory \"../../coverage/backend/\""
+    "production": "ts-node --files src/index.ts"
   },
   "dependencies": {
     "@team-10/lib": "workspace:^",
