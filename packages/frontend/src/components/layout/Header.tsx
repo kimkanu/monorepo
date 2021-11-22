@@ -12,7 +12,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
-import classroomState from '../../recoil/classroom';
+import classroomsState from '../../recoil/classrooms';
 import dialogState from '../../recoil/dialog';
 import dropdownState from '../../recoil/dropdown';
 import meState from '../../recoil/me';
@@ -25,7 +25,7 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
-  const classroom = useRecoilValue(classroomState.atom);
+  const classrooms = useRecoilValue(classroomsState.atom);
   const screenType = useScreenType();
   const location = useLocation();
   const history = useHistory();
@@ -81,7 +81,7 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
             )}
           </div>
           {/* Classroom Name */}
-          {classroom && inClassroom && screenType === ScreenType.MobilePortrait && (
+          {classrooms[0] && inClassroom && screenType === ScreenType.MobilePortrait && (
             <div
               style={{
                 maxWidth: 'calc(100% - 54px)',
@@ -93,14 +93,14 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
               className="flex items-center overflow-hidden max-h-full"
             >
               <span className="font-semibold text-base" style={{ lineHeight: '19px' }}>
-                {classroom.name}
+                {classrooms[0].name}
               </span>
             </div>
           )}
-          {classroom && inClassroom && screenType === ScreenType.Desktop && (
+          {classrooms[0] && inClassroom && screenType === ScreenType.Desktop && (
             <div>
               <span className="font-semibold text-base" style={{ lineHeight: '19px' }}>
-                {classroom.name}
+                {classrooms[0].name}
               </span>
             </div>
           )}

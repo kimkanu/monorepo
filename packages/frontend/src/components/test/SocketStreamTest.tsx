@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 
 import useSocket from '../../hooks/useSocket';
-import toastState, { ToastType } from '../../recoil/toast';
+import toastState from '../../recoil/toast';
 import { arrayBufferToString, concatArrayBuffer } from '../../utils/arrayBuffer';
 import { mergeClassNames } from '../../utils/style';
 import VoiceBuffer from '../../utils/VoiceBuffer';
@@ -262,7 +262,7 @@ const SocketStreamTest: React.FC = () => {
   React.useEffect(() => {
     if (recorderStatus === 'failed') {
       setToast({
-        type: ToastType.ERROR,
+        type: 'error',
         message: '마이크 사용 권한을 얻는 데에 실패했습니다! 마이크 사용 권한을 허용해 주세요.',
         sentAt: new Date(),
       });
@@ -296,7 +296,7 @@ const SocketStreamTest: React.FC = () => {
           setButtonPressed(false);
           setToast({
             sentAt: new Date(),
-            type: ToastType.ERROR,
+            type: 'error',
             message: `음성 채팅 권한을 얻는 데에 실패했습니다. ${
               SocketVoice.permissionDeniedReasonAsMessage(response.reason)
             }`,

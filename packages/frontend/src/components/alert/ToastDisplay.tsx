@@ -1,7 +1,7 @@
 import { Info24Regular, Warning24Regular, ErrorCircle24Regular } from '@fluentui/react-icons';
 import React from 'react';
 
-import { Toast, ToastType } from '../../recoil/toast';
+import { Toast } from '../../recoil/toast';
 import { mergeClassNames } from '../../utils/style';
 
 import styles from './ToastDisplay.module.css';
@@ -16,9 +16,9 @@ const ToastItem: React.FC<{ toast: Toast }> = ({ toast }) => (
     <div
       className={mergeClassNames(
         {
-          [ToastType.INFO]: 'bg-blue-500',
-          [ToastType.WARN]: 'bg-yellow-500',
-          [ToastType.ERROR]: 'bg-red-500',
+          info: 'bg-blue-500',
+          warn: 'bg-yellow-500',
+          error: 'bg-red-500',
         }[toast.type],
         'w-1 rounded-full mr-4',
       )}
@@ -32,16 +32,16 @@ const ToastItem: React.FC<{ toast: Toast }> = ({ toast }) => (
       <div
         className={mergeClassNames(
           {
-            [ToastType.INFO]: 'text-blue-500',
-            [ToastType.WARN]: 'text-yellow-500',
-            [ToastType.ERROR]: 'text-red-500',
+            info: 'text-blue-500',
+            warn: 'text-yellow-500',
+            error: 'text-red-500',
           }[toast.type],
           'w-8 flex items-center mr-2',
         )}
       >
-        {toast.type === ToastType.INFO && <Info24Regular className="stroke-current" />}
-        {toast.type === ToastType.WARN && <Warning24Regular className="stroke-current" />}
-        {toast.type === ToastType.ERROR && <ErrorCircle24Regular className="stroke-current" />}
+        {toast.type === 'info' && <Info24Regular className="stroke-current" />}
+        {toast.type === 'warn' && <Warning24Regular className="stroke-current" />}
+        {toast.type === 'error' && <ErrorCircle24Regular className="stroke-current" />}
       </div>
       {toast.message}
     </div>

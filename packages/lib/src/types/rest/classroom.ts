@@ -2,12 +2,13 @@ export type YouTubeVideo = YouTubeVideoSingle | YouTubeVideoPlaylist;
 
 export interface YouTubeVideoSingle {
   type: 'single';
-  id: string;
+  videoId: string;
 }
 
 export interface YouTubeVideoPlaylist {
   type: 'playlist';
-  id: string;
+  videoId: string;
+  playlistId: string;
   index: number;
 }
 
