@@ -65,12 +65,12 @@ const Dropdown: React.FC<Styled<Props>> = ({
           styles[`${initialVisible ? 'visible' : 'invisible'}`],
         )}
         onClick={(e) => {
-          if (e.target === e.currentTarget) {
+          if (visible && e.target === e.currentTarget) {
             onClose();
           }
         }}
         onKeyUp={(e) => {
-          if (e.key === 'Escape') {
+          if (visible && e.key === 'Escape') {
             onClose();
           }
         }}
