@@ -6,7 +6,6 @@ export interface UserInfoMeJSON extends UserInfoJSON {
   initialized: boolean;
   ssoAccounts: SSOAccountJSON[];
   classrooms: ClassroomJSON[];
-  myClassrooms: ClassroomJSON[];
 }
 
 export interface PatchableUserInfoJSON {

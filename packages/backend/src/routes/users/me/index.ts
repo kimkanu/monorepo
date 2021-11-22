@@ -31,7 +31,6 @@ export default function generateRouter(server: Server) {
           leftJoinAndSelect: {
             ssoAccounts: 'user.ssoAccounts',
             classrooms: 'user.classrooms',
-            myClassrooms: 'user.myClassrooms',
           },
         },
       });
@@ -49,11 +48,6 @@ export default function generateRouter(server: Server) {
           initialized: userEntity.initialized,
           classrooms: (await Promise.all(
             userEntity.classrooms.map(
-              (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
-            ),
-          )).filter((x) => !!x) as ClassroomJSON[],
-          myClassrooms: (await Promise.all(
-            userEntity.myClassrooms.map(
               (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
             ),
           )).filter((x) => !!x) as ClassroomJSON[],

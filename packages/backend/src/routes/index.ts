@@ -3,6 +3,7 @@ import { Router } from 'express';
 import Server from '../server';
 
 import auth from './auth';
+import classrooms from './classrooms';
 import users from './users';
 
 export default function generateRouter(server: Server) {
@@ -16,6 +17,7 @@ export default function generateRouter(server: Server) {
   );
 
   router.use('/auth', auth);
+  router.use('/classrooms', classrooms(server));
   router.use('/users', users(server));
 
   return router;
