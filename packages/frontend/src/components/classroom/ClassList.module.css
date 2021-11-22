@@ -1,0 +1,19 @@
+.container {
+  @apply grid gap-6 mx-auto;
+  max-width: 404px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 672px) {
+  .container {
+    max-width: 784px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1012px) {
+  .container {
+    max-width: unset;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

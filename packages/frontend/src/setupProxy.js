@@ -15,6 +15,16 @@ module.exports = function setupProxy(app) {
       changeOrigin: true,
       target: process.env.REACT_APP_PROXY_URL,
       ws: true,
+      logLevel: 'silent',
+    }),
+  );
+  app.use(
+    '/service-worker.js',
+    createProxyMiddleware({
+      changeOrigin: true,
+      target: process.env.REACT_APP_PROXY_URL,
+      ws: true,
+      logLevel: 'silent',
     }),
   );
 };

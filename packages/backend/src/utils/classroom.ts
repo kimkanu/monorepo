@@ -6,9 +6,9 @@ import {
 export function generateClassroomHash(): ClassroomHash {
   const generateSyllable = (): ClassroomHashSyllable => {
     const random = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
-    const first: ClassroomHashFirst[] = ['B', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'S', 'T', 'W'];
+    const first: ClassroomHashFirst[] = ['B', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'S', 'T'];
     const second: ClassroomHashSecond[] = ['A', 'E', 'I', 'O', 'U'];
-    const third: ClassroomHashThird[] = ['K', 'L', 'M', 'N', 'P', 'S', 'T', 'W', 'Z'];
+    const third: ClassroomHashThird[] = ['K', 'L', 'M', 'N', 'P', 'S', 'T', 'Z'];
 
     return `${random(first)}${random(second)}${random(third)}`;
   };

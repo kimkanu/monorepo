@@ -5,7 +5,7 @@ import React from 'react';
 import { useRecoilState } from 'recoil';
 
 import themeState from '../../recoil/theme';
-import Button from '../Button';
+import Button from '../buttons/Button';
 
 import { RadioInput, CheckboxInput } from './TestComponents';
 
