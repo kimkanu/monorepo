@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
-import { SSOAccountJSON } from '@team-10/lib';
+import { Provider, SSOAccountJSON } from '@team-10/lib';
 import { Socket } from 'socket.io';
-import { getConnection } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 
 import UserEntity from '../entity/user';
 
@@ -19,8 +19,8 @@ interface SerializableUserInfo {
   displayName: string;
   profileImage: string;
   initialized: boolean;
-  classroomIds: string[];
-  myClassroomIds: string[];
+  classroomHashes: string[];
+  myClassroomHashes: string[];
 }
 
 export default class UserManager {
@@ -30,28 +30,41 @@ export default class UserManager {
 
   // userId는 중복 가능
   async add(userId: string, socket: Socket): Promise<boolean> {
-    const userRepository = getConnection().getRepository(UserEntity);
-    const userEntity = await userRepository
-      .createQueryBuilder('user')
-      .innerJoinAndSelect('user.classrooms', 'classrooms')
-      .innerJoinAndSelect('user.myClassrooms', 'myClassrooms')
-      .leftJoinAndSelect('classrooms.id', 'classroomIds')
-      .leftJoinAndSelect('myClassrooms.id', 'myClassroomIds')
-      .leftJoinAndSelect('user.ssoAccounts', 'ssoAccounts')
-      .where({ stringId: userId })
-      .getOne();
+    const info = await this.getSerializableUserInfoFromStringId(userId);
+    if (!info) return false;
 
-    console.log(this.users.size);
-    console.log(userEntity);
+    const entry = this.users.get(userId);
+    if (!entry) {
+      this.users.set(userId, {
+        info,
+        sockets: [socket],
+      });
+    } else {
+      entry.sockets.push(socket);
+    }
 
-    return false;
+    return true;
   }
 
   remove(userId: string, socket: Socket): boolean {
     const entry = this.users.get(userId);
     if (!entry) return false;
 
-    this.users.delete(userId);
+    entry.sockets = entry.sockets.filter((s) => s.id !== socket.id);
+    if (entry.sockets.length === 0) {
+      this.users.delete(userId);
+    }
+    return true;
+  }
+
+  async refreshUserInfo(userId: string): Promise<boolean> {
+    const entry = this.users.get(userId);
+    if (!entry) return false;
+
+    const info = await this.getSerializableUserInfoFromStringId(userId);
+    if (!info) return false;
+
+    entry.info = info;
     return true;
   }
 
@@ -59,6 +72,28 @@ export default class UserManager {
     const userRepository = getConnection().getRepository(UserEntity);
     return await userRepository.findOne({
       where: { stringId: userId },
+      relations: ['classrooms', 'myClassrooms', 'ssoAccounts'],
     }) ?? null;
+  }
+
+  getSerializableUserInfoFromEntity(userEntity: UserEntity) {
+    return {
+      id: userEntity.id,
+      stringId: userEntity.stringId,
+      displayName: userEntity.displayName,
+      profileImage: userEntity.profileImage,
+      initialized: userEntity.initialized,
+      ssoAccounts: userEntity.ssoAccounts.map(({ provider, providerId }) => ({
+        provider: provider as Provider, providerId,
+      })),
+      classroomHashes: userEntity.classrooms.map((c) => c.hash),
+      myClassroomHashes: userEntity.myClassrooms.map((c) => c.hash),
+    };
+  }
+
+  async getSerializableUserInfoFromStringId(userId: string): Promise<SerializableUserInfo | null> {
+    const userEntity = await this.getEntity(userId);
+
+    return userEntity ? this.getSerializableUserInfoFromEntity(userEntity) : null;
   }
 }
