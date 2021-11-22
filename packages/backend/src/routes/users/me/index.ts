@@ -1,16 +1,14 @@
 import {
+  ClassroomJSON,
   Provider, UsersMeGetResponse, UsersMePatchError, UsersMePatchResponse,
 } from '@team-10/lib';
 import { Router } from 'express';
 import { getConnection } from 'typeorm';
 
-import ClassroomEntity from '../../../entity/classroom';
-import SSOAccount from '../../../entity/sso-account';
 import UserEntity from '../../../entity/user';
 
 import { isAuthenticatedOrFail } from '../../../passport';
 import Server from '../../../server';
-import { ClassroomInfo, getClassroomInfo, getClassroomJSON } from '../../../types/classroom';
 
 import ssoAccounts from './ssoAccounts';
 
@@ -24,7 +22,8 @@ export default function generateRouter(server: Server) {
     async (req, res) => {
       const user = req.user!;
       const userRepository = getConnection().getRepository(UserEntity);
-      const classroomRepository = getConnection().getRepository(ClassroomEntity);
+      const { managers } = server;
+
       const userEntity = await userRepository.findOneOrFail({
         where: { id: user.id },
         join: {
@@ -48,12 +47,16 @@ export default function generateRouter(server: Server) {
             providerId,
           })),
           initialized: userEntity.initialized,
-          classrooms: Array.from(
-            await getClassroomJSON(classroomRepository, userEntity.classrooms),
-          ),
-          myClassrooms: Array.from(
-            await getClassroomJSON(classroomRepository, userEntity.myClassrooms),
-          ),
+          classrooms: (await Promise.all(
+            userEntity.classrooms.map(
+              (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
+            ),
+          )).filter((x) => !!x) as ClassroomJSON[],
+          myClassrooms: (await Promise.all(
+            userEntity.myClassrooms.map(
+              (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
+            ),
+          )).filter((x) => !!x) as ClassroomJSON[],
         },
       };
 
@@ -114,7 +117,7 @@ export default function generateRouter(server: Server) {
           success: false,
           error,
         };
-        return res.json(response);
+        return res.status(response.error.statusCode).json(response);
       }
 
       const userRepository = getConnection().getRepository(UserEntity);
@@ -128,7 +131,7 @@ export default function generateRouter(server: Server) {
       }
       // patch user.profileImage
       user.initialized = true;
-      await userRepository.save(user);
+      await user.save();
 
       const response: UsersMePatchResponse = {
         success: true,
