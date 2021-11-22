@@ -57,13 +57,13 @@ export default (connection: Connection) => {
         user.displayName = profile.nickname!;
         user.profileImage = profile.profileImage ?? null!;
         user.initialized = false;
-        await userRepository.save(user);
+        await user.save();
 
         const newSSOAccount = new SSOAccountEntity();
         newSSOAccount.provider = profile.provider;
         newSSOAccount.providerId = profile.id;
         newSSOAccount.user = user;
-        await ssoAccountRepository.save(newSSOAccount);
+        await newSSOAccount.save();
       } else {
         user = ssoAccount.user;
       }

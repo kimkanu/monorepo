@@ -1,66 +1,26 @@
-import { ClassroomJSON } from '@team-10/lib';
-import { Repository } from 'typeorm';
-
-import ClassroomEntity from '../entity/classroom';
+import { YouTubeVideo } from '@team-10/lib';
 
 export interface ClassroomInfo {
   hash: string;
-  instructorId: number;
-  memberIds: Set<number>;
-}
-
-export async function getClassroomJSON(
-  classroomRepository: Repository<ClassroomEntity>,
-  cs: ClassroomEntity[],
-): Promise<ClassroomJSON[]> {
-  return classroomRepository.findByIds(
-    cs.map((classroom) => classroom.id),
-    {
-      join: {
-        alias: 'classroom',
-        leftJoinAndSelect: {
-          instructor: 'classroom.instructor',
-          members: 'classroom.members',
-        },
-      },
-    },
-  ).then((classrooms) => classrooms.map((classroom) => ({
-    hash: classroom.hash,
-    instructorId: classroom.instructor.stringId,
-    memberIds: classroom.members.map((member) => member.stringId),
-  })));
-}
-
-export async function getClassroomInfo(
-  classroomRepository: Repository<ClassroomEntity>,
-  cs: ClassroomEntity[],
-): Promise<ClassroomInfo[]> {
-  return classroomRepository.findByIds(
-    cs.map((classroom) => classroom.id),
-    {
-      join: {
-        alias: 'classroom',
-        leftJoinAndSelect: {
-          instructor: 'classroom.instructor',
-          members: 'classroom.members',
-        },
-      },
-    },
-  ).then((classrooms) => classrooms.map((classroom) => ({
-    hash: classroom.hash,
-    instructorId: classroom.instructor.id,
-    memberIds: new Set(classroom.members.map((member) => member.id)),
-  })));
+  name: string;
+  instructorId: string;
+  memberIds: Set<string>;
 }
 
 export default class Classroom {
   hash: string;
 
-  instructorId: number;
+  name: string;
 
-  memberIds: Set<number>;
+  instructorId: string;
 
-  connectedMemberIds: Set<number> = new Set();
+  memberIds: Set<string>;
+
+  connectedMemberIds: Set<string> = new Set();
+
+  video: YouTubeVideo | null = null;
+
+  isLive: boolean = false;
 
   constructor(
     info: ClassroomInfo,
@@ -68,15 +28,28 @@ export default class Classroom {
     public roomId: string,
   ) {
     this.hash = info.hash;
+    this.name = info.name;
     this.instructorId = info.instructorId;
     this.memberIds = info.memberIds;
   }
 
-  connectMember(userId: number) {
+  connectMember(userId: string) {
     this.connectedMemberIds.add(userId);
   }
 
-  disconnectMember(userId: number) {
+  disconnectMember(userId: string) {
     this.connectedMemberIds.delete(userId);
+  }
+
+  hasMember(userId: string) {
+    return this.memberIds.has(userId);
+  }
+
+  start() {
+    this.isLive = true;
+  }
+
+  end() {
+    this.isLive = false;
   }
 }

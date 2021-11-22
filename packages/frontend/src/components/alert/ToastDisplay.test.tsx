@@ -1,7 +1,6 @@
 import { render, act, screen } from '@testing-library/react';
 import React from 'react';
 
-import { ToastType } from '../../recoil/toast';
 import { randomInt, range } from '../../utils/math';
 
 import ToastDisplay from './ToastDisplay';
@@ -22,7 +21,7 @@ test('Toasts should be rendered.', async () => {
     }
 
     const toasts = range(TOTAL_TOASTS).map((i) => ({
-      type: [ToastType.INFO, ToastType.WARN, ToastType.ERROR][randomInt(3)],
+      type: ['info', 'warn', 'error'][randomInt(3)] as 'info' | 'warn' | 'error',
       message: `Toast Message ${i}`,
       sentAt: new Date(randomDates[i]),
     }));

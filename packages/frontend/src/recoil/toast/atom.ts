@@ -1,13 +1,7 @@
 import { atom } from 'recoil';
 
-export enum ToastType {
-  INFO,
-  WARN,
-  ERROR,
-}
-
 export interface Toast {
-  type: ToastType;
+  type: 'info' | 'warn' | 'error';
   message: string;
   sentAt: Date;
 }

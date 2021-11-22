@@ -12,20 +12,15 @@ import { Server as IOServer, Socket } from 'socket.io';
 import { createConnection } from 'typeorm';
 import { TypeormStore } from 'typeorm-store';
 
-import ClassroomEntity from './entity/classroom';
 import SessionEntity from './entity/session';
-import SSOAccountEntity from './entity/sso-account';
-import UserEntity from './entity/user';
 
 import ClassroomManager from './managers/classroom';
-import SocketManager from './managers/socket';
+import UserManager from './managers/user';
 
 import initializePassport from './passport';
 
 import mainRouter from './routes';
 import frontendRouter from './routes/frontend';
-
-import { generateClassroomHash } from './utils/classroom';
 
 const DROP_SCHEMA = true;
 
@@ -49,7 +44,7 @@ export default class Server {
   /** Managers. */
   managers: {
     classroom: ClassroomManager;
-    socket: SocketManager;
+    user: UserManager;
   };
 
   /**
@@ -66,7 +61,7 @@ export default class Server {
 
     this.managers = {
       classroom: new ClassroomManager(this),
-      socket: new SocketManager(this),
+      user: new UserManager(this),
     };
 
     this.upload = multer();
@@ -82,11 +77,11 @@ export default class Server {
       synchronize: true,
       dropSchema: DROP_SCHEMA,
       entities: ['src/entity/**/*.ts'],
+      ssl: process.env.NODE_ENV === 'production' ? {
+        rejectUnauthorized: false,
+      } : undefined,
     });
     const sessionRepository = connection.getRepository(SessionEntity);
-    const ssoAccountRepository = connection.getRepository(SSOAccountEntity);
-    const classroomRepository = connection.getRepository(ClassroomEntity);
-    const userRepository = connection.getRepository(UserEntity);
 
     const sessionMiddleware = session({
       name: 'SID',
@@ -95,12 +90,13 @@ export default class Server {
       secret: process.env.SESSION_SECRET!,
       store: new TypeormStore({ repository: sessionRepository }),
       cookie: {
-        sameSite: false,
-        httpOnly: false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : undefined,
+        httpOnly: process.env.NODE_ENV === 'production',
         secure: process.env.NODE_ENV === 'production',
       },
     });
 
+    this.app.set('trust proxy', 1);
     this.app.use(sessionMiddleware);
     this.app.use(morgan('short'));
     this.app.use(cors());
@@ -135,53 +131,6 @@ export default class Server {
     this.io.use(wrap(sessionMiddleware));
     this.io.use(wrap(passport.initialize()));
     this.io.use(wrap(passport.session()));
-
-    // Construct test data
-    if (DROP_SCHEMA) {
-      console.log('=========== Constructing Test Data ===========');
-
-      const user = new UserEntity();
-      user.stringId = 'naver:NzYgpUnFPklAHLIrLBw5ic7PvJy64SFpLmPiMWfz4Go';
-      user.displayName = 'uto****';
-      user.profileImage = 'https://phinf.pstatic.net/contact/20191025_133/1572004399046UqQgO_PNG/image.png';
-      await userRepository.save(user);
-
-      const ssoAccount = new SSOAccountEntity();
-      ssoAccount.provider = 'naver';
-      ssoAccount.providerId = 'NzYgpUnFPklAHLIrLBw5ic7PvJy64SFpLmPiMWfz4Go';
-      ssoAccount.user = user;
-      await ssoAccountRepository.save(ssoAccount);
-
-      const user2 = new UserEntity();
-      user2.stringId = 'naver:asdasdlkasfalksclaskdlakdj';
-      user2.displayName = 'uto****';
-      user2.profileImage = 'https://phinf.pstatic.net/contact/20191025_133/1572004399046UqQgO_PNG/image.png';
-      await userRepository.save(user2);
-
-      const ssoAccount2 = new SSOAccountEntity();
-      ssoAccount2.provider = 'naver';
-      ssoAccount2.providerId = 'asdasdlkasfalksclaskdlakdj';
-      ssoAccount2.user = user2;
-      await ssoAccountRepository.save(ssoAccount2);
-
-      const testClassroom = new ClassroomEntity();
-      testClassroom.hash = generateClassroomHash();
-      testClassroom.name = 'Test Classroom';
-      testClassroom.instructor = user;
-      testClassroom.members = [user];
-      testClassroom.histories = [];
-      await classroomRepository.save(testClassroom);
-
-      const testClassroom2 = new ClassroomEntity();
-      testClassroom2.hash = generateClassroomHash();
-      testClassroom2.name = 'Test Classroom2';
-      testClassroom2.instructor = user2;
-      testClassroom2.members = [user, user2];
-      testClassroom2.histories = [];
-      await classroomRepository.save(testClassroom2);
-    }
-
-    console.log(await classroomRepository.find({ join: { alias: 'classroom', leftJoinAndSelect: { members: 'classroom.members' } } }));
   }
 
   listen() {

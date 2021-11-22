@@ -4,11 +4,11 @@ import { Chat20Regular, Add20Regular } from '@fluentui/react-icons';
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
-import toastState, { ToastType } from '../../recoil/toast';
+import toastState from '../../recoil/toast';
 import TempButton from '../buttons/TempButton';
 
 const ToastTest: React.FC = () => {
-  const [toastType, setToastType] = React.useState<ToastType>(ToastType.INFO);
+  const [toastType, setToastType] = React.useState<'info' | 'warn' | 'error'>('info');
   const [message, setMessage] = React.useState<string>('');
   const setToast = useSetRecoilState(toastState.new);
 
@@ -31,9 +31,9 @@ const ToastTest: React.FC = () => {
           <input
             type="radio"
             className="form-radio h-5 w-5 text-blue-500"
-            checked={toastType === ToastType.INFO}
+            checked={toastType === 'info'}
             onChange={() => {
-              setToastType(ToastType.INFO);
+              setToastType('info');
             }}
           />
           <span className="ml-2 text-gray-700">Info</span>
@@ -42,9 +42,9 @@ const ToastTest: React.FC = () => {
           <input
             type="radio"
             className="form-radio h-5 w-5 text-yellow-500"
-            checked={toastType === ToastType.WARN}
+            checked={toastType === 'warn'}
             onChange={() => {
-              setToastType(ToastType.WARN);
+              setToastType('warn');
             }}
           />
           <span className="ml-2 text-gray-700">Warn</span>
@@ -53,9 +53,9 @@ const ToastTest: React.FC = () => {
           <input
             type="radio"
             className="form-radio h-5 w-5 text-red-500"
-            checked={toastType === ToastType.ERROR}
+            checked={toastType === 'error'}
             onChange={() => {
-              setToastType(ToastType.ERROR);
+              setToastType('error');
             }}
           />
           <span className="ml-2 text-gray-700">Error</span>

@@ -1,10 +1,12 @@
-import { ClassroomHash } from '@team-10/lib';
+import { ClassroomHash, ClassroomJSON } from '@team-10/lib';
 import { getConnection } from 'typeorm';
+import { v4 as generateUUID } from 'uuid';
 
 import ClassroomEntity from '../entity/classroom';
 
 import Server from '../server';
 import Classroom, { ClassroomInfo } from '../types/classroom';
+import { generateClassroomHash } from '../utils/classroom';
 
 export default class ClassroomManager {
   private classrooms: Map<ClassroomHash, Classroom> = new Map();
@@ -29,17 +31,51 @@ export default class ClassroomManager {
 
     const classroomInfo: ClassroomInfo = {
       hash: classroomHash,
-      instructorId: classroomEntity.instructor.id,
-      memberIds: new Set(classroomEntity.members.map((member) => member.id)),
+      name: classroomEntity.name,
+      instructorId: classroomEntity.instructor.stringId,
+      memberIds: new Set(classroomEntity.members.map((member) => member.stringId)),
     };
-    const roomId = 'sample';
+    const roomId = generateUUID();
     const classroom = new Classroom(classroomInfo, roomId);
     this.classrooms.set(classroomHash, classroom);
 
     return true;
   }
 
-  async isUserMember(userId: number, classroomHash: ClassroomHash): Promise<boolean> {
+  async createClassroom(userId: string, name: string): Promise<Classroom> {
+    const instructor = await this.server.managers.user.getEntity(userId);
+    if (!instructor) {
+      throw new Error();
+    }
+
+    const entity = new ClassroomEntity();
+    entity.instructor = instructor;
+    entity.members = [instructor];
+    entity.name = name;
+
+    while (true) {
+      try {
+        entity.hash = generateClassroomHash();
+        // eslint-disable-next-line no-await-in-loop
+        await entity.save();
+        break;
+      } catch (e) {
+        // retry
+      }
+    }
+
+    const roomId = generateUUID();
+    const classroom = new Classroom({
+      hash: entity.hash,
+      name: entity.name,
+      instructorId: userId,
+      memberIds: new Set([userId]),
+    }, roomId);
+
+    return classroom;
+  }
+
+  async isUserMember(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
     if (!this.classrooms.has(classroomHash)) {
       await this.loadClassroom(classroomHash);
     }
@@ -47,7 +83,7 @@ export default class ClassroomManager {
     return classroom?.memberIds.has(userId) ?? false;
   }
 
-  async isUserInstructor(userId: number, classroomHash: ClassroomHash): Promise<boolean> {
+  async isUserInstructor(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
     if (!this.classrooms.has(classroomHash)) {
       await this.loadClassroom(classroomHash);
     }
@@ -55,10 +91,7 @@ export default class ClassroomManager {
     return classroom?.instructorId === userId;
   }
 
-  // clearClassrooms() {
-  // }
-
-  async connectMember(userId: number, classroomHash: ClassroomHash): Promise<boolean> {
+  async connectMember(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
     if (!this.classrooms.has(classroomHash)) {
       await this.loadClassroom(classroomHash);
     }
@@ -68,10 +101,30 @@ export default class ClassroomManager {
     return true;
   }
 
-  disconnectMember(userId: number, classroomHash: ClassroomHash): boolean {
+  disconnectMember(userId: string, classroomHash: ClassroomHash): boolean {
     const classroom = this.classrooms.get(classroomHash);
     if (!classroom) return false;
     classroom.connectedMemberIds.delete(userId);
     return true;
+  }
+
+  async getClassroomJSON(
+    userId: string, classroomHash: ClassroomHash,
+  ): Promise<ClassroomJSON | null> {
+    if (!this.classrooms.has(classroomHash)) {
+      await this.loadClassroom(classroomHash);
+    }
+    const classroom = this.classrooms.get(classroomHash);
+    if (!classroom) return null;
+    if (!classroom.hasMember(userId)) return null;
+
+    return {
+      hash: classroomHash,
+      name: classroom.name,
+      instructorId: classroom.instructorId,
+      memberIds: Array.from(classroom.memberIds),
+      video: classroom.video,
+      isLive: classroom.isLive,
+    };
   }
 }

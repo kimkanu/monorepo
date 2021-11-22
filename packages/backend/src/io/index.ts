@@ -8,15 +8,13 @@ const ioHandler = (server: Server) => {
 
   io.on('connection', async (socket: UserSocket) => {
     console.log('user', socket.request.user);
-
     if (socket.request.user) {
-      managers.socket.add(socket.request.user.id, socket);
-      console.log(await managers.classroom.isUserMember(socket.request.user.id, 'TOP-SAL-LIN'));
+      await managers.user.add(socket.request.user.stringId, socket);
     }
 
     socket.on('disconnect', () => {
       if (socket.request.user) {
-        managers.socket.remove(socket.request.user.id, socket);
+        managers.user.remove(socket.request.user.stringId, socket);
       }
     });
   });

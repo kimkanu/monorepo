@@ -9,7 +9,7 @@ import YouTube from 'react-youtube';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
 
-import classroomState from '../../recoil/classroom';
+import classroomsState from '../../recoil/classrooms';
 import dialogState from '../../recoil/dialog';
 import dropdownState from '../../recoil/dropdown';
 import loadingState from '../../recoil/loading';
@@ -35,7 +35,7 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const location = useLocation();
   const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
 
-  const classroom = useRecoilValue(classroomState.atom);
+  const classrooms = useRecoilValue(classroomsState.atom);
   const dropdown = useRecoilValue(dropdownState.atom);
   const dialog = useRecoilValue(dialogState.atom);
   const toasts = useRecoilValue(toastState.atom);
@@ -67,7 +67,10 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
       })
       .then((response: UsersMeGetResponse) => {
         if (response.success) {
-          setMe({ loading: false, info: response.payload });
+          setMe({
+            loading: false,
+            info: response.payload,
+          });
         } else {
           setMe({ loading: false, info: null });
         }
@@ -99,16 +102,16 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
       <Loading loading={loading} />
 
       <YTWrapper
-        isPresent={!!classroom?.videoId}
+        isPresent={!!classrooms[0]?.video}
         inClassroom={inClassroom}
         onClick={() => {
-          if (classroom?.hash) {
-            history.push(`/classrooms/${classroom.hash}`);
+          if (classrooms[0]?.hash) {
+            history.push(`/classrooms/${classrooms[0]?.hash}`);
           }
         }}
       >
         <YTPlayer
-          videoId={classroom?.videoId}
+          videoId={classrooms[0]?.video?.videoId}
           onReady={onYouTubeReady}
           onStateChange={onYouTubeStateChange}
         />

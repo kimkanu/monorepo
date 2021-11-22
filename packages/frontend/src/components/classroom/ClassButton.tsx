@@ -1,8 +1,8 @@
 import { Circle20Filled, Star20Filled } from '@fluentui/react-icons';
+import { SSOAccountJSON, ClassroomJSON } from '@team-10/lib';
 import React from 'react';
 import seedrandom from 'seedrandom';
 
-import { Classroom } from '../../types/classroom';
 import { mergeClassNames, Styled } from '../../utils/style';
 
 import styles from './ClassButton.module.css';
@@ -14,11 +14,12 @@ const buttonStyles: { shadowColor:string;backgroundImage:string }[] = [
 ];
 
 interface Props {
-  classroom: Classroom;
+  userId: string;
+  classroom: ClassroomJSON;
 }
 
 const ClassButton: React.FC<Styled<Props>> = ({
-  classroom, style, className,
+  userId, classroom, style, className,
 }) => {
   const [index, setIndex] = React.useState(Math.abs(seedrandom(classroom.hash).int32()));
   const { shadowColor, backgroundImage } = buttonStyles[index % buttonStyles.length];
@@ -56,7 +57,7 @@ const ClassButton: React.FC<Styled<Props>> = ({
             <div className="text-emph">LIVE</div>
           </div>
         )}
-        {classroom.isMine && (
+        {classroom.instructorId === userId && (
           <div className="flex gap-3 items-center">
             <div className="w-5 h-5 inline-flex justify-center items-center"><Star20Filled /></div>
             <div className="text-emph">MY</div>
