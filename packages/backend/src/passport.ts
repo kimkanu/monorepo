@@ -41,8 +41,10 @@ export default (connection: Connection) => {
     profile: NaverProfile,
     done: PassportOauth2.VerifyCallback,
   ) => {
+    const providerId = profile.email?.replace(/@.*$/, '') ?? profile.id;
+
     ssoAccountRepository.findOne({
-      where: { providerId: profile.id },
+      where: { providerId },
       join: {
         alias: 'ssoAccount',
         leftJoinAndSelect: {
@@ -53,15 +55,15 @@ export default (connection: Connection) => {
       let user: UserEntity;
       if (!ssoAccount) {
         user = new UserEntity();
-        user.stringId = `${profile.provider}:${profile.id}`;
-        user.displayName = profile.nickname!;
+        user.stringId = `${profile.provider}:${providerId}`;
+        user.displayName = profile.name ?? profile.nickname!;
         user.profileImage = profile.profileImage ?? null!;
         user.initialized = false;
         await user.save();
 
         const newSSOAccount = new SSOAccountEntity();
         newSSOAccount.provider = profile.provider;
-        newSSOAccount.providerId = profile.id;
+        newSSOAccount.providerId = providerId;
         newSSOAccount.user = user;
         await newSSOAccount.save();
       } else {
