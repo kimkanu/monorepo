@@ -30,7 +30,7 @@ const AmbientButton: React.FC<Styled<Props>> = ({
     className={mergeClassNames(
       'flex justify-center items-center transition rounded-full bg-transparent',
       dark ? 'text-white hover:bg-white hover:bg-opacity-25' : 'text-gray-700 hover:bg-gray-200',
-      filled ? null : styles.filledIcon,
+      filled ? null : styles.icon,
       isImageIcon ? styles.imageIcon : null,
       className,
     )}

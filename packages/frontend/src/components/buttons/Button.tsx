@@ -36,7 +36,6 @@ const Button: React.FC<Styled<Props>> = ({
       type="button"
       className={mergeClassNames(
         'rounded-full outline-none flex items-center justify-center font-bold transition-button duration-button',
-        // eslint-disable-next-line no-nested-ternary
         width === 'full'
           ? 'w-full'
           : text
@@ -79,20 +78,20 @@ const Button: React.FC<Styled<Props>> = ({
       }}
     >
       {icon && (
-      <div
-        className="select-none pointer-events-none flex justify-center"
-        style={{
-          marginRight: text ? { 36: 10, 48: 12, 56: 16 }[height] : 0,
-          width: { 36: 20, 48: 24, 56: 28 }[height],
-        }}
-      >
         <div
-          style={{ transform: `scale(${{ 36: 20, 48: 24, 56: 28 }[height] * 5}%)` }}
-          className={filled ? undefined : styles.filledIcon}
+          className="select-none pointer-events-none flex justify-center"
+          style={{
+            marginRight: text ? { 36: 10, 48: 12, 56: 16 }[height] : 0,
+            width: { 36: 20, 48: 24, 56: 28 }[height],
+          }}
         >
-          {icon}
+          <div
+            style={{ transform: `scale(${{ 36: 20, 48: 24, 56: 28 }[height] * 5}%)` }}
+            className={filled ? styles.icon : undefined}
+          >
+            {icon}
+          </div>
         </div>
-      </div>
       )}
       <span>{text}</span>
     </button>

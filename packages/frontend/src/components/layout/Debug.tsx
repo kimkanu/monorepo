@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
 import useScreenType from '../../hooks/useScreenType';
 import classroomState from '../../recoil/classroom';
+import loadingState from '../../recoil/loading';
 import ScreenType from '../../types/screen';
 import { conditionalClassName } from '../../utils/style';
 
@@ -15,6 +16,7 @@ import DebugWrapper from './DebugWrapper';
 const Debug: React.FC = () => {
   const screenType = useScreenType();
   const [classroom, setClassroom] = useRecoilState(classroomState.atom);
+  const setLoading = useSetRecoilState(loadingState.atom);
 
   const { connected } = useSocket(
     '/',
@@ -47,6 +49,15 @@ const Debug: React.FC = () => {
       <button
         type="button"
         onClick={() => {
+          setLoading((l) => !l);
+        }}
+      >
+        Toggle loading
+      </button>
+      <br />
+      <button
+        type="button"
+        onClick={() => {
           setClassroom(classroom ? null : {
             hash: 'SAM-PEL-KAS',
             name: 'Sample Class',
@@ -58,6 +69,28 @@ const Debug: React.FC = () => {
       >
         {classroom ? 'End class' : 'Start class'}
       </button>
+      {classroom ? (
+        <button
+          type="button"
+          onClick={() => {
+            setClassroom(classroom.hash === 'SAM-PEL-KAS' ? {
+              hash: 'SAM-PEL-KAT',
+              name: 'Sample Class 2',
+              videoId: 'nYyddo_VXs8',
+              isLive: true,
+              isMine: false,
+            } : {
+              hash: 'SAM-PEL-KAS',
+              name: 'Sample Class',
+              videoId: 'Zyi9QUB-fyo',
+              isLive: true,
+              isMine: true,
+            });
+          }}
+        >
+          Change class
+        </button>
+      ) : null}
     </DebugWrapper>
   );
 };

@@ -1,0 +1,16 @@
+.visible:not(.beingInvisible) {
+  @apply opacity-100;
+  transition: none;
+}
+.invisible:not(.beingVisible) {
+  @apply opacity-0;
+  transition: none;
+}
+.beingVisible {
+  @apply opacity-100;
+  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.beingInvisible {
+  @apply opacity-0;
+  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}

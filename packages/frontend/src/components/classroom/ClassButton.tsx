@@ -31,7 +31,7 @@ const ClassButton: React.FC<Styled<Props>> = ({
     <button
       type="button"
       className={mergeClassNames(
-        'relative rounded-8 w-full h-48 p-5 flex flex-col justify-between font-bold shadow-class hover:shadow-class-hover active:shadow-class text-white text-left',
+        'relative m-auto rounded-8 w-full h-48 p-5 flex flex-col justify-between font-bold shadow-class hover:shadow-class-hover active:shadow-class text-white text-left',
         styles.classButton,
         className,
       )}

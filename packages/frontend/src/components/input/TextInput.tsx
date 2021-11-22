@@ -1,4 +1,5 @@
-import { Checkmark20Regular, Dismiss20Regular } from '@fluentui/react-icons';
+import { Checkmark20Regular, Dismiss20Regular, SpinnerIos20Regular } from '@fluentui/react-icons';
+import CancelablePromise, { cancelable } from 'cancelable-promise';
 import React from 'react';
 
 import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
@@ -6,10 +7,20 @@ import buttonStyles from '../buttons/Button.module.css';
 
 import styles from './TextInput.module.css';
 
+type ValidationError = string | null;
+type Validator =
+  | ((value: string) => boolean)
+  | ((value: string) => ValidationError)
+  | ((value: string) => Promise<boolean>)
+  | ((value: string) => CancelablePromise<boolean>)
+  | ((value: string) => Promise<ValidationError>)
+  | ((value: string) => CancelablePromise<ValidationError>);
+
 interface Props {
   value: string;
   onInput?: (newText: string) => void;
   icon?: React.ReactElement | null; // `20Regular`
+  filled?: boolean;
   type?: 'text' | 'password';
   name?: string;
   autoComplete?: string;
@@ -19,7 +30,7 @@ interface Props {
   align?: 'left' | 'center' | 'right';
   button?: React.ReactElement; // of height 48
   onSubmit?: (value: string) => void;
-  validator?: (value: string) => boolean;
+  validator?: Validator;
   nextRef?: React.RefObject<HTMLInputElement> | React.RefObject<HTMLButtonElement>;
   ref_?: React.RefObject<HTMLInputElement>
   containerStyle?: React.CSSProperties;
@@ -30,6 +41,7 @@ const TextInput: React.FC<Styled<Props>> = ({
   value,
   onInput,
   icon,
+  filled = false,
   type = 'text',
   name,
   autoComplete = name,
@@ -58,7 +70,42 @@ const TextInput: React.FC<Styled<Props>> = ({
   const paddingRightValidation = validator ? 28 : 0;
   const paddingRight = 20 + paddingRightValidation + paddingRightButton;
 
-  const isValid = validator ? validator(value) : true;
+  const [isValid, setValid] = React.useState<true | false | null>(null);
+  const [error, setError] = React.useState<ValidationError>(null);
+  React.useEffect(() => {
+    if (!validator) return () => {};
+    setValid(null);
+
+    const promiseValid = validator(value);
+    if (!(promiseValid instanceof Promise || promiseValid instanceof CancelablePromise)) {
+      if (typeof promiseValid === 'boolean') {
+        setValid(promiseValid);
+        setError(null);
+      } else {
+        setValid(promiseValid === null);
+        setError(promiseValid);
+      }
+
+      return () => {};
+    }
+    const cancelablePromise = promiseValid instanceof CancelablePromise
+      ? promiseValid
+      : cancelable<boolean | ValidationError>(promiseValid);
+    cancelablePromise.then((v) => {
+      if (typeof v === 'boolean') {
+        setValid(v);
+        setError(null);
+      } else {
+        setValid(v === null);
+        setError(v);
+      }
+    });
+
+    return () => {
+      console.log('canceled');
+      cancelablePromise.cancel();
+    };
+  }, [value]);
 
   return (
     <div
@@ -66,15 +113,15 @@ const TextInput: React.FC<Styled<Props>> = ({
       className={mergeClassNames(
         containerClassName,
         'relative w-full h-12',
-        isValid ? styles.focusWithin : styles.focusWithinInvalid,
-        isValid ? 'text-gray-500' : 'text-red-300',
+        isValid !== false ? styles.focusWithin : styles.focusWithinInvalid,
+        isValid !== false ? 'text-gray-500' : 'text-red-300',
         buttonStyles.input,
       )}
     >
       {icon && (
         <div className={mergeClassNames(
           'absolute left-5 top-3.5 select-none pointer-events-none',
-          styles.icon,
+          filled ? null : styles.icon,
         )}
         >
           {icon}
@@ -87,7 +134,7 @@ const TextInput: React.FC<Styled<Props>> = ({
         autoComplete={autoComplete ?? (type === 'password' ? 'password' : undefined)}
         style={mergeStyles(
           {
-            '--tw-ring-color': isValid ? 'currentColor' : '#F5323C',
+            '--tw-ring-color': isValid !== false ? 'currentColor' : '#F5323C',
             textAlign: align,
             paddingRight,
           } as React.CSSProperties,
@@ -96,7 +143,7 @@ const TextInput: React.FC<Styled<Props>> = ({
         className={mergeClassNames(
           className,
           'text-gray-900 text-emph w-full h-full rounded-full placeholder-sans outline-none border-none focus:ring-2',
-          isValid ? 'bg-gray-200' : 'bg-red-100 bg-opacity-50',
+          isValid !== false ? 'bg-gray-200' : 'bg-red-100 bg-opacity-50',
           font === 'sans' ? 'font-sans' : 'font-mono',
           icon ? 'pl-14' : 'pl-5',
         )}
@@ -130,14 +177,14 @@ const TextInput: React.FC<Styled<Props>> = ({
         <div
           className={mergeClassNames(
             'absolute top-3.5 select-none pointer-events-none',
-            isValid ? 'text-blue-500' : 'text-red-500',
+            isValid === true ? 'text-blue-500' : isValid === false ? 'text-red-500' : 'text-gray-500',
             styles.icon,
           )}
           style={{
             right: button ? 12 + paddingRightButton : 20,
           }}
         >
-          {isValid ? <Checkmark20Regular /> : <Dismiss20Regular />}
+          {isValid === true ? <Checkmark20Regular /> : isValid === false ? <Dismiss20Regular /> : <SpinnerIos20Regular className="animate-spin block" style={{ height: 20 }} />}
         </div>
       )}
     </div>

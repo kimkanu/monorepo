@@ -8,9 +8,10 @@ import styles from './ClassList.module.css';
 
 interface Props {
   classrooms: Classroom[];
+  onClickAdd?: React.MouseEventHandler;
 }
 
-const ClassList: React.FC<Props> = ({ classrooms }) => (
+const ClassList: React.FC<Props> = ({ classrooms, onClickAdd }) => (
   <ul className={styles.container}>
     {classrooms.map((classroom) => (
       <li key={classroom.hash}>
@@ -20,7 +21,7 @@ const ClassList: React.FC<Props> = ({ classrooms }) => (
       </li>
     ))}
     <li>
-      <ClassAddButton />
+      <ClassAddButton onClick={onClickAdd} />
     </li>
   </ul>
 );
