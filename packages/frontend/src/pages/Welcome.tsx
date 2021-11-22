@@ -6,6 +6,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import Button from '../components/buttons/Button';
+import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
+import Title from '../components/elements/Title';
 import TextInput from '../components/input/TextInput';
 import ContentPadding from '../components/layout/ContentPadding';
 import Fade from '../components/layout/Fade';
@@ -33,8 +35,8 @@ const Welcome: React.FC = () => {
   React.useEffect(() => {
     if (!me.loading && me.info) {
       if (me.info.initialized) {
-        // const query = decodeURI(new URLSearchParams(location.search).get('redirect_uri') ?? '/');
-        // history.replace(query);
+        const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
+        history.replace(query);
       } else {
         setDisplayName(me.info.displayName);
         setStringId(me.info.stringId);
@@ -48,16 +50,12 @@ const Welcome: React.FC = () => {
     <ContentPadding isFooterPresent>
       <Fade visible={!me.loading}>
         {(ref) => (
-          <div ref={ref} className="mx-auto" style={{ maxWidth: 480 }}>
-            <h1 className="text-title mt-16 mb-12 font-bold text-center">
+          <NarrowPageWrapper ref_={ref}>
+            <Title size="title">
               반갑습니다
               {' '}
-              <img
-                className="w-12 h-12 inline-block align-bottom"
-                src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/285/grinning-face-with-big-eyes_1f603.png"
-                alt="Smiley"
-              />
-            </h1>
+              <i className="twa twa-grinning" />
+            </Title>
             <p className="text-emph text-center my-12">
               서비스 이용에 필요한 정보를 채워주세요!
             </p>
@@ -148,7 +146,7 @@ const Welcome: React.FC = () => {
                 />
               </div>
             </div>
-          </div>
+          </NarrowPageWrapper>
         )}
       </Fade>
     </ContentPadding>

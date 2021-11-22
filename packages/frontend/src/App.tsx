@@ -11,6 +11,7 @@ import Layout from './components/layout/Layout';
 import Classroom from './pages/Classroom';
 import Login from './pages/Login';
 import Main from './pages/Main';
+import Profile from './pages/Profile';
 import Test from './pages/Test';
 import Welcome from './pages/Welcome';
 import WelcomeDone from './pages/WelcomeDone';
@@ -58,6 +59,13 @@ const App: React.FC = () => {
           exact
           path="/login"
           render={() => <Login />}
+        />
+
+        {/* Profile page */}
+        <Route
+          exact
+          path="/profile"
+          render={() => <Profile />}
         />
 
         {process.env.NODE_ENV === 'development' && (

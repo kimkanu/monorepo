@@ -87,7 +87,7 @@ const Button: React.FC<Styled<Props>> = ({
         >
           <div
             style={{ transform: `scale(${{ 36: 20, 48: 24, 56: 28 }[height] * 5}%)` }}
-            className={filled ? styles.icon : undefined}
+            className={filled ? undefined : styles.icon}
           >
             {icon}
           </div>
