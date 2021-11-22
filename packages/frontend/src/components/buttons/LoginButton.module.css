@@ -1,9 +1,9 @@
 .naver {
-  --shadow-color: rgba(22, 201, 0, 0.5) !important;
-  background-color: rgb(22, 201, 0) !important;
+  --shadow-color: rgba(3, 199, 90, 0.5) !important;
+  background-color: rgb(3, 199, 90) !important;
 }
 .naver:active {
-  background-color: rgb(23, 158, 6) !important;
+  background-color: rgb(1, 159, 71) !important;
 }
 
 .github {
@@ -11,5 +11,5 @@
   --shadow-color: rgba(0, 0, 0, 0.25) !important;
 }
 .github:active > img {
-  @apply opacity-80;
+  @apply opacity-80 text-opacity-80;
 }

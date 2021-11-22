@@ -5,6 +5,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
 import useScreenType from '../../hooks/useScreenType';
+import loadingState from '../../recoil/loading';
 import ScreenType from '../../types/screen';
 import { conditionalClassName } from '../../utils/style';
 
@@ -12,6 +13,7 @@ import DebugWrapper from './DebugWrapper';
 
 const Debug: React.FC = () => {
   const screenType = useScreenType();
+  const setLoading = useSetRecoilState(loadingState.atom);
 
   const { connected } = useSocket(
     '/',
@@ -21,6 +23,12 @@ const Debug: React.FC = () => {
         host: process.env.REACT_APP_PROXY_URL.replace(/https?:\/\//g, ''),
       },
   );
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      setLoading(!connected);
+    }
+  }, [connected]);
 
   return (
     <DebugWrapper>
