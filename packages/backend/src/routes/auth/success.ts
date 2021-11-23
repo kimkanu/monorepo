@@ -10,7 +10,7 @@ router.get(
 
     if (req.user?.initialized) {
       res.redirect(redirectUri ?? '/');
-    } if (redirectUri) {
+    } else if (redirectUri) {
       res.redirect(`/welcome?redirect_uri=${redirectUri}`);
     } else {
       res.redirect('/welcome');
