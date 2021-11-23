@@ -1,47 +1,34 @@
-import { ClassroomJSON, UsersOtherGetResponse } from '@team-10/lib';
-import { Router } from 'express';
+import { ClassroomJSON } from '@team-10/lib';
 import { getConnection } from 'typeorm';
 
 import ClassroomEntity from '../../entity/classroom';
 
-import UserEntity from '../../entity/user';
 import { isAuthenticatedOrFail } from '../../passport';
 import Server from '../../server';
+import Route from '../route';
 
-export default function generateRouter(server: Server) {
-  const router = Router();
+export default function generateRoute(server: Server): Route {
+  const route = new Route(server);
 
   const { managers } = server;
 
-  router.get(
-    '/:userStringId',
+  route.accept(
+    'GET /users/:id',
     isAuthenticatedOrFail,
-    async (req, res, next) => {
-      const stringId = req.params.userStringId;
+    async (params, body, user, req, res, next) => {
+      const stringId = req.params.id;
       if (!stringId || stringId === 'me') {
         return next();
       }
 
-      const user = req.user!;
       if (stringId === user.stringId) {
       // Unreachable
         return res.redirect('/api/users/me');
       }
 
-      const userRepository = getConnection().getRepository(UserEntity);
-      const classroomRepository = getConnection().getRepository(ClassroomEntity);
-      const userEntity = await userRepository.findOne({
-        where: { stringId },
-        join: {
-          alias: 'user',
-          leftJoinAndSelect: {
-            classrooms: 'user.classrooms',
-          },
-        },
-      });
-
+      const userEntity = await server.managers.user.getEntity(stringId);
       if (!userEntity) {
-        const response: UsersOtherGetResponse = {
+        return {
           success: false,
           error: {
             code: 'NONEXISTENT_USER',
@@ -49,17 +36,16 @@ export default function generateRouter(server: Server) {
             extra: {},
           },
         };
-        res.status(404).json(response);
-        return;
       }
 
+      const classroomRepository = getConnection().getRepository(ClassroomEntity);
       const commonClassrooms = await classroomRepository
         .createQueryBuilder('classroom')
         .innerJoinAndSelect('classroom.members', 'members')
         .where(':me IN (members.id)', { me: user.id })
         .getMany();
 
-      const response: UsersOtherGetResponse = {
+      return {
         success: true,
         payload: {
           stringId: user.stringId,
@@ -72,9 +58,8 @@ export default function generateRouter(server: Server) {
           )).filter((x) => !!x) as ClassroomJSON[],
         },
       };
-      res.json(response);
     },
   );
 
-  return router;
+  return route;
 }

@@ -6,11 +6,13 @@ import {
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
+import Fade from './components/layout/Fade';
 import Global from './components/layout/Global';
 import Layout from './components/layout/Layout';
 import Classroom from './pages/Classroom';
 import Login from './pages/Login';
 import Main from './pages/Main';
+import Profile from './pages/Profile';
 import Test from './pages/Test';
 import Welcome from './pages/Welcome';
 import WelcomeDone from './pages/WelcomeDone';
@@ -27,10 +29,13 @@ const App: React.FC = () => {
       <Layout className={`theme-${theme}`}>
         {/* Main page */}
         <Route
-          path="/"
-          render={({ location }) => (
-            ['/', '/classrooms/new'].includes(location.pathname) ? <Main /> : null
-          )}
+          exact
+          path={['/', '/classrooms/new']}
+          render={() => <Main />}
+        />
+        <Route
+          path="/classrooms/:hash"
+          render={({ match }) => (match.params.hash === 'new' ? null : <Main />)}
         />
 
         {/* Welcome pages */}
@@ -47,9 +52,11 @@ const App: React.FC = () => {
 
         {/* Classroom page */}
         <Route
-          path="/classrooms/:id"
+          path="/classrooms/:hash"
           render={({ match }) => (
-            classroomHashRegex.test(match.params.id) ? <Classroom /> : null
+            classroomHashRegex.test(match.params.hash)
+              ? <Classroom hash={match.params.hash} />
+              : null
           )}
         />
 
@@ -58,6 +65,13 @@ const App: React.FC = () => {
           exact
           path="/login"
           render={() => <Login />}
+        />
+
+        {/* Profile page */}
+        <Route
+          exact
+          path="/profile"
+          render={() => <Profile />}
         />
 
         {process.env.NODE_ENV === 'development' && (

@@ -19,4 +19,6 @@ export interface ClassroomJSON {
   memberIds: string[];
   video: YouTubeVideo | null;
   isLive: boolean;
+  passcode: string;
+  updatedAt: Date;
 }

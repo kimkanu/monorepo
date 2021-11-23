@@ -1,22 +1,21 @@
-import { Router } from 'express';
-
 import Server from '../server';
 
 import auth from './auth';
+import classrooms from './classrooms';
+import Route from './route';
 import users from './users';
 
-export default function generateRouter(server: Server) {
-  const router = Router();
+export default function generateRoute(server: Server): Route {
+  const route = new Route(server);
 
-  router.get(
-    '/',
-    (req, res) => {
-      res.sendStatus(200);
-    },
+  route.accept(
+    'GET /',
+    async () => ({ success: true, payload: {} }),
   );
 
-  router.use('/auth', auth);
-  router.use('/users', users(server));
+  route.router.use('/auth', auth);
+  route.use(classrooms);
+  route.use(users);
 
-  return router;
+  return route;
 }

@@ -1,4 +1,4 @@
-import { SSOAccountJSON, ClassroomJSON } from '@team-10/lib';
+import { ClassroomJSON } from '@team-10/lib';
 import React from 'react';
 
 import ClassAddButton from './ClassAddButton';
@@ -8,21 +8,25 @@ import styles from './ClassList.module.css';
 interface Props {
   userId: string;
   classrooms: ClassroomJSON[];
-  onClickAdd?: React.MouseEventHandler;
+  onClickClassroom?: (classroom: ClassroomJSON) => void;
+  onJoinOrCreate?: React.MouseEventHandler;
 }
 
-const ClassList: React.FC<Props> = ({ userId, classrooms, onClickAdd }) => (
+const ClassList: React.FC<Props> = ({
+  userId, classrooms, onClickClassroom = () => {}, onJoinOrCreate,
+}) => (
   <ul className={styles.container}>
     {classrooms.map((classroom) => (
       <li key={classroom.hash}>
         <ClassButton
           userId={userId}
           classroom={classroom}
+          onClick={() => onClickClassroom(classroom)}
         />
       </li>
     ))}
     <li>
-      <ClassAddButton onClick={onClickAdd} />
+      <ClassAddButton onClick={onJoinOrCreate} />
     </li>
   </ul>
 );

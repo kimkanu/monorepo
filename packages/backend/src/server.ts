@@ -22,7 +22,7 @@ import initializePassport from './passport';
 import mainRouter from './routes';
 import frontendRouter from './routes/frontend';
 
-const DROP_SCHEMA = true;
+const DROP_SCHEMA = false;
 
 /** Class representing a server stack. */
 export default class Server {
@@ -114,7 +114,7 @@ export default class Server {
     this.app.use(passport.session());
     initializePassport(connection);
 
-    this.app.use('/api', mainRouter(this));
+    this.app.use('/api', mainRouter(this).router);
     this.app.use(frontendRouter);
 
     this.io = new IOServer(this.http, {

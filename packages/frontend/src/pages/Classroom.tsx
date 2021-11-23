@@ -1,18 +1,39 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import classroomsState from '../recoil/classrooms';
+import mainClassroomHashState from '../recoil/mainClassroomHash';
+import meState from '../recoil/me';
 
-const Classroom: React.FC = () => {
+interface Props {
+  hash: string;
+}
+
+const Classroom: React.FC<Props> = ({ hash }) => {
   const classrooms = useRecoilValue(classroomsState.atom);
+  const setMainClassroomHash = useSetRecoilState(mainClassroomHashState.atom);
+  const me = useRecoilValue(meState.atom);
   const history = useHistory();
 
   React.useEffect(() => {
-    if (classrooms[0]) {
-      history.replace(`/classrooms/${classrooms[0].hash}`);
+    if (me.loaded) {
+      if (me.info) {
+        const classroom = classrooms.find((c) => c.hash === hash);
+        if (!classroom) {
+          if (history.length > 0) {
+            history.goBack();
+          } else {
+            history.replace('/');
+          }
+        } else {
+          setMainClassroomHash(hash);
+        }
+      } else {
+        history.replace(`/login?redirect_uri=/classrooms/${hash}`);
+      }
     }
-  }, [classrooms]);
+  }, [me, classrooms]);
 
   return (
     <>
