@@ -31,9 +31,13 @@ export default class UserEntity extends BaseEntity {
   @Column({ default: false })
   initialized: boolean;
 
-  @ManyToMany(() => Classroom, (classroom) => classroom.members)
+  @ManyToMany(() => Classroom, (classroom) => classroom.members, {
+    cascade: true,
+  })
   classrooms: Classroom[];
 
-  @OneToMany(() => Classroom, (classroom) => classroom.instructor)
+  @OneToMany(() => Classroom, (classroom) => classroom.instructor, {
+    cascade: true,
+  })
   myClassrooms: Classroom[];
 }

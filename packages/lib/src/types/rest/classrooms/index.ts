@@ -1,5 +1,5 @@
 import { Empty } from '..';
-import { Response, UnauthorizedError } from '../..';
+import { KeysOfUnion, Response } from '../..';
 import { ClassroomJSON } from '../../classroom';
 
 export type ClassroomsEndpoints =
@@ -22,7 +22,15 @@ export type ClassroomsResponseType = {
 export interface ClassroomsPostRequest {
   name: string;
 }
-export type ClassroomsPostResponse = Response<ClassroomJSON, UnauthorizedError>;
+export type ClassroomsPostResponse = Response<ClassroomJSON, ClassroomsPostError>;
+export type ClassroomsPostError = {
+  code: 'INVALID_INFORMATION';
+  statusCode: 400;
+  extra: {
+    field: keyof ClassroomsPostRequest;
+    details: string;
+  }
+};
 
 /* PATCH /classrooms/:hash */
 export type ClassroomsHashPatchResponse
@@ -33,8 +41,15 @@ export type ClassroomsHashPatchRequest = {
 } | {
   operation: 'leave';
 };
-export type ClassroomsHashPatchError = UnauthorizedError | {
+export type ClassroomsHashPatchError = {
   code: 'NONEXISTENT_CLASSROOM';
   statusCode: 400;
   extra: Empty;
+} | {
+  code: 'INVALID_INFORMATION';
+  statusCode: 400;
+  extra: {
+    field: KeysOfUnion<ClassroomsHashPatchRequest>;
+    details: string;
+  }
 };

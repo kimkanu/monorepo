@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { Provider, SSOAccountJSON } from '@team-10/lib';
+import { Provider, SSOAccountJSON, UserInfoJSON } from '@team-10/lib';
 import { Socket } from 'socket.io';
 import { getConnection, Repository } from 'typeorm';
 
@@ -70,10 +70,26 @@ export default class UserManager {
 
   async getEntity(userId: string): Promise<UserEntity | null> {
     const userRepository = getConnection().getRepository(UserEntity);
-    return await userRepository.findOne({
+    const user = await userRepository.findOne({
       where: { stringId: userId },
-      relations: ['classrooms', 'myClassrooms', 'ssoAccounts'],
-    }) ?? null;
+      join: {
+        alias: 'user',
+        leftJoinAndSelect: {
+          classrooms: 'user.classrooms',
+          myClassrooms: 'user.myClassrooms',
+          ssoAccounts: 'user.ssoAccounts',
+        },
+      },
+    });
+    return user ?? null;
+  }
+
+  async getEntityOrFail(userId: string): Promise<UserEntity> {
+    const user = await this.getEntity(userId);
+    if (!user) {
+      throw new Error('getEntityOrFail has failed.');
+    }
+    return user;
   }
 
   getSerializableUserInfoFromEntity(userEntity: UserEntity) {
@@ -88,6 +104,14 @@ export default class UserManager {
       })),
       classroomHashes: userEntity.classrooms.map((c) => c.hash),
       myClassroomHashes: userEntity.myClassrooms.map((c) => c.hash),
+    };
+  }
+
+  getUserInfoJSONFromEntity(userEntity: UserEntity): UserInfoJSON {
+    return {
+      stringId: userEntity.stringId,
+      displayName: userEntity.displayName,
+      profileImage: userEntity.profileImage,
     };
   }
 

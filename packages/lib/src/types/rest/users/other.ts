@@ -8,7 +8,7 @@ export type UsersOtherPathParams = {
   'GET /users/:id': { id: string };
 };
 export type UsersOtherRequestBodyType = {
-  'GET /users/:id': undefined;
+  'GET /users/:id': Empty;
 };
 export type UsersOtherResponseType = {
   'GET /users/:id': UsersOtherGetResponse;
@@ -18,8 +18,8 @@ export type UsersOtherResponseType = {
 export interface UserInfoOtherJSON extends UserInfoJSON {
   commonClassrooms: ClassroomJSON[];
 }
-type UsersOtherGetResponse = Response<UserInfoOtherJSON, UserInfoOtherGetError>;
-type UserInfoOtherGetError = {
+export type UsersOtherGetResponse = Response<UserInfoOtherJSON, UserInfoOtherGetError>;
+export type UserInfoOtherGetError = {
   code: 'NONEXISTENT_USER';
   statusCode: 404;
   extra: Empty;

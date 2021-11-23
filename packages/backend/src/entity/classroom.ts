@@ -23,18 +23,20 @@ export default class ClassroomEntity extends BaseEntity {
   @Column()
   name: string;
 
-  @ManyToOne(() => User, (user) => user.myClassrooms, {
-    cascade: true,
-  })
+  @ManyToOne(() => User, (user) => user.myClassrooms)
   @JoinTable()
   instructor: User;
 
-  @ManyToMany(() => User, (user) => user.classrooms, {
-    cascade: true,
-  })
+  @ManyToMany(() => User, (user) => user.classrooms)
   @JoinTable()
   members: User[];
 
   @OneToMany(() => History, (history) => history.classroom)
   histories: History[];
+
+  @Column()
+  passcode: string;
+
+  @Column({ type: 'timestamptz' })
+  updatedAt: Date;
 }

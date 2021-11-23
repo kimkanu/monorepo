@@ -8,8 +8,6 @@ router.get(
     const { redirectUri } = req.session;
     req.session.redirectUri = undefined;
 
-    console.log(redirectUri);
-
     if (req.user?.initialized) {
       res.redirect(redirectUri ?? '/');
     } if (redirectUri) {

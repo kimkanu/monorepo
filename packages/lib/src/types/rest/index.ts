@@ -20,7 +20,7 @@ export interface SuccessResponse<P> {
 }
 export interface FailureResponse<E extends ResponseError> {
   success: false;
-  error: UnauthorizedError | E;
+  error: UnauthorizedError | InternalServerError | E;
 }
 export interface ResponseError {
   code: string;
@@ -31,6 +31,13 @@ export interface UnauthorizedError extends ResponseError {
   code: 'UNAUTHORIZED';
   statusCode: 401;
   extra: Empty;
+}
+export interface InternalServerError extends ResponseError {
+  code: 'INTERNAL_SERVER_ERROR';
+  statusCode: 500;
+  extra: {
+    details?: string;
+  }
 }
 export const unauthorizedError: UnauthorizedError = {
   code: 'UNAUTHORIZED',

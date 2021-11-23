@@ -21,7 +21,7 @@ export type UsersMePathParams = UsersMeSSOAccountsPathParams & {
 };
 export type UsersMeRequestBodyType = UsersMeSSOAccountsRequestBodyType & {
   'GET /users/me': Empty;
-  'PATCH /users/me': Partial<PatchableUserInfoJSON>;
+  'PATCH /users/me': Partial<UserInfoJSON>;
   'DELETE /users/me': Empty;
 };
 export type UsersMeResponseType = UsersMeSSOAccountsResponseType & {
@@ -34,8 +34,8 @@ export type UsersMeResponseType = UsersMeSSOAccountsResponseType & {
 type UsersMeGetResponse = Response<UserInfoMeJSON, never>;
 
 // PATCH /users/me
-type UsersMePatchResponse = Response<UserInfoMeJSON, UsersMePatchError>;
-type UsersMePatchError = {
+export type UsersMePatchResponse = Response<UserInfoJSON, UsersMePatchError>;
+export type UsersMePatchError = {
   code: 'INVALID_INFORMATION';
   statusCode: 400;
   extra: {
@@ -47,11 +47,6 @@ type UsersMePatchError = {
 // DELETE /users/me
 type UsersMeDeleteResponse = Response<Empty, never>;
 
-interface PatchableUserInfoJSON {
-  stringId: string;
-  displayName: string;
-  profileImage: string;
-}
 interface UserInfoMeJSON extends UserInfoJSON {
   initialized: boolean;
   ssoAccounts: SSOAccountJSON[];
