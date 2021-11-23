@@ -2,7 +2,7 @@ import { ContactCard20Filled, SpinnerIos20Regular } from '@fluentui/react-icons'
 import CancelablePromise from 'cancelable-promise';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import Button from '../components/buttons/Button';
 import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
@@ -11,6 +11,7 @@ import TextInput from '../components/input/TextInput';
 import ContentPadding from '../components/layout/ContentPadding';
 import Fade from '../components/layout/Fade';
 import meState from '../recoil/me';
+import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
 
 const Welcome: React.FC = () => {
@@ -18,6 +19,7 @@ const Welcome: React.FC = () => {
   const location = useLocation();
 
   const me = useRecoilValue(meState.atom);
+  const addToast = useSetRecoilState(toastState.new);
 
   const idRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -125,11 +127,20 @@ const Welcome: React.FC = () => {
                       if (response.success) {
                         const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
                         history.replace(`/welcome/done?redirect_uri=${query}`);
+                      } else {
+                        setWaitingResponse(false);
+                        addToast({
+                          sentAt: new Date(),
+                          type: 'error',
+                          message: `[${response.error.code}] ${response.error.extra?.details ?? ''}`,
+                        });
                       }
                     } catch (e) {
-                      // TODO: toast
-                      setWaitingResponse(false);
-                      console.log('TODO: toast');
+                      addToast({
+                        sentAt: new Date(),
+                        type: 'error',
+                        message: '알 수 없는 오류가 발생했습니다.',
+                      });
                     }
                   }}
                 />

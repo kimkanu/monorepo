@@ -10,7 +10,7 @@ import {
 export default async function fetchAPI<E extends Endpoints>(
   endpoint: E,
   pathParams: PathParams[E] = ({} as any),
-  body?: RequestBodyType[E],
+  body?: RequestBodyType[E] | FormData,
 ): Promise<ResponseType[E]> {
   const urls = endpoint.split(' ');
   const method = urls[0] as FetchMethods;
@@ -18,10 +18,15 @@ export default async function fetchAPI<E extends Endpoints>(
     /(?<=\/):(\w+)(?=\/|$)/g,
     (param) => (pathParams as Record<string, string>)[param.slice(1)],
   );
+  console.log(body, body instanceof FormData);
   const response = await fetch(`/api${url}`, {
     method,
-    body: JSON.stringify(body),
-    ...(body ? { headers: { 'Content-Type': 'application/json' } } : {}),
+    body: body instanceof FormData ? body : JSON.stringify(body),
+    ...(body && !(body instanceof FormData) ? {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    } : {}),
   });
   if (response.status === 401) {
     return { success: false, error: unauthorizedError };

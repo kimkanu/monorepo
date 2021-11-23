@@ -18,7 +18,7 @@ type Validator =
 
 interface Props {
   value: string;
-  onInput?: (newText: string) => void;
+  onInput?: (newText: string, event: React.FormEvent<HTMLInputElement>) => void;
   icon?: React.ReactElement | null; // `20Regular`
   filled?: boolean;
   type?: 'text' | 'password';
@@ -151,7 +151,7 @@ const TextInput: React.FC<Styled<Props>> = ({
         value={value}
         onInput={(e) => {
           if (onInput) {
-            onInput(e.currentTarget.value);
+            onInput(e.currentTarget.value, e);
           }
         }}
         onKeyPress={(e) => {

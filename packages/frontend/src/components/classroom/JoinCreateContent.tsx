@@ -6,6 +6,7 @@ import React from 'react';
 
 import AmbientButton from '../buttons/AmbientButton';
 import Button from '../buttons/Button';
+import Title from '../elements/Title';
 import TextInput from '../input/TextInput';
 
 interface Props {
@@ -31,25 +32,52 @@ const JoinCreateContent: React.FC<Props> = ({
   return (
     <div>
       <section>
-        <div className="flex justify-between mb-6 items-end">
-          <h2 className="text-sect font-bold">
-            Join Class
-          </h2>
-          <div className="w-8 h-8 relative">
-            <AmbientButton icon={<QrCode28Regular />} size={48} style={{ top: -8, left: -8 }} className="absolute" />
+        <Title size="sect" className="mb-6 mt-2">
+          <div className="flex justify-between items-end">
+            수업 참가하기
+            <div className="w-8 h-8 relative">
+              <AmbientButton icon={<QrCode28Regular />} size={48} style={{ top: -8, left: -8 }} className="absolute" />
+            </div>
           </div>
-        </div>
+        </Title>
         <div className="w-full flex flex-col gap-4">
           <TextInput
             value={classroomIdJoin}
-            onInput={setClassroomIdJoin}
+            onInput={(v, e) => {
+              const prev = classroomIdJoin;
+              const { currentTarget } = e;
+              const { selectionStart, selectionEnd } = currentTarget;
+              if (prev.length === 11 && v.length > 11) {
+                setTimeout(() => {
+                  currentTarget.selectionStart = selectionStart;
+                  currentTarget.selectionEnd = selectionEnd;
+                }, 0);
+                return;
+              }
+              const next = Array.from(v.toUpperCase().replace(/[^A-Za-z]/g, '').slice(0, 9)).reduce((all, one, i) => {
+                const ch = Math.floor(i / 3);
+                // eslint-disable-next-line no-param-reassign
+                all[ch] = ([] as string[]).concat((all[ch] ?? []), one);
+                return all;
+              }, [] as string[][]).map((x) => x.join('')).join('-');
+              if (prev.length !== next.length) {
+                setTimeout(() => {
+                  currentTarget.selectionStart = (selectionStart ?? 0)
+                    + (next.length - prev.length === 2 ? 1 : 0);
+                  currentTarget.selectionEnd = currentTarget.selectionStart;
+                }, 0);
+              }
+              setClassroomIdJoin(next);
+            }}
             placeholderText="Classroom ID"
+            font="mono"
             nextRef={passwordJoinRef}
             icon={<NumberSymbol20Regular />}
           />
           <TextInput
             ref_={passwordJoinRef}
             type="password"
+            font="mono"
             value={passwordJoin}
             onInput={setPasswordJoin}
             placeholderText="Password"
@@ -68,9 +96,7 @@ const JoinCreateContent: React.FC<Props> = ({
         </div>
       </section>
       <section className="mt-14">
-        <h2 className="text-sect font-bold mb-6">
-          Create Class
-        </h2>
+        <Title size="sect" className="mb-6">수업 만들기</Title>
         <div className="w-full flex flex-col gap-4">
           <TextInput
             value={classNameCreate}

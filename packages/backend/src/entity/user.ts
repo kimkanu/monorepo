@@ -28,6 +28,9 @@ export default class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   profileImage: string;
 
+  @Column({ nullable: true })
+  profileImageDeleteHash: string;
+
   @Column({ default: false })
   initialized: boolean;
 

@@ -41,7 +41,7 @@ const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, onRemove }) => (
         alt={ssoAccount.provider}
       />
     </div>
-    <span>{ssoAccount.providerId}</span>
+    <span className="font-mono font-emph font-bold">{ssoAccount.providerId}</span>
     <Button onClick={onRemove} className="absolute right-0 top-0" width="fit-content" type="destructive" icon={<Dismiss20Regular />} />
   </div>
 );

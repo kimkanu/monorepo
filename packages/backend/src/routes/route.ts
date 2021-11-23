@@ -99,6 +99,7 @@ export default class Route {
     listener(
       url,
       authenticationMiddleware,
+      this.server.upload.single('file'),
       async (req, res, next) => {
         const params = { ...req.query, ...req.params } as PathParams[E] & Record<string, string>;
         const response = await middleware(
