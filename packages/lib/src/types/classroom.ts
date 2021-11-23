@@ -20,5 +20,5 @@ export interface ClassroomJSON {
   video: YouTubeVideo | null;
   isLive: boolean;
   passcode: string;
-  updatedAt: Date;
+  updatedAt: number;
 }

@@ -227,7 +227,7 @@ export default class ClassroomManager {
       video: classroom.video,
       isLive: classroom.isLive,
       passcode: classroom.passcode,
-      updatedAt: classroom.updatedAt,
+      updatedAt: classroom.updatedAt.getTime(),
     };
   }
 }
