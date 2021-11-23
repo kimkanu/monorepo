@@ -120,7 +120,7 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
         <>
           <AmbientButton
             alt="Langauge Selection"
-            className="mr-1"
+            className="mr-2.5"
             icon={(
               <span className="w-6 h-6">
                 <span className="inline-flex items-center w-10">

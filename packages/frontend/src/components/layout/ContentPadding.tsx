@@ -19,7 +19,7 @@ const ContentPadding: React.FC<Props> = ({ isFooterPresent, ref_, children }) =>
         paddingRight: `calc(env(safe-area-inset-right, 0px) + ${width >= 960 ? 32 : 24}px)`,
       }}
     >
-      <div className="w-full h-fit" style={{ maxWidth: 1184 }}>
+      <div className="w-full h-fit my-auto" style={{ maxWidth: 1184 }}>
         {children}
       </div>
     </div>

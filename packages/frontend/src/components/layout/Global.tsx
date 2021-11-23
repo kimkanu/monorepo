@@ -10,6 +10,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
 
 import useRedirect from '../../hooks/useRedirect';
+import useSocket from '../../hooks/useSocket';
 
 import classroomsState from '../../recoil/classrooms';
 import dialogState from '../../recoil/dialog';
@@ -17,8 +18,8 @@ import dropdownState from '../../recoil/dropdown';
 import loadingState from '../../recoil/loading';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
-import fetchAPI from '../../utils/fetch';
 
+import fetchAPI from '../../utils/fetch';
 import { Styled } from '../../utils/style';
 import { getYouTubePlayerStateName } from '../../utils/youtube';
 
@@ -43,6 +44,14 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const toasts = useRecoilValue(toastState.atom);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
   const [me, setMe] = useRecoilState(meState.atom);
+
+  const { connected } = useSocket('/');
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      setLoading(!connected);
+    }
+  }, [connected]);
 
   const onYouTubeReady = (player: YouTubePlayer) => {
     console.log('Player ready', player);
