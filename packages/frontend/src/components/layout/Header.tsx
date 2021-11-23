@@ -18,6 +18,7 @@ import meState from '../../recoil/me';
 import { HeaderMenu } from '../../types/header';
 import ScreenType from '../../types/screen';
 import AmbientButton from '../buttons/AmbientButton';
+import LogoButton from '../buttons/LogoButton';
 
 interface Props {
   onMenu?: (menu: HeaderMenu) => void;
@@ -52,7 +53,7 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
     >
       <div className="flex items-center">
         {/* Back button or Logo */}
-        <div className="w-10 h-10 mr-4" style={{ marginLeft: -2 }}>
+        <div className="w-10 h-10 mr-4 flex justify-center items-center">
           {inClassroom ? (
             <AmbientButton
               alt="Back"
@@ -61,7 +62,7 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
                   className="inline-block"
                   style={{ transform: 'translateX(3px)' }}
                 />
-                  )}
+              )}
               onClick={() => {
                 if (history.length > 0) {
                   history.goBack();
@@ -71,12 +72,9 @@ const Header: React.FC<Props> = ({ onMenu = () => {} }) => {
               }}
             />
           ) : (
-            <AmbientButton
-              alt="Navigate to Home"
-              icon={<span>Logo Here</span>}
-              isImageIcon
+            <LogoButton
               onClick={() => {
-                if (me.loaded && (!me.info || me.info.initialized)) {
+                if (me.loaded && (!me.info || me.info.initialized) && location.pathname !== '/') {
                   history.push('/');
                 }
               }}

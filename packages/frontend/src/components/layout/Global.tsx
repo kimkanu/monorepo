@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import { ClassroomJSON } from '@team-10/lib';
 import React from 'react';
 import {
   useLocation,
@@ -32,6 +33,24 @@ import YTWrapper from '../youtube/YTWrapper';
 import Debug from './Debug';
 import Loading from './Loading';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
+
+function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJSON[] {
+  return classrooms.slice(0)
+    .sort((c1, c2) => {
+      // Live
+      const isLive1 = c1.isLive ? 1 : 0;
+      const isLive2 = c2.isLive ? 1 : 0;
+      if (isLive1 !== isLive2) return isLive2 - isLive1;
+
+      // Mine
+      const isInstructor1 = c1.instructorId === userId ? 1 : 0;
+      const isInstructor2 = c2.instructorId === userId ? 1 : 0;
+      if (isInstructor1 !== isInstructor2) return isInstructor2 - isInstructor1;
+
+      // updatedAt
+      return c2.updatedAt - c1.updatedAt;
+    });
+}
 
 const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const history = useHistory();
@@ -68,18 +87,20 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
 
   React.useEffect(() => {
     setLoading(true);
-    fetchAPI('GET /users/me').then((response) => {
-      if (response.success) {
-        setMe({
-          loaded: true,
-          info: response.payload,
-        });
-        setClassrooms(response.payload.classrooms);
-      } else {
-        setMe({ loaded: true, info: null });
-      }
-    })
-      .catch(() => {
+    fetchAPI('GET /users/me')
+      .then((response) => {
+        if (response.success) {
+          setMe({
+            loaded: true,
+            info: response.payload,
+          });
+          setClassrooms(sortClassrooms(response.payload.classrooms, response.payload.stringId));
+        } else {
+          setMe({ loaded: true, info: null });
+        }
+      })
+      .catch((e) => {
+        console.log(e);
         setMe({ loaded: true, info: null });
       })
       .finally(() => {
