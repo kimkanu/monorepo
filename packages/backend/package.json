@@ -29,7 +29,7 @@
   },
   "scripts": {
     "development": "yarn install && nodemon",
-    "production": "yarn install && ts-node --files src/index.ts",
+    "production": "ts-node --files src/index.ts",
     "dev": "yarn development",
     "prod": "yarn production",
     "lint": "eslint --fix .",
