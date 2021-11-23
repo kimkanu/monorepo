@@ -1,25 +1,41 @@
 import { SSOAccountJSON, UserInfoJSON } from '..';
 import { Response } from '../..';
-import { ClassroomJSON } from '../../classroom';
+import { ClassroomJSON } from '../../../classroom';
 
-export interface UserInfoMeJSON extends UserInfoJSON {
-  initialized: boolean;
-  ssoAccounts: SSOAccountJSON[];
-  classrooms: ClassroomJSON[];
-}
+import {
+  UsersMeSSOAccountsEndpoints,
+  UsersMeSSOAccountsPathParams,
+  UsersMeSSOAccountsRequestBodyType,
+  UsersMeSSOAccountsResponseType,
+} from './sso-accounts';
 
-export interface PatchableUserInfoJSON {
-  stringId: string;
-  displayName: string;
-  profileImage: string;
-}
+export type UsersMeEndpoints =
+  | UsersMeSSOAccountsEndpoints
+  | 'GET /users/me'
+  | 'PATCH /users/me'
+  | 'DELETE /users/me';
+export type UsersMePathParams = UsersMeSSOAccountsPathParams & {
+  'GET /users/me': undefined;
+  'PATCH /users/me': undefined;
+  'DELETE /users/me': undefined;
+};
+export type UsersMeRequestBodyType = UsersMeSSOAccountsRequestBodyType & {
+  'GET /users/me': undefined;
+  'PATCH /users/me': Partial<PatchableUserInfoJSON>;
+  'DELETE /users/me': undefined;
+};
+export type UsersMeResponseType = UsersMeSSOAccountsResponseType & {
+  'GET /users/me': UsersMeGetResponse;
+  'PATCH /users/me': UsersMePatchResponse;
+  'DELETE /users/me': UsersMeDeleteResponse;
+};
 
 // GET /users/me
-export type UsersMeGetResponse = Response<UserInfoMeJSON, never>;
+type UsersMeGetResponse = Response<UserInfoMeJSON, never>;
 
 // PATCH /users/me
-export type UsersMePatchResponse = Response<Partial<PatchableUserInfoJSON>, UsersMePatchError>;
-export type UsersMePatchError = {
+type UsersMePatchResponse = Response<UserInfoMeJSON, UsersMePatchError>;
+type UsersMePatchError = {
   code: 'INVALID_INFORMATION';
   statusCode: 400;
   extra: {
@@ -29,6 +45,17 @@ export type UsersMePatchError = {
 };
 
 // DELETE /users/me
-export type UsersMeDeleteResponse = Response<Record<string, never>, never>;
+type UsersMeDeleteResponse = Response<Record<string, never>, never>;
+
+interface PatchableUserInfoJSON {
+  stringId: string;
+  displayName: string;
+  profileImage: string;
+}
+interface UserInfoMeJSON extends UserInfoJSON {
+  initialized: boolean;
+  ssoAccounts: SSOAccountJSON[];
+  classrooms: ClassroomJSON[];
+}
 
 export * from './sso-accounts';
