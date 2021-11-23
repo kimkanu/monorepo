@@ -115,6 +115,7 @@ export default class Server {
         directives: {
           ...helmet.contentSecurityPolicy.getDefaultDirectives(),
           'script-src': ["'self'", "'unsafe-inline'"], // TODO: remove 'unsafe-inline'
+          'img-src': ["'self'", 'data: https:'], // TODO: remove 'unsafe-inline'
         },
       },
     }));
