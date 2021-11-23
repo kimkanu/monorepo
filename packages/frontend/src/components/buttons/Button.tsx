@@ -43,7 +43,7 @@ const Button: React.FC<Styled<Props>> = ({
       ? null
       : <SpinnerIos20Regular className="animate-spin block" style={{ height: 20 }} />;
 
-  const filled = isLoading === null ? filled_ : true;
+  const filled = isLoading === null ? filled_ : false;
 
   const text = isLoading === null
     ? text_
@@ -74,7 +74,7 @@ const Button: React.FC<Styled<Props>> = ({
         disabled
           ? styles.disabled
           : mergeClassNames(pressedByKey ? styles.pressed : styles.released, styles[type], `shadow-color-${type}`),
-        isLoading ? 'shadow-none' : null,
+        isLoading ? 'shadow-none hover:shadow-none focus:shadow-none active:shadow-none cursor-wait' : null,
         disabled
           ? 'shadow-none hover:shadow-none focus:shadow-none active:shadow-none cursor-not-allowed'
           : '',

@@ -1,13 +1,15 @@
 /* istanbul ignore file */
-import { UsersMeGetResponse } from '@team-10/lib';
 import React from 'react';
 import {
   useLocation,
   useHistory,
 } from 'react-router-dom';
+import ScrollRestoration from 'react-scroll-restoration';
 import YouTube from 'react-youtube';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
+
+import useRedirect from '../../hooks/useRedirect';
 
 import classroomsState from '../../recoil/classrooms';
 import dialogState from '../../recoil/dialog';
@@ -15,8 +17,8 @@ import dropdownState from '../../recoil/dropdown';
 import loadingState from '../../recoil/loading';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
+import fetchAPI from '../../utils/fetch';
 
-import { MeInfo } from '../../types/user';
 import { Styled } from '../../utils/style';
 import { getYouTubePlayerStateName } from '../../utils/youtube';
 
@@ -35,7 +37,7 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
   const location = useLocation();
   const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
 
-  const classrooms = useRecoilValue(classroomsState.atom);
+  const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
   const dropdown = useRecoilValue(dropdownState.atom);
   const dialog = useRecoilValue(dialogState.atom);
   const toasts = useRecoilValue(toastState.atom);
@@ -53,30 +55,23 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
     }
   };
 
+  useRedirect(me.loaded && !!me.info && !me.info.initialized, [me], '/welcome');
+
   React.useEffect(() => {
     setLoading(true);
-    fetch('/api/users/me')
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        }
-        if (response.status === 401) {
-          throw new Error('Unauthorized');
-        }
-        throw new Error('Not supported');
-      })
-      .then((response: UsersMeGetResponse) => {
-        if (response.success) {
-          setMe({
-            loading: false,
-            info: response.payload,
-          });
-        } else {
-          setMe({ loading: false, info: null });
-        }
-      })
-      .catch((e) => {
-        setMe({ loading: false, info: null });
+    fetchAPI('GET /users/me').then((response) => {
+      if (response.success) {
+        setMe({
+          loaded: true,
+          info: response.payload,
+        });
+        setClassrooms(response.payload.classrooms);
+      } else {
+        setMe({ loaded: true, info: null });
+      }
+    })
+      .catch(() => {
+        setMe({ loaded: true, info: null });
       })
       .finally(() => {
         setLoading(false);
@@ -87,6 +82,9 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
     <div className={className} style={style}>
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
+
+      {/* 스크롤 위치 복구 */}
+      <ScrollRestoration />
 
       {/* 디버그용 컴포넌트 */}
       <Debug />

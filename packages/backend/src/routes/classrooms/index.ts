@@ -22,7 +22,7 @@ export default function generateRoute(server: Server): Route {
             statusCode: 400,
             extra: {
               field: 'name',
-              details: 'Not a value of type string',
+              details: 'Not a value of string type',
             },
           },
         };
@@ -48,7 +48,7 @@ export default function generateRoute(server: Server): Route {
         return next();
       }
 
-      if (!operation || ['join'].includes(operation)) {
+      if (!operation) {
         return {
           success: false,
           error: {
@@ -56,7 +56,7 @@ export default function generateRoute(server: Server): Route {
             statusCode: 400,
             extra: {
               field: 'operation',
-              details: 'Not a value of type string',
+              details: 'Not a value of string type',
             },
           },
         };
@@ -110,19 +110,33 @@ export default function generateRoute(server: Server): Route {
             statusCode: 500,
             extra: {},
           },
-        } as ClassroomsHashPatchResponse;
+        };
+      }
+
+      if (operation === 'leave') {
+        return {
+          success: false,
+          error: {
+            code: 'INTERNAL_SERVER_ERROR',
+            statusCode: 500,
+            extra: {
+              details: 'Not implemented',
+            },
+          },
+        };
       }
 
       return {
         success: false,
         error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          statusCode: 500,
+          code: 'INVALID_INFORMATION',
+          statusCode: 400,
           extra: {
-            details: 'Not implemented',
+            field: 'operation',
+            details: 'Not a value of string type',
           },
         },
-      } as ClassroomsHashPatchResponse;
+      };
     },
   );
 

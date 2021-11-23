@@ -14,10 +14,10 @@ const addSSOAccountSelector = selector<SSOAccountJSON>({
   set: ({ set }, a) => {
     if (guardRecoilDefaultValue(a)) return;
     set(meAtom, (me) => {
-      if (me.loading || !me.info) return me;
+      if (!me.loaded || !me.info) return me;
 
       const newSSOAccounts = me.info.ssoAccounts.concat(a);
-      return { loading: false, info: { ...me.info, ssoAccounts: newSSOAccounts } };
+      return { loaded: true, info: { ...me.info, ssoAccounts: newSSOAccounts } };
     });
   },
 });

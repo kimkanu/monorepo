@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
+import Fade from './components/layout/Fade';
 import Global from './components/layout/Global';
 import Layout from './components/layout/Layout';
 import Classroom from './pages/Classroom';
@@ -28,10 +29,13 @@ const App: React.FC = () => {
       <Layout className={`theme-${theme}`}>
         {/* Main page */}
         <Route
-          path="/"
-          render={({ location }) => (
-            ['/', '/classrooms/new'].includes(location.pathname) ? <Main /> : null
-          )}
+          exact
+          path={['/', '/classrooms/new']}
+          render={() => <Main />}
+        />
+        <Route
+          path="/classrooms/:hash"
+          render={({ match }) => (match.params.hash === 'new' ? null : <Main />)}
         />
 
         {/* Welcome pages */}
@@ -48,9 +52,11 @@ const App: React.FC = () => {
 
         {/* Classroom page */}
         <Route
-          path="/classrooms/:id"
+          path="/classrooms/:hash"
           render={({ match }) => (
-            classroomHashRegex.test(match.params.id) ? <Classroom /> : null
+            classroomHashRegex.test(match.params.hash)
+              ? <Classroom hash={match.params.hash} />
+              : null
           )}
         />
 

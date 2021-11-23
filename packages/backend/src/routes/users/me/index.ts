@@ -56,7 +56,7 @@ export default function generateRoute(server: Server): Route {
           statusCode: 400,
           extra: {
             field: 'stringId',
-            details: 'Not a value of type string',
+            details: 'Not a value of string type',
           },
         };
       } else if (!/^[\w\d._\-:]{3,}$/.test(stringId)) {
@@ -74,7 +74,7 @@ export default function generateRoute(server: Server): Route {
           statusCode: 400,
           extra: {
             field: 'displayName',
-            details: 'Not a value of type string',
+            details: 'Not a value of string type',
           },
         };
       } else if (false) { // TODO: validate profileImage

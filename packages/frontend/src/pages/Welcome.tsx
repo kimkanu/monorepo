@@ -1,9 +1,8 @@
 import { ContactCard20Filled, SpinnerIos20Regular } from '@fluentui/react-icons';
-import { UsersMePatchResponse, UsersOtherGetResponse } from '@team-10/lib';
 import CancelablePromise from 'cancelable-promise';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 import Button from '../components/buttons/Button';
 import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
@@ -11,16 +10,14 @@ import Title from '../components/elements/Title';
 import TextInput from '../components/input/TextInput';
 import ContentPadding from '../components/layout/ContentPadding';
 import Fade from '../components/layout/Fade';
-import loadingState from '../recoil/loading';
 import meState from '../recoil/me';
-import { MeInfo } from '../types/user';
+import fetchAPI from '../utils/fetch';
 
 const Welcome: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const [me, setMe] = useRecoilState(meState.atom);
-  const setLoading = useSetRecoilState(loadingState.atom);
+  const me = useRecoilValue(meState.atom);
 
   const idRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -33,7 +30,7 @@ const Welcome: React.FC = () => {
   const [isStringIdValid, setStringIdValid] = React.useState(true);
 
   React.useEffect(() => {
-    if (!me.loading && me.info) {
+    if (me.loaded && me.info) {
       if (me.info.initialized) {
         const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
         history.replace(query);
@@ -41,14 +38,14 @@ const Welcome: React.FC = () => {
         setDisplayName(me.info.displayName);
         setStringId(me.info.stringId);
       }
-    } else if (!me.loading) {
+    } else if (me.loaded) {
       history.replace('/login?redirect_uri=/welcome');
     }
-  }, [me.loading]);
+  }, [me.loaded]);
 
   return (
     <ContentPadding isFooterPresent>
-      <Fade visible={!me.loading}>
+      <Fade visible={me.loaded && location.pathname === '/welcome'}>
         {(ref) => (
           <NarrowPageWrapper ref_={ref}>
             <Title size="title">
@@ -77,7 +74,7 @@ const Welcome: React.FC = () => {
                   validator={(value) => new CancelablePromise<boolean>((
                     resolve, reject, onCancel,
                   ) => {
-                    if (!/^[\w\d._\-:]{3,}$/.test(value) || value === 'me' || me.loading || !me.info) {
+                    if (!/^[\w\d._\-:]{3,}$/.test(value) || value === 'me' || !me.loaded || !me.info) {
                       setStringIdValid(false);
                       resolve(false);
                       return;
@@ -95,9 +92,8 @@ const Welcome: React.FC = () => {
                     }
 
                     const timeout = setTimeout(() => {
-                      fetch(`/api/users/${value}`)
-                        .then((res) => res.json())
-                        .then((response: UsersOtherGetResponse) => {
+                      fetchAPI('GET /users/:id', { id: value })
+                        .then((response) => {
                           setStringIdValid(!response.success);
                           resolve(!response.success);
                         })
@@ -125,14 +121,7 @@ const Welcome: React.FC = () => {
                     if (isWaitingResponse) return;
                     try {
                       setWaitingResponse(true);
-                      const response: UsersMePatchResponse = await fetch(
-                        'https://192.168.0.17:3567/api/users/me',
-                        {
-                          method: 'PATCH',
-                          body: JSON.stringify({ stringId, displayName }),
-                          headers: { 'Content-Type': 'application/json' },
-                        },
-                      ).then((r) => r.json());
+                      const response = await fetchAPI('PATCH /users/me', {}, { stringId, displayName });
                       if (response.success) {
                         const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
                         history.replace(`/welcome/done?redirect_uri=${query}`);

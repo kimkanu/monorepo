@@ -18,7 +18,7 @@ const WelcomeDone: React.FC = () => {
 
   return (
     <ContentPadding isFooterPresent>
-      <Fade visible={!me.loading}>
+      <Fade visible={me.loaded}>
         {(ref) => (
           <NarrowPageWrapper ref_={ref}>
             <section>

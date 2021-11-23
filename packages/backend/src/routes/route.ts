@@ -90,10 +90,10 @@ export default class Route {
     const url = urls.slice(1).join(' ');
 
     const listener: IRouterMatcher<Router> = {
-      GET: this.router.get,
-      POST: this.router.post,
-      PATCH: this.router.patch,
-      DELETE: this.router.delete,
+      GET: this.router.get.bind(this.router),
+      POST: this.router.post.bind(this.router),
+      PATCH: this.router.patch.bind(this.router),
+      DELETE: this.router.delete.bind(this.router),
     }[method];
 
     listener(

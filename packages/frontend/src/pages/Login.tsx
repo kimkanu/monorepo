@@ -14,7 +14,7 @@ const Login: React.FC = () => {
   const me = useRecoilValue(meState.atom);
 
   React.useEffect(() => {
-    if (!me.loading && me.info) {
+    if (me.loaded && me.info) {
       const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
       history.replace(query);
     }
@@ -22,7 +22,7 @@ const Login: React.FC = () => {
 
   return (
     <ContentPadding isFooterPresent>
-      <Fade visible={!me.loading}>
+      <Fade visible={me.loaded && location.pathname === '/login'}>
         {(ref) => (
           <div ref={ref} className="mx-auto mb-16" style={{ maxWidth: 360 }}>
             <h1 className="text-title my-16 font-bold text-center">
