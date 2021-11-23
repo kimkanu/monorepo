@@ -14,12 +14,12 @@ const removeSSOAccountSelector = selector<SSOAccountJSON>({
   set: ({ set }, a) => {
     if (guardRecoilDefaultValue(a)) return;
     set(meAtom, (me) => {
-      if (me.loading || !me.info) return me;
+      if (!me.loaded || !me.info) return me;
 
       const newSSOAccounts = me.info.ssoAccounts.filter((s) => (
         s.provider === a.provider && s.providerId === a.providerId
       ));
-      return { loading: false, info: { ...me.info, ssoAccounts: newSSOAccounts } };
+      return { loaded: true, info: { ...me.info, ssoAccounts: newSSOAccounts } };
     });
   },
 });

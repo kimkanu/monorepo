@@ -11,14 +11,14 @@ import meState from '../recoil/me';
 const Profile: React.FC = () => {
   const me = useRecoilValue(meState.atom);
 
-  const visible = !me.loading && !!me.info;
-  useRedirect(!me.loading && !me.info, [me]);
+  const visible = me.loaded && !!me.info;
+  useRedirect(visible, [me]);
 
   const [profileImage, setProfileImage] = React.useState('');
   const [isProfileImageChanging, setProfileImageChanging] = React.useState(false);
 
   React.useEffect(() => {
-    if (!me.loading && !!me.info) {
+    if (me.loaded && !!me.info) {
       setProfileImage(me.info.profileImage);
     }
   }, [me]);
@@ -35,7 +35,7 @@ const Profile: React.FC = () => {
               console.log(file);
             }}
             isProfileImageChanging={isProfileImageChanging}
-            ssoAccounts={me.loading ? [] : me.info?.ssoAccounts ?? []}
+            ssoAccounts={!me.loaded ? [] : me.info?.ssoAccounts ?? []}
             onSSOAccountsRemove={() => {}}
           />
         )}

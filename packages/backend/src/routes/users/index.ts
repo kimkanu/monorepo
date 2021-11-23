@@ -1,15 +1,15 @@
-import { Router } from 'express';
-
 import Server from '../../server';
+
+import Route from '../route';
 
 import me from './me';
 import other from './other';
 
-export default function generateRouter(server: Server) {
-  const router = Router();
+export default function generateRoute(server: Server): Route {
+  const route = new Route(server);
 
-  router.use('/me', me(server));
-  router.use('/', other(server));
+  route.use(me);
+  route.use(other);
 
-  return router;
+  return route;
 }

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import React from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilSnapshot, useRecoilState, useSetRecoilState } from 'recoil';
 import { useSocket } from 'socket.io-react-hook';
 
 import useScreenType from '../../hooks/useScreenType';
@@ -10,6 +10,19 @@ import ScreenType from '../../types/screen';
 import { conditionalClassName } from '../../utils/style';
 
 import DebugWrapper from './DebugWrapper';
+
+const DebugObserver: React.FC = () => {
+  const snapshot = useRecoilSnapshot();
+  React.useEffect(() => {
+    const stateChanges = Object.fromEntries(
+      Array.from(snapshot.getNodes_UNSTABLE({ isModified: true }))
+        .map((node) => [node.key, snapshot.getLoadable(node)]),
+    );
+    console.log('The following atoms were modified:\n', stateChanges);
+  }, [snapshot]);
+
+  return <></>;
+};
 
 const Debug: React.FC = () => {
   const screenType = useScreenType();
@@ -32,6 +45,7 @@ const Debug: React.FC = () => {
 
   return (
     <DebugWrapper>
+      <DebugObserver />
       <span className="bold text-blue-500">
         {connected ? 'Connected!' : 'Disconnected.'}
       </span>

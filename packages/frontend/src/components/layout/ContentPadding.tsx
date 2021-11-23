@@ -3,13 +3,15 @@ import React from 'react';
 
 interface Props {
   isFooterPresent: boolean;
+  ref_?: React.RefObject<HTMLDivElement>;
 }
 
-const ContentPadding: React.FC<Props> = ({ isFooterPresent, children }) => {
+const ContentPadding: React.FC<Props> = ({ isFooterPresent, ref_, children }) => {
   const [width] = useWindowSize();
 
   return (
     <div
+      ref={ref_}
       className="py-8 overflow-y-auto overflow-x-hidden flex justify-center w-full"
       style={{
         height: `calc(100 * var(--wh) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - ${isFooterPresent ? 140 : 64}px)`,

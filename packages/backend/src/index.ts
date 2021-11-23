@@ -24,7 +24,6 @@ if (!process.env.SESSION_SECRET) {
 }
 
 if (process.env.DYNO) {
-  console.log('This is on Heroku..!!');
   fs.openSync('/tmp/app-initialized', 'w');
 }
 

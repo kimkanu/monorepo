@@ -1,42 +1,26 @@
-import {
-  ClassroomJSON,
-  Provider, UsersMeGetResponse, UsersMePatchError, UsersMePatchResponse,
-} from '@team-10/lib';
-import { Router } from 'express';
+import { ClassroomJSON, Provider, UsersMePatchError } from '@team-10/lib';
 import { getConnection } from 'typeorm';
 
 import UserEntity from '../../../entity/user';
 
 import { isAuthenticatedOrFail } from '../../../passport';
 import Server from '../../../server';
+import Route from '../../route';
 
 import ssoAccounts from './ssoAccounts';
 
-export default function generateRouter(server: Server) {
-  const router = Router();
+export default function generateRoute(server: Server): Route {
+  const route = new Route(server);
 
-  // GET /me
-  router.get(
-    '/',
+  route.accept(
+    'GET /users/me',
     isAuthenticatedOrFail,
-    async (req, res) => {
-      const user = req.user!;
-      const userRepository = getConnection().getRepository(UserEntity);
+    async (params, body, user, req, res) => {
       const { managers } = server;
 
-      const userEntity = await userRepository.findOneOrFail({
-        where: { id: user.id },
-        join: {
-          alias: 'user',
-          leftJoinAndSelect: {
-            ssoAccounts: 'user.ssoAccounts',
-            classrooms: 'user.classrooms',
-            myClassrooms: 'user.myClassrooms',
-          },
-        },
-      });
+      const userEntity = await managers.user.getEntityOrFail(user.stringId);
 
-      const response: UsersMeGetResponse = {
+      return {
         success: true,
         payload: {
           stringId: user.stringId,
@@ -52,25 +36,17 @@ export default function generateRouter(server: Server) {
               (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
             ),
           )).filter((x) => !!x) as ClassroomJSON[],
-          myClassrooms: (await Promise.all(
-            userEntity.myClassrooms.map(
-              (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
-            ),
-          )).filter((x) => !!x) as ClassroomJSON[],
         },
       };
-
-      res.json(response);
     },
   );
 
-  // PATCH /me // TODO
-  router.patch(
-    '/',
+  route.accept(
+    'PATCH /users/me',
     isAuthenticatedOrFail,
-    async (req, res) => {
+    async (params, body, user, req, res) => {
       // Body validation
-      const { stringId, displayName } = req.body;
+      const { stringId, displayName } = body;
       const profileImageFile = req.file; // TODO
 
       let error: UsersMePatchError | null = null;
@@ -80,7 +56,7 @@ export default function generateRouter(server: Server) {
           statusCode: 400,
           extra: {
             field: 'stringId',
-            details: 'Not a value of type string',
+            details: 'Not a value of string type',
           },
         };
       } else if (!/^[\w\d._\-:]{3,}$/.test(stringId)) {
@@ -98,7 +74,7 @@ export default function generateRouter(server: Server) {
           statusCode: 400,
           extra: {
             field: 'displayName',
-            details: 'Not a value of type string',
+            details: 'Not a value of string type',
           },
         };
       } else if (false) { // TODO: validate profileImage
@@ -113,49 +89,42 @@ export default function generateRouter(server: Server) {
       }
 
       if (error) {
-        const response: UsersMePatchResponse = {
+        return {
           success: false,
           error,
         };
-        return res.status(response.error.statusCode).json(response);
       }
 
-      const userRepository = getConnection().getRepository(UserEntity);
-
-      const user = await userRepository.findOneOrFail(req.user!.id);
+      const userEntity = await server.managers.user.getEntityOrFail(user.stringId);
       if (stringId) {
-        user.stringId = stringId;
+        userEntity.stringId = stringId;
       }
       if (displayName) {
-        user.displayName = displayName;
+        userEntity.displayName = displayName;
       }
-      // patch user.profileImage
-      user.initialized = true;
-      await user.save();
+      // TODO: patch user.profileImage
+      userEntity.initialized = true;
+      await userEntity.save();
 
-      const response: UsersMePatchResponse = {
+      req.user = userEntity;
+
+      return {
         success: true,
-        payload: {
-          stringId: user.stringId,
-          displayName: user.displayName,
-          profileImage: user.profileImage,
-        },
+        payload: server.managers.user.getUserInfoJSONFromEntity(userEntity),
       };
-
-      res.json(response);
     },
   );
 
-  // DELETE /me // TODO
-  router.get(
-    '/',
-    isAuthenticatedOrFail,
-    async (req, res) => {
+  // TODO
+  // route.accept(
+  //   'DELETE /users/me',
+  //   isAuthenticatedOrFail,
+  //   async (params, body, user, req, res) => {
 
-    },
-  );
+  //   },
+  // );
 
-  router.use('/sso-accounts', ssoAccounts(server));
+  route.use(ssoAccounts);
 
-  return router;
+  return route;
 }

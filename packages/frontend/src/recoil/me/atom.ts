@@ -3,15 +3,15 @@ import { atom } from 'recoil';
 import { MeInfo } from '../../types/user';
 
 type MeState = {
-  loading: true;
+  loaded: false;
 } | {
-  loading: false;
+  loaded: true;
   info: MeInfo | null;
 };
 
 const meAtom = atom<MeState>({
   key: 'meAtom',
-  default: { loading: true },
+  default: { loaded: false },
 });
 
 export default meAtom;

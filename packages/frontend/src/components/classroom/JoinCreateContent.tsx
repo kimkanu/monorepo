@@ -10,10 +10,17 @@ import TextInput from '../input/TextInput';
 
 interface Props {
   onJoin?: (hash: string, passcode: string) => void;
+  isLoadingJoin: boolean;
   onCreate?: (name: string) => void;
+  isLoadingCreate: boolean;
 }
 
-const JoinCreateContent: React.FC<Props> = ({ onJoin = () => {}, onCreate = () => {} }) => {
+const JoinCreateContent: React.FC<Props> = ({
+  onJoin = () => {},
+  isLoadingJoin,
+  onCreate = () => {},
+  isLoadingCreate,
+}) => {
   const passwordJoinRef = React.useRef<HTMLInputElement>(null);
   const joinButtonRef = React.useRef<HTMLButtonElement>(null);
   const createButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -56,6 +63,7 @@ const JoinCreateContent: React.FC<Props> = ({ onJoin = () => {}, onCreate = () =
             width="full"
             disabled={!(classroomIdJoin && passwordJoin)}
             onClick={() => onJoin(classroomIdJoin, passwordJoin)}
+            isLoading={isLoadingJoin}
           />
         </div>
       </section>
@@ -78,6 +86,7 @@ const JoinCreateContent: React.FC<Props> = ({ onJoin = () => {}, onCreate = () =
             width="full"
             disabled={!classNameCreate}
             onClick={() => onCreate(classNameCreate)}
+            isLoading={isLoadingCreate}
           />
         </div>
       </section>
