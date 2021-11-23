@@ -9,12 +9,14 @@ import morgan from 'morgan';
 import multer from 'multer';
 import passport from 'passport';
 import { Server as IOServer, Socket } from 'socket.io';
+import tempy from 'tempy';
 import { createConnection } from 'typeorm';
 import { TypeormStore } from 'typeorm-store';
 
 import SessionEntity from './entity/session';
 
 import ClassroomManager from './managers/classroom';
+import ImageManager from './managers/image';
 import UserManager from './managers/user';
 
 import initializePassport from './passport';
@@ -39,12 +41,15 @@ export default class Server {
   io: IOServer;
 
   /** Multer upload */
+  tempDir: string;
+
   upload: multer.Multer;
 
   /** Managers. */
   managers: {
     classroom: ClassroomManager;
     user: UserManager;
+    image: ImageManager;
   };
 
   /**
@@ -62,9 +67,12 @@ export default class Server {
     this.managers = {
       classroom: new ClassroomManager(this),
       user: new UserManager(this),
+      image: new ImageManager(this),
     };
 
-    this.upload = multer();
+    this.tempDir = tempy.directory();
+
+    this.upload = multer({ dest: this.tempDir });
   }
 
   /**

@@ -13,6 +13,7 @@ import SSOAccountList from './SSOAccountList';
 
 interface Props {
   ref_: React.RefObject<HTMLDivElement>;
+  initialDisplayName: string;
   onDisplayNameChange: (displayName: string) => void;
   profileImage: string;
   isProfileImageChanging: boolean;
@@ -23,6 +24,7 @@ interface Props {
 
 const ProfileSettingContent: React.FC<Props> = ({
   ref_,
+  initialDisplayName,
   onProfileImageEdit,
   profileImage,
   isProfileImageChanging,
@@ -30,11 +32,11 @@ const ProfileSettingContent: React.FC<Props> = ({
   ssoAccounts,
   onSSOAccountsRemove,
 }) => {
-  const [displayName, setDisplayName] = React.useState('');
+  const [displayName, setDisplayName] = React.useState(initialDisplayName);
 
   return (
     <NarrowPageWrapper ref_={ref_}>
-      <section>
+      <section className="mb-16">
         <Title size="title">내 프로필</Title>
         <ProfileImageEditor
           src={profileImage}
@@ -56,8 +58,9 @@ const ProfileSettingContent: React.FC<Props> = ({
           )}
           placeholderText="이름"
           align="center"
+          validator={(v) => !!v}
         />
-        <Title size="sect">연결된 소셜 계정</Title>
+        <Title size="sect" className="mb-12 mt-4">연결된 소셜 계정</Title>
         <SSOAccountList ssoAccounts={ssoAccounts} onRemove={onSSOAccountsRemove} />
       </section>
     </NarrowPageWrapper>

@@ -6,10 +6,12 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import Dialog from '../components/alert/Dialog';
 import ClassList from '../components/classroom/ClassList';
 import JoinCreateContent from '../components/classroom/JoinCreateContent';
+import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
 import classroomsState from '../recoil/classrooms';
 import mainClassroomHashState from '../recoil/mainClassroomHash';
 import meState from '../recoil/me';
+import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
 
 const Main: React.FC = () => {
@@ -17,6 +19,7 @@ const Main: React.FC = () => {
   const me = useRecoilValue(meState.atom);
   const addClassroom = useSetRecoilState(classroomsState.new);
   const setMainClassroomHash = useSetRecoilState(mainClassroomHashState.atom);
+  const addToast = useSetRecoilState(toastState.new);
   const location = useLocation();
   const history = useHistory();
 
@@ -40,10 +43,12 @@ const Main: React.FC = () => {
                   setMainClassroomHash(response.payload.hash);
                   history.replace('/');
                   history.push(`/classrooms/${response.payload.hash}`);
-
-                  console.log('Join suceeded');
                 } else {
-                  // TODO: show a toast
+                  addToast({
+                    sentAt: new Date(),
+                    type: 'error',
+                    message: `[${response.error.code}] ${response.error.extra?.details ?? ''}`,
+                  });
                 }
               })
               .finally(() => {
@@ -59,10 +64,12 @@ const Main: React.FC = () => {
                   setMainClassroomHash(response.payload.hash);
                   history.replace('/');
                   history.push(`/classrooms/${response.payload.hash}`);
-
-                  console.log('Creation suceeded');
                 } else {
-                  // TODO: show a toast
+                  addToast({
+                    sentAt: new Date(),
+                    type: 'error',
+                    message: `[${response.error.code}] ${response.error.extra?.details ?? ''}`,
+                  });
                 }
               })
               .finally(() => {
@@ -78,7 +85,7 @@ const Main: React.FC = () => {
       <ContentPadding isFooterPresent>
         {!me.loaded ? null : me.info ? (
           <>
-            <h1 className="py-16 text-title text-center font-bold">My Classes</h1>
+            <Title size="title">내 수업</Title>
             <ClassList
               userId={me.info.stringId}
               classrooms={classrooms}
@@ -89,7 +96,7 @@ const Main: React.FC = () => {
           </>
         ) : (
           <>
-            <h1 className="py-16 text-title text-center font-bold">로그인 해주세요!</h1>
+            <Title size="title">로그인 해주세요!</Title>
           </>
         )}
       </ContentPadding>

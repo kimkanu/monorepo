@@ -10,6 +10,9 @@
   background-color: black !important;
   --shadow-color: rgba(0, 0, 0, 0.25) !important;
 }
-.github:active > img {
-  @apply opacity-80 text-opacity-80;
+.github:active + div > img {
+  @apply opacity-80 text-opacity-80 transition-colors duration-button;
+}
+.github:active > span {
+  @apply opacity-80 text-opacity-80 transition-colors duration-button;
 }

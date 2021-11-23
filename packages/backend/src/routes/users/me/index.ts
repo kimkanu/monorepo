@@ -1,7 +1,4 @@
 import { ClassroomJSON, Provider, UsersMePatchError } from '@team-10/lib';
-import { getConnection } from 'typeorm';
-
-import UserEntity from '../../../entity/user';
 
 import { isAuthenticatedOrFail } from '../../../passport';
 import Server from '../../../server';
@@ -15,7 +12,7 @@ export default function generateRoute(server: Server): Route {
   route.accept(
     'GET /users/me',
     isAuthenticatedOrFail,
-    async (params, body, user, req, res) => {
+    async (params, body, user) => {
       const { managers } = server;
 
       const userEntity = await managers.user.getEntityOrFail(user.stringId);
@@ -44,13 +41,13 @@ export default function generateRoute(server: Server): Route {
   route.accept(
     'PATCH /users/me',
     isAuthenticatedOrFail,
-    async (params, body, user, req, res) => {
+    async (params, body, user, req) => {
       // Body validation
       const { stringId, displayName } = body;
-      const profileImageFile = req.file; // TODO
+      const { file } = req; // TODO
 
       let error: UsersMePatchError | null = null;
-      if (!['string', 'undefined'].includes(typeof stringId) || !stringId) {
+      if (!['string', 'undefined'].includes(typeof stringId)) {
         error = {
           code: 'INVALID_INFORMATION',
           statusCode: 400,
@@ -59,7 +56,7 @@ export default function generateRoute(server: Server): Route {
             details: 'Not a value of string type',
           },
         };
-      } else if (!/^[\w\d._\-:]{3,}$/.test(stringId)) {
+      } else if (stringId && !/^[\w\d._\-:]{3,}$/.test(stringId)) {
         error = {
           code: 'INVALID_INFORMATION',
           statusCode: 400,
@@ -68,7 +65,7 @@ export default function generateRoute(server: Server): Route {
             details: 'Not a valid string ID',
           },
         };
-      } else if (!['string', 'undefined'].includes(typeof displayName) || !displayName) {
+      } else if (!['string', 'undefined'].includes(typeof displayName)) {
         error = {
           code: 'INVALID_INFORMATION',
           statusCode: 400,
@@ -77,7 +74,7 @@ export default function generateRoute(server: Server): Route {
             details: 'Not a value of string type',
           },
         };
-      } else if (false) { // TODO: validate profileImage
+      } else if (file && !['image/png', 'image/jpeg', 'image/gif', 'image/tiff'].includes(file.mimetype)) {
         error = {
           code: 'INVALID_INFORMATION',
           statusCode: 400,
@@ -95,12 +92,33 @@ export default function generateRoute(server: Server): Route {
         };
       }
 
+      const profileImageUploadResponse = file ? await server.managers.image.upload(file) : null;
+      if (file && !profileImageUploadResponse) {
+        return {
+          success: false,
+          error: {
+            code: 'INTERNAL_SERVER_ERROR',
+            statusCode: 500,
+            extra: {
+              details: 'Failed to upload the profile image',
+            },
+          },
+        };
+      }
+
       const userEntity = await server.managers.user.getEntityOrFail(user.stringId);
       if (stringId) {
         userEntity.stringId = stringId;
       }
       if (displayName) {
         userEntity.displayName = displayName;
+      }
+      if (profileImageUploadResponse) {
+        if (userEntity.profileImageDeleteHash) {
+          await server.managers.image.delete(userEntity.profileImageDeleteHash);
+        }
+        userEntity.profileImage = profileImageUploadResponse.link;
+        userEntity.profileImageDeleteHash = profileImageUploadResponse.deletehash ?? null!;
       }
       // TODO: patch user.profileImage
       userEntity.initialized = true;

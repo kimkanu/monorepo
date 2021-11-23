@@ -9,8 +9,10 @@ import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
 import Fade from '../components/layout/Fade';
 import meState from '../recoil/me';
+import themeState from '../recoil/theme';
 
 const WelcomeDone: React.FC = () => {
+  const theme = useRecoilValue(themeState.atom);
   const me = useRecoilValue(meState.atom);
 
   const history = useHistory();
@@ -28,7 +30,18 @@ const WelcomeDone: React.FC = () => {
                 <i className="twa twa-raised-hands" />
               </Title>
               <p className="text-emph text-center my-12" style={{ wordBreak: 'keep-all', lineHeight: 1.6 }}>
-                온라인과 오프라인의 장점을 접목한 [서비스 이름]에서 즐겁고 편하게 공부하세요!
+                온라인과 오프라인의 장점을 접목한
+                {' '}
+                <span
+                  style={{
+                    background: `linear-gradient(${['blue', 'green'].includes(theme) ? '#7C98FC' : '#AF83F9'}, ${['blue', 'green'].includes(theme) ? '#44D28E' : '#FF8AAD'})`,
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  Blearn!
+                </span>
+                에서 즐겁고 편하게 공부하세요!
               </p>
               <div className="flex flex-col gap-6">
                 <Button

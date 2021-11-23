@@ -74,10 +74,8 @@ const Button: React.FC<Styled<Props>> = ({
         disabled
           ? styles.disabled
           : mergeClassNames(pressedByKey ? styles.pressed : styles.released, styles[type], `shadow-color-${type}`),
-        isLoading ? 'shadow-none hover:shadow-none focus:shadow-none active:shadow-none cursor-wait' : null,
-        disabled
-          ? 'shadow-none hover:shadow-none focus:shadow-none active:shadow-none cursor-not-allowed'
-          : '',
+        isLoading ? 'shadow-none hover:shadow-none focus:shadow-none active:shadow-none pointer-events-none cursor-wait' : null,
+        disabled ? 'shadow-none hover:shadow-none focus:shadow-none active:shadow-none cursor-not-allowed' : null,
         className,
       )}
       style={mergeStyles(
