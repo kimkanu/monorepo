@@ -1,19 +1,19 @@
 import { SSOAccountJSON } from '..';
-import { Response } from '../..';
+import { Empty, Response } from '../..';
 
 export type UsersMeSSOAccountsEndpoints =
   | 'GET /users/me/sso-accounts'
   | 'GET /users/me/sso-accounts/:provider'
   | 'DELETE /users/me/sso-accounts/:provider';
 export type UsersMeSSOAccountsPathParams = {
-  'GET /users/me/sso-accounts': undefined;
+  'GET /users/me/sso-accounts': Empty;
   'GET /users/me/sso-accounts/:provider': { provider: string };
   'DELETE /users/me/sso-accounts/:provider': { provider: string };
 };
 export type UsersMeSSOAccountsRequestBodyType = {
-  'GET /users/me/sso-accounts': undefined;
-  'GET /users/me/sso-accounts/:provider': undefined;
-  'DELETE /users/me/sso-accounts/:provider': undefined;
+  'GET /users/me/sso-accounts': Empty;
+  'GET /users/me/sso-accounts/:provider': Empty;
+  'DELETE /users/me/sso-accounts/:provider': Empty;
 };
 export type UsersMeSSOAccountsResponseType = {
   'GET /users/me/sso-accounts': UsersMeSSOAccountsGetResponse;
@@ -30,26 +30,26 @@ export type UsersMeSSOAccountsProviderGetResponse
 export type UsersMeSSOAccountsProviderGetError = {
   code: 'UNSUPPORTED_PROVIDER';
   statusCode: 400;
-  extra: Record<string, never>;
+  extra: Empty;
 } | {
   code: 'NONEXISTENT_SSO_ACCOUNT';
   statusCode: 404;
-  extra: Record<string, never>;
+  extra: Empty;
 };
 
 // DELETE /users/me/sso-accounts/:provider
 export type UsersMeSSOAccountsProviderDeleteResponse
-  = Response<Record<string, never>, UsersMeSSOAccountsProviderDeleteError>;
+  = Response<Empty, UsersMeSSOAccountsProviderDeleteError>;
 export type UsersMeSSOAccountsProviderDeleteError = {
   code: 'UNSUPPORTED_PROVIDER';
   statusCode: 400;
-  extra: Record<string, never>;
+  extra: Empty;
 } | {
   code: 'NONEXISTENT_SSO_ACCOUNT';
   statusCode: 400;
-  extra: Record<string, never>;
+  extra: Empty;
 } | {
   code: 'UNIQUE_SSO_ACCOUNT';
   statusCode: 400;
-  extra: Record<string, never>;
+  extra: Empty;
 };

@@ -1,4 +1,4 @@
-import { Response } from '..';
+import { Empty, Response } from '..';
 import { ClassroomJSON } from '../../classroom';
 
 import { UserInfoJSON } from '.';
@@ -22,5 +22,5 @@ type UsersOtherGetResponse = Response<UserInfoOtherJSON, UserInfoOtherGetError>;
 type UserInfoOtherGetError = {
   code: 'NONEXISTENT_USER';
   statusCode: 404;
-  extra: Record<string, never>;
+  extra: Empty;
 };

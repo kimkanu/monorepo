@@ -11,6 +11,8 @@ import {
   UsersResponseType,
 } from './users';
 
+export type Empty = Record<string, never>;
+
 export type Response<P, E extends ResponseError> = SuccessResponse<P> | FailureResponse<E>;
 export interface SuccessResponse<P> {
   success: true;
@@ -28,7 +30,7 @@ export interface ResponseError {
 export interface UnauthorizedError extends ResponseError {
   code: 'UNAUTHORIZED';
   statusCode: 401;
-  extra: Record<string, never>;
+  extra: Empty;
 }
 export const unauthorizedError: UnauthorizedError = {
   code: 'UNAUTHORIZED',
@@ -38,16 +40,20 @@ export const unauthorizedError: UnauthorizedError = {
 
 export type FetchMethods = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 export type Endpoints =
+  | 'GET /'
   | UsersEndpoints
   | ClassroomsEndpoints;
 export type PathParams =
-  UsersPathParams
+  { 'GET /': Empty }
+  & UsersPathParams
   & ClassroomsPathParams;
 export type RequestBodyType =
-  UsersRequestBodyType
+  { 'GET /': Empty }
+  & UsersRequestBodyType
   & ClassroomsRequestBodyType;
 export type ResponseType =
-  UsersResponseType
+  { 'GET /': Response<Empty, never> }
+  & UsersResponseType
   & ClassroomsResponseType;
 
 export * from './users';

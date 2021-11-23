@@ -1,5 +1,5 @@
 import { SSOAccountJSON, UserInfoJSON } from '..';
-import { Response } from '../..';
+import { Empty, Response } from '../..';
 import { ClassroomJSON } from '../../../classroom';
 
 import {
@@ -15,14 +15,14 @@ export type UsersMeEndpoints =
   | 'PATCH /users/me'
   | 'DELETE /users/me';
 export type UsersMePathParams = UsersMeSSOAccountsPathParams & {
-  'GET /users/me': undefined;
-  'PATCH /users/me': undefined;
-  'DELETE /users/me': undefined;
+  'GET /users/me': Empty;
+  'PATCH /users/me': Empty;
+  'DELETE /users/me': Empty;
 };
 export type UsersMeRequestBodyType = UsersMeSSOAccountsRequestBodyType & {
-  'GET /users/me': undefined;
+  'GET /users/me': Empty;
   'PATCH /users/me': Partial<PatchableUserInfoJSON>;
-  'DELETE /users/me': undefined;
+  'DELETE /users/me': Empty;
 };
 export type UsersMeResponseType = UsersMeSSOAccountsResponseType & {
   'GET /users/me': UsersMeGetResponse;
@@ -45,7 +45,7 @@ type UsersMePatchError = {
 };
 
 // DELETE /users/me
-type UsersMeDeleteResponse = Response<Record<string, never>, never>;
+type UsersMeDeleteResponse = Response<Empty, never>;
 
 interface PatchableUserInfoJSON {
   stringId: string;

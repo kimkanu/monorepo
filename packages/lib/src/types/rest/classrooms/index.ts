@@ -1,3 +1,4 @@
+import { Empty } from '..';
 import { Response, UnauthorizedError } from '../..';
 import { ClassroomJSON } from '../../classroom';
 
@@ -5,7 +6,7 @@ export type ClassroomsEndpoints =
   | 'POST /classrooms'
   | 'PATCH /classrooms/:hash';
 export type ClassroomsPathParams = {
-  'POST /classrooms': Record<string, never>;
+  'POST /classrooms': Empty;
   'PATCH /classrooms/:hash': { hash: string };
 };
 export type ClassroomsRequestBodyType = {
@@ -35,5 +36,5 @@ export type ClassroomsHashPatchRequest = {
 export type ClassroomsHashPatchError = UnauthorizedError | {
   code: 'NONEXISTENT_CLASSROOM';
   statusCode: 400;
-  extra: Record<string, never>;
+  extra: Empty;
 };
