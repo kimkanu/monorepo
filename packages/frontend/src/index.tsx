@@ -9,6 +9,8 @@ import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 import './index.css';
+import './css/noto-sans-kr.css';
+import './css/twemoji-awesome.css';
 
 if (document.documentElement.style) {
   document.documentElement.style.setProperty('--vh', '1vh');
