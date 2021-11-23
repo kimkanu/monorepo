@@ -1,11 +1,10 @@
 /* istanbul ignore file */
 
 import React from 'react';
-import { useRecoilSnapshot, useRecoilState, useSetRecoilState } from 'recoil';
-import { useSocket } from 'socket.io-react-hook';
+import { useRecoilSnapshot } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
-import loadingState from '../../recoil/loading';
+import useSocket from '../../hooks/useSocket';
 import ScreenType from '../../types/screen';
 import { conditionalClassName } from '../../utils/style';
 
@@ -26,22 +25,8 @@ const DebugObserver: React.FC = () => {
 
 const Debug: React.FC = () => {
   const screenType = useScreenType();
-  const setLoading = useSetRecoilState(loadingState.atom);
 
-  const { connected } = useSocket(
-    '/',
-    process.env.NODE_ENV === 'production' || !process.env.REACT_APP_PROXY_URL
-      ? undefined
-      : {
-        host: process.env.REACT_APP_PROXY_URL.replace(/https?:\/\//g, ''),
-      },
-  );
-
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      setLoading(!connected);
-    }
-  }, [connected]);
+  const { connected } = useSocket('/');
 
   return (
     <DebugWrapper>
