@@ -54,12 +54,14 @@ const ScreenHeightMeasure: React.FC = () => {
         || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height
     ) {
       shouldUpdateVh = (difference > 0) === isKeyboardVisible;
-    } else if (difference > 0) {
+    } else if (difference > HEIGHT_THRESHOLD) {
       shouldUpdateVh = false;
       setKeyboardVisible(false);
-    } else {
+    } else if (difference < HEIGHT_THRESHOLD) {
       shouldUpdateVh = false;
       setKeyboardVisible(true);
+    } else {
+      shouldUpdateVh = false;
     }
 
     if (shouldUpdateVh && document.documentElement.style) {
