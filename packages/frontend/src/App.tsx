@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import Fade from './components/layout/Fade';
 import Global from './components/layout/Global';
 import Layout from './components/layout/Layout';
 import Classroom from './pages/Classroom';
@@ -25,7 +24,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Global className={`theme-${theme}`} />
+      <Global theme={theme} className={`theme-${theme}`} />
       <Layout className={`theme-${theme}`}>
         {/* Main page */}
         <Route

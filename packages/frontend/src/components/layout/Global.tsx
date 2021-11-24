@@ -19,6 +19,7 @@ import dropdownState from '../../recoil/dropdown';
 import loadingState from '../../recoil/loading';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
+import { Theme } from '../../types/theme';
 
 import fetchAPI from '../../utils/fetch';
 import { Styled } from '../../utils/style';
@@ -31,6 +32,7 @@ import YTPlayer from '../youtube/YTPlayer';
 import YTWrapper from '../youtube/YTWrapper';
 
 import Debug from './Debug';
+import DynamicManifest from './DynamicManifest';
 import Loading from './Loading';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
 
@@ -52,7 +54,7 @@ function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJ
     });
 }
 
-const Global: React.FC<Styled<{}>> = ({ className, style }) => {
+const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style }) => {
   const history = useHistory();
   const location = useLocation();
   const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
@@ -113,11 +115,14 @@ const Global: React.FC<Styled<{}>> = ({ className, style }) => {
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
 
-      {/* 스크롤 위치 복구 */}
+      {/* TODO: 스크롤 위치 복구가 잘 안 되네요 */}
       <ScrollRestoration />
 
       {/* 디버그용 컴포넌트 */}
       <Debug />
+
+      {/* manifest.json */}
+      <DynamicManifest theme={theme} />
 
       <Dropdown visible={dropdown.visible} onClose={dropdown.onClose ?? (() => {})}>
         {dropdown.element}
