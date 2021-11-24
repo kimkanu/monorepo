@@ -18,7 +18,18 @@ const violet = {
 
 module.exports = {
   plugins: [require('@tailwindcss/forms')],
-  purge: ['./src/**/*.{ts,tsx}', './public/index.html'],
+  purge: {
+    content: ['./src/**/*.{ts,tsx}', './src/index.css', './public/index.html'],
+    safelist: [
+      '.theme-violet',
+      '.theme-pink',
+      '.theme-green',
+      '.theme-blue',
+      '.shadow-color-primary',
+      '.shadow-color-destructive',
+      '.shadow-color-neutral',
+    ],
+  },
   darkMode: false,
   theme: {
     boxShadow: {
