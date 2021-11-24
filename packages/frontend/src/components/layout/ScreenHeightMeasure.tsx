@@ -1,5 +1,6 @@
 import { useWindowSize } from '@react-hook/window-size';
 import React from 'react';
+import { isMobile } from 'react-device-detect';
 import { useRecoilState } from 'recoil';
 
 import screenSizeState from '../../recoil/screenSize';
@@ -12,6 +13,7 @@ const ScreenHeightMeasure: React.FC = () => {
   const [isProblematic, setProblematic] = React.useState<boolean | null>(null);
   const [lastWidth, setLastWidth] = React.useState<number | null>(null);
   const [lastHeight, setLastHeight] = React.useState<number | null>(null);
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   const [width, height] = useWindowSize();
   const ref = React.useRef<HTMLDivElement>(null);
@@ -20,7 +22,7 @@ const ScreenHeightMeasure: React.FC = () => {
 
   React.useEffect(() => {
     if (ref.current !== null) {
-      setProblematic(ref.current.getBoundingClientRect().height !== height);
+      setProblematic(ref.current.getBoundingClientRect().height !== height || isMobile);
     }
   }, [ref.current]);
 
@@ -39,30 +41,26 @@ const ScreenHeightMeasure: React.FC = () => {
   React.useEffect(() => {
     const difference = height - (lastHeight ?? height);
 
-    const shouldUpdateVh = isProblematic === false || (
-      Math.abs(difference) < HEIGHT_THRESHOLD // 주소창
-      || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height // orientation
-    );
+    // const shouldUpdateVh = isProblematic === false || (
+    //   Math.abs(difference) < HEIGHT_THRESHOLD // 주소창
+    //   || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height // orientation
+    // );
 
-    // 키보드가 열린 상태인지까지 확인하려면 (추후에 필요할 상황을 위해서):
-    //
-    // let shouldUpdateVh = false;
-    // if (isProblematic !== true) {
-    //   shouldUpdateVh = false;
-    // } else {
-    //   if (
-    //     Math.abs(difference) < HEIGHT_THRESHOLD
-    //     || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height
-    //   ) {
-    //     shouldUpdateVh = true;
-    //   } else if (difference > 0) {
-    //     shouldUpdateVh = false;
-    //     setMsg('keyboard disappeared');
-    //   } else {
-    //     shouldUpdateVh = false;
-    //     setMsg('keyboard detected');
-    //   }
-    // }
+    let shouldUpdateVh = false;
+    if (isProblematic !== true) {
+      shouldUpdateVh = false;
+    } else if (
+      Math.abs(difference) < HEIGHT_THRESHOLD
+        || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height
+    ) {
+      shouldUpdateVh = (difference > 0) === isKeyboardVisible;
+    } else if (difference > 0) {
+      shouldUpdateVh = false;
+      setKeyboardVisible(false);
+    } else {
+      shouldUpdateVh = false;
+      setKeyboardVisible(true);
+    }
 
     if (shouldUpdateVh && document.documentElement.style) {
       document.documentElement.style.setProperty('--vh', `${height / 100}px`);
