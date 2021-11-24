@@ -2,7 +2,7 @@ import { ContactCard20Filled, SpinnerIos20Regular } from '@fluentui/react-icons'
 import CancelablePromise from 'cancelable-promise';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import Button from '../components/buttons/Button';
 import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
@@ -18,7 +18,7 @@ const Welcome: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const me = useRecoilValue(meState.atom);
+  const [me, setMe] = useRecoilState(meState.atom);
   const addToast = useSetRecoilState(toastState.new);
 
   const idRef = React.useRef<HTMLInputElement>(null);
@@ -61,7 +61,16 @@ const Welcome: React.FC = () => {
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
                 <span className="text-base text-left font-bold text-gray-800">이름</span>
-                <TextInput value={displayName} nextRef={idRef} onInput={setDisplayName} font="mono" icon={<ContactCard20Filled />} validator={(v) => !!v} filled />
+                <TextInput
+                  value={displayName}
+                  nextRef={idRef}
+                  onInput={setDisplayName}
+                  readOnly={isWaitingResponse}
+                  font="mono"
+                  icon={<ContactCard20Filled />}
+                  validator={(v) => !!v}
+                  filled
+                />
               </div>
               <div className="flex flex-col gap-2">
                 <span className="text-base text-left font-bold text-gray-800">아이디</span>
@@ -70,6 +79,7 @@ const Welcome: React.FC = () => {
                   nextRef={buttonRef}
                   value={stringId}
                   onInput={setStringId}
+                  readOnly={isWaitingResponse}
                   font="mono"
                   icon={<ContactCard20Filled />}
                   filled
@@ -125,6 +135,16 @@ const Welcome: React.FC = () => {
                       setWaitingResponse(true);
                       const response = await fetchAPI('PATCH /users/me', {}, { stringId, displayName });
                       if (response.success) {
+                        if (me.loaded && !!me.info) {
+                          setMe({
+                            loaded: true,
+                            info: {
+                              ...me.info,
+                              stringId: response.payload.stringId,
+                              displayName: response.payload.displayName,
+                            },
+                          });
+                        }
                         const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
                         history.replace(`/welcome/done?redirect_uri=${query}`);
                       } else {

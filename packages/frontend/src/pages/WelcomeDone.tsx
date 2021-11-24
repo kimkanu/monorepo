@@ -35,7 +35,7 @@ const WelcomeDone: React.FC = () => {
                 <span
                   style={{
                     background: `linear-gradient(${['blue', 'green'].includes(theme) ? '#7C98FC' : '#AF83F9'}, ${['blue', 'green'].includes(theme) ? '#44D28E' : '#FF8AAD'})`,
-                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                   }}
                 >
