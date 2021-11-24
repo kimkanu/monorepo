@@ -1,6 +1,8 @@
 import { atom } from 'recoil';
 
-const themeAtom = atom<'violet' | 'pink' | 'green' | 'blue'>({
+import { Theme } from '../../types/theme';
+
+const themeAtom = atom<Theme>({
   key: 'themeAtom',
   default: 'violet',
 });

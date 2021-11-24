@@ -38,6 +38,8 @@ afterEach(() => {
 });
 
 test('Renders `Connected!` message.', () => {
+  global.URL.createObjectURL = jest.fn(() => '/manifest.json');
+
   render(<RecoilRoot><App /></RecoilRoot>);
   const linkElement = screen.getByText(/Connected!/i);
   expect(linkElement).toBeInTheDocument();
