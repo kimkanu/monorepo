@@ -28,7 +28,7 @@ interface Props {
 function calDate(content: ChatContent['content']) {
   let result;
   if (content.sentAt.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)) {
-    result = content.sentAt.toLocaleString().slice(13, 22);
+    result = (content.sentAt.toLocaleString().charAt(21) === ':') ? content.sentAt.toLocaleString().slice(13, 21) : content.sentAt.toLocaleString().slice(13, 22);
   } else {
     result = content.sentAt.toLocaleString();
   }
