@@ -13,7 +13,7 @@ interface ClassMember {
 }
 
 interface OthersChatProps {
-  dark: boolean; // 모바일 가로 교실 화면인지
+  dark: boolean;
   type: ChatType;
   content: ChatContent['content'];
 }
@@ -26,7 +26,7 @@ const OthersChat: React.FC<OthersChatProps> = ({
 );
 
 interface Props {
-  dark: boolean; // 모바일 가로 교실 화면인지
+  dark: boolean;
   sender: ClassMember;
   chats: ChatContent[];
 }

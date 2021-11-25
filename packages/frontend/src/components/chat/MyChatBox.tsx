@@ -8,7 +8,7 @@ import MyPhotoChat from './MyPhotoChat';
 import MyTextChat from './MyTextChat';
 
 interface MyChatProps {
-  dark: boolean; // 모바일 가로 교실 화면인지
+  dark: boolean;
   type: ChatType;
   content: ChatContent['content'];
 }
@@ -21,7 +21,7 @@ const MyChat: React.FC<MyChatProps> = ({
 );
 
 interface Props {
-  dark: boolean; // 모바일 가로 교실 화면인지
+  dark: boolean;
   chats: ChatContent[];
 }
 
