@@ -40,6 +40,9 @@ export class ChatHistoryEntity extends HistoryEntity {
     cascade: true,
   })
   chat: ChatEntity;
+
+  @Column({ type: 'timestamptz' })
+  sentAt: Date;
 }
 
 @ChildEntity()
