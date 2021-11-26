@@ -1,12 +1,20 @@
+/* eslint-disable max-classes-per-file */
 import {
   BaseEntity,
   Entity,
   Column,
   PrimaryGeneratedColumn,
   OneToMany,
+  TableInheritance,
+  OneToOne,
+  ManyToOne,
+  ChildEntity,
 } from 'typeorm';
 
+import ChatEntity from './chat';
+
 import Classroom from './classroom';
+import UserEntity from './user';
 
 export enum HistoryType {
   CHAT = 'chat',
@@ -17,17 +25,31 @@ export enum HistoryType {
 }
 
 @Entity()
+@TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export default class HistoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    type: 'enum',
-    enum: HistoryType,
-    default: HistoryType.CHAT,
-  })
-  role: HistoryType;
-
-  @OneToMany(() => Classroom, (classroom) => classroom.histories)
+  @ManyToOne(() => Classroom, (classroom) => classroom.histories)
   classroom: Classroom;
+}
+
+@ChildEntity()
+export class ChatHistoryEntity extends HistoryEntity {
+  @OneToOne(() => ChatEntity, (chat) => chat.history, {
+    cascade: true,
+  })
+  chat: ChatEntity;
+}
+
+@ChildEntity()
+export class VoiceHistoryEntity extends HistoryEntity {
+  @Column({ type: 'timestamptz' })
+  startedAt: Date;
+
+  @Column({ type: 'timestamptz' })
+  endedAt: Date;
+
+  @ManyToOne(() => UserEntity)
+  speaker: UserEntity;
 }
