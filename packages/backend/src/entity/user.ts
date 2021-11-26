@@ -7,9 +7,10 @@ import {
   ManyToMany,
 } from 'typeorm';
 
-import Classroom from './classroom';
+import ChatEntity from './chat';
 
-import SSOAccount from './sso-account';
+import ClassroomEntity from './classroom';
+import SSOAccountEntity from './sso-account';
 
 @Entity()
 export default class UserEntity extends BaseEntity {
@@ -19,8 +20,8 @@ export default class UserEntity extends BaseEntity {
   @Column({ unique: true })
   stringId: string;
 
-  @OneToMany(() => SSOAccount, (ssoAccount) => ssoAccount.user)
-  ssoAccounts: SSOAccount[];
+  @OneToMany(() => SSOAccountEntity, (ssoAccount) => ssoAccount.user)
+  ssoAccounts: SSOAccountEntity[];
 
   @Column({ nullable: false })
   displayName: string;
@@ -34,13 +35,18 @@ export default class UserEntity extends BaseEntity {
   @Column({ default: false })
   initialized: boolean;
 
-  @ManyToMany(() => Classroom, (classroom) => classroom.members, {
+  @ManyToMany(() => ClassroomEntity, (classroom) => classroom.members, {
     cascade: true,
   })
-  classrooms: Classroom[];
+  classrooms: ClassroomEntity[];
 
-  @OneToMany(() => Classroom, (classroom) => classroom.instructor, {
+  @OneToMany(() => ClassroomEntity, (classroom) => classroom.instructor, {
     cascade: true,
   })
-  myClassrooms: Classroom[];
+  myClassrooms: ClassroomEntity[];
+
+  @OneToMany(() => ChatEntity, (chat) => chat.author, {
+    cascade: true,
+  })
+  chats: ChatEntity[];
 }
