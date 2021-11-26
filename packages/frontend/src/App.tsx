@@ -1,10 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  RouteComponentProps,
-} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { AnimatedRoute } from 'react-router-transition';
 import { useRecoilValue } from 'recoil';
 
