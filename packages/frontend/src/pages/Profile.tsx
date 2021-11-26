@@ -14,7 +14,7 @@ const Profile: React.FC = () => {
   const [me, setMe] = useRecoilState(meState.atom);
   const addToast = useSetRecoilState(toastState.new);
 
-  useRedirect(me.loaded && !me.info, [me]);
+  useRedirect(me.loaded && !me.info);
 
   const [profileImage, setProfileImage] = React.useState('');
   const [isProfileImageChanging, setProfileImageChanging] = React.useState(false);

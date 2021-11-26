@@ -144,9 +144,10 @@ const Welcome: React.FC = () => {
                               displayName: response.payload.displayName,
                             },
                           });
+                          const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
+                          history.replace(`/welcome/done?redirect_uri=${query}`);
+                          console.log('replaced');
                         }
-                        const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-                        history.replace(`/welcome/done?redirect_uri=${query}`);
                       } else {
                         setWaitingResponse(false);
                         addToast({

@@ -39,10 +39,13 @@ const Main: React.FC = () => {
             fetchAPI('PATCH /classrooms/:hash', { hash }, { operation: 'join', passcode })
               .then((response) => {
                 if (response.success) {
+                  console.log('PATCH /classrooms/:hash', response.payload);
                   addClassroom(response.payload);
                   setMainClassroomHash(response.payload.hash);
                   history.replace('/');
-                  history.push(`/classrooms/${response.payload.hash}`);
+                  setTimeout(() => {
+                    history.push(`/classrooms/${response.payload.hash}`);
+                  }, 10);
                 } else {
                   addToast({
                     sentAt: new Date(),
@@ -60,10 +63,13 @@ const Main: React.FC = () => {
             fetchAPI('POST /classrooms', {}, { name })
               .then((response) => {
                 if (response.success) {
+                  console.log('POST /classrooms', response.payload);
                   addClassroom(response.payload);
                   setMainClassroomHash(response.payload.hash);
                   history.replace('/');
-                  history.push(`/classrooms/${response.payload.hash}`);
+                  setTimeout(() => {
+                    history.push(`/classrooms/${response.payload.hash}`);
+                  }, 10);
                 } else {
                   addToast({
                     sentAt: new Date(),

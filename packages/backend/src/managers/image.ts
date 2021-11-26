@@ -14,13 +14,13 @@ export default class ImageManager {
 
   async upload(file: Express.Multer.File): Promise<ImageData | null> {
     if (!this.client) {
-      console.log('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
+      console.error('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
       return null;
     }
 
     const extension = file.mimetype.split('/')[1];
     if (!extension) {
-      console.log('WRONG MIMETYPE', file.mimetype);
+      console.error('WRONG MIMETYPE', file.mimetype);
       return null;
     }
 
@@ -32,7 +32,7 @@ export default class ImageManager {
 
   async delete(deleteHash: string): Promise<boolean> {
     if (!this.client) {
-      console.log('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
+      console.error('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
       return false;
     }
 

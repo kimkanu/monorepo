@@ -36,7 +36,7 @@ export default class HistoryEntity extends BaseEntity {
 
 @ChildEntity()
 export class ChatHistoryEntity extends HistoryEntity {
-  @OneToOne(() => ChatEntity, (chat) => chat.history, {
+  @OneToOne(() => ChatEntity, {
     cascade: true,
   })
   chat: ChatEntity;

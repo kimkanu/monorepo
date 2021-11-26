@@ -53,7 +53,7 @@ export default function generateRoute(server: Server): Route {
           profileImage: user.profileImage,
           commonClassrooms: (await Promise.all(
             commonClassrooms.map(
-              (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
+              (classroom) => managers.classroom.getClassroomJSON(classroom.hash),
             ),
           )).filter((x) => !!x) as ClassroomJSON[],
         },

@@ -1,6 +1,5 @@
 import { useWindowSize } from '@react-hook/window-size';
 import React from 'react';
-import { isMobile } from 'react-device-detect';
 import { useRecoilState } from 'recoil';
 
 import screenSizeState from '../../recoil/screenSize';
@@ -22,7 +21,7 @@ const ScreenHeightMeasure: React.FC = () => {
 
   React.useEffect(() => {
     if (ref.current !== null) {
-      setProblematic(ref.current.getBoundingClientRect().height !== height || isMobile);
+      setProblematic(ref.current.getBoundingClientRect().height !== height);
     }
   }, [ref.current]);
 
@@ -48,7 +47,7 @@ const ScreenHeightMeasure: React.FC = () => {
 
     let shouldUpdateVh = false;
     if (isProblematic !== true) {
-      shouldUpdateVh = false;
+      shouldUpdateVh = true;
     } else if (
       Math.abs(difference) < HEIGHT_THRESHOLD
         || ((lastWidth ?? width) < (lastHeight ?? height)) !== width < height
@@ -57,12 +56,11 @@ const ScreenHeightMeasure: React.FC = () => {
     } else if (difference > HEIGHT_THRESHOLD) {
       shouldUpdateVh = false;
       setKeyboardVisible(false);
-    } else if (difference < HEIGHT_THRESHOLD) {
-      shouldUpdateVh = false;
-      setKeyboardVisible(true);
     } else {
       shouldUpdateVh = false;
+      setKeyboardVisible(true);
     }
+    console.log(difference, shouldUpdateVh);
 
     if (shouldUpdateVh && document.documentElement.style) {
       document.documentElement.style.setProperty('--vh', `${height / 100}px`);
