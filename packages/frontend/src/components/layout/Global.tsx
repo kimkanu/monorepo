@@ -102,7 +102,6 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
         }
       })
       .catch((e) => {
-        console.log(e);
         setMe({ loaded: true, info: null });
       })
       .finally(() => {
