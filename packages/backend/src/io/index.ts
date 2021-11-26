@@ -7,7 +7,6 @@ const ioHandler = (server: Server) => {
   const { io, managers } = server;
 
   io.on('connection', async (socket: UserSocket) => {
-    console.log('user', socket.request.user);
     if (socket.request.user) {
       await managers.user.add(socket.request.user.stringId, socket);
     }

@@ -4,6 +4,7 @@ import { getConnection } from 'typeorm';
 import { v4 as generateUUID } from 'uuid';
 
 import ClassroomEntity from '../entity/classroom';
+import HistoryEntity, { VoiceHistoryEntity } from '../entity/history';
 import UserEntity from '../entity/user';
 
 import Server from '../server';
@@ -39,8 +40,6 @@ export default class ClassroomManager {
     });
     if (!classroomEntity) return false;
 
-    console.log(classroomEntity);
-
     const classroomInfo: ClassroomInfo = {
       hash: classroomHash,
       name: classroomEntity.name,
@@ -50,14 +49,13 @@ export default class ClassroomManager {
       updatedAt: classroomEntity.updatedAt,
     };
     const roomId = generateUUID();
-    const classroom = new Classroom(classroomInfo, roomId);
+    const classroom = new Classroom(this.server, classroomEntity, classroomInfo, roomId);
     this.classrooms.set(classroomHash, classroom);
 
     return true;
   }
 
   async create(userId: string, name: string): Promise<Classroom> {
-    console.log('create with userid', userId);
     const instructor = await this.server.managers.user.getEntity(userId);
     if (!instructor) {
       throw new Error();
@@ -70,7 +68,7 @@ export default class ClassroomManager {
     entity.updatedAt = new Date();
     entity.passcode = '000000'; // Will be updated later
 
-    while (true) {
+    for (;;) {
       try {
         entity.hash = generateClassroomHash();
         // eslint-disable-next-line no-await-in-loop
@@ -82,22 +80,21 @@ export default class ClassroomManager {
     }
 
     const roomId = generateUUID();
-    const classroom = new Classroom({
-      hash: entity.hash,
-      name: entity.name,
-      instructorId: userId,
-      memberIds: new Set([userId]),
-      passcode: entity.passcode,
-      updatedAt: entity.updatedAt,
-    }, roomId);
-
-    console.log('entity before', entity);
+    const classroom = new Classroom(
+      this.server,
+      entity,
+      {
+        hash: entity.hash,
+        name: entity.name,
+        instructorId: userId,
+        memberIds: new Set([userId]),
+        passcode: entity.passcode,
+        updatedAt: entity.updatedAt,
+      }, roomId,
+    );
 
     entity.passcode = classroom.regeneratePasscode();
     await entity.save();
-
-    console.log('entity after', entity);
-    console.log('instructor', entity.instructor);
 
     return classroom;
   }
@@ -181,41 +178,13 @@ export default class ClassroomManager {
     return true;
   }
 
-  /**
-   * 수업 중인 classroom에 들어온 socket에게 보내는 메시지의 집합
-   * @param userId
-   */
-  emitWelcome(userId: string) {
-    // TODO
-  }
-
-  /**
-   * 접속한 유저의 모든 소켓에 broadcast하는 method
-   * @param eventName
-   * @param message
-   */
-  broadcast<T>(eventName: string, message: T) {
-    // TODO
-  }
-
-  /**
-   * 접속한 유저의 소켓 중 main 소켓에만 broadcast하는 method
-   * @param eventName
-   * @param message
-   */
-  broadcastMain<T>(eventName: string, message: T) {
-    // TODO
-  }
-
   async getClassroomJSON(
     userId: string, classroomHash: ClassroomHash,
   ): Promise<ClassroomJSON | null> {
-    console.log('getting classroom json');
     if (!this.classrooms.has(classroomHash)) {
       await this.load(classroomHash);
     }
     const classroom = this.classrooms.get(classroomHash);
-    console.log('classroom', classroom);
     if (!classroom) return null;
     if (!classroom.hasMember(userId)) return null;
 
@@ -229,5 +198,31 @@ export default class ClassroomManager {
       passcode: classroom.passcode,
       updatedAt: classroom.updatedAt.getTime(),
     };
+  }
+
+  async recordVoiceHistory(
+    classroomHash: ClassroomHash,
+    speakerId: string,
+    startedAt: Date,
+    endedAt: Date,
+  ): Promise<boolean> {
+    const userEntity = await this.server.managers.user.getEntity(speakerId);
+    if (!userEntity) return false;
+
+    const voiceHistoryEntity = new VoiceHistoryEntity();
+    let classroomEntity = this.classrooms.get(classroomHash)?.entity;
+    if (!classroomEntity) {
+      await this.load(classroomHash);
+      classroomEntity = this.classrooms.get(classroomHash)?.entity;
+    }
+    if (!classroomEntity) return false;
+
+    voiceHistoryEntity.classroom = classroomEntity;
+    voiceHistoryEntity.speaker = userEntity;
+    voiceHistoryEntity.startedAt = startedAt;
+    voiceHistoryEntity.endedAt = endedAt;
+    await voiceHistoryEntity.save();
+
+    return true;
   }
 }
