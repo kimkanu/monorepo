@@ -6,13 +6,11 @@ const router = Router();
 router.get(
   '/',
   (req, res, next) => {
-    console.log('redirecturi', req.query.redirect_uri);
     req.session.redirectUri = req.query.redirect_uri as string | undefined;
     next();
   },
   passport.authenticate('naver'),
   (req, res) => {
-    console.log('redirecturi', req.session.redirectUri);
     res.redirect('/');
   },
 );

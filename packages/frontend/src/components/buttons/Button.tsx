@@ -5,7 +5,7 @@ import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
 
 import styles from './Button.module.css';
 
-interface Props {
+interface Props extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   type: 'primary' | 'destructive' | 'neutral';
   disabled?: boolean;
   text?: string;
@@ -31,6 +31,7 @@ const Button: React.FC<Styled<Props>> = ({
   className,
   style,
   isLoading: isLoading_ = null,
+  ...props
 }) => {
   const [pressedByKey, setPressedByKey] = React.useState(false);
 
@@ -54,6 +55,8 @@ const Button: React.FC<Styled<Props>> = ({
   return (
     <button
       ref={ref_}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
       type="button"
       className={mergeClassNames(
         'rounded-full outline-none flex items-center justify-center font-bold transition-button duration-button',
