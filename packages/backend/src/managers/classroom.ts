@@ -123,6 +123,8 @@ export default class ClassroomManager {
       .of(userEntity)
       .add(classroomEntity.id);
 
+    await this.load(classroomHash);
+
     return true;
   }
 
