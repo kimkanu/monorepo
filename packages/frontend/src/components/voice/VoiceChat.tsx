@@ -110,7 +110,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   const [audioContext] = React.useState(new AudioContext({
     latencyHint: 'interactive',
-    sampleRate: 4000,
+    sampleRate: 8000,
   }));
   const [voiceBuffer] = React.useState(new VoiceBuffer(audioContext));
   const analyser = React.useRef(audioContext.createAnalyser());

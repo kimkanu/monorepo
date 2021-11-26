@@ -1,6 +1,5 @@
 import { useWindowSize } from '@react-hook/window-size';
 import React from 'react';
-import { isMobile } from 'react-device-detect';
 import { useRecoilState } from 'recoil';
 
 import screenSizeState from '../../recoil/screenSize';
@@ -22,7 +21,7 @@ const ScreenHeightMeasure: React.FC = () => {
 
   React.useEffect(() => {
     if (ref.current !== null) {
-      setProblematic(ref.current.getBoundingClientRect().height !== height && isMobile);
+      setProblematic(ref.current.getBoundingClientRect().height !== height);
     }
   }, [ref.current]);
 
