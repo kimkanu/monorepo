@@ -12,7 +12,6 @@ import ProfileImageEditor from './ProfileImageEditor';
 import SSOAccountList from './SSOAccountList';
 
 interface Props {
-  ref_: React.RefObject<HTMLDivElement>;
   initialDisplayName: string;
   onDisplayNameChange: (displayName: string) => void;
   profileImage: string;
@@ -23,7 +22,6 @@ interface Props {
 }
 
 const ProfileSettingContent: React.FC<Props> = ({
-  ref_,
   initialDisplayName,
   onProfileImageEdit,
   profileImage,
@@ -35,7 +33,7 @@ const ProfileSettingContent: React.FC<Props> = ({
   const [displayName, setDisplayName] = React.useState(initialDisplayName);
 
   return (
-    <NarrowPageWrapper ref_={ref_}>
+    <NarrowPageWrapper>
       <section className="mb-16">
         <Title size="title">내 프로필</Title>
         <ProfileImageEditor

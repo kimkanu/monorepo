@@ -9,7 +9,6 @@ import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
 import Title from '../components/elements/Title';
 import TextInput from '../components/input/TextInput';
 import ContentPadding from '../components/layout/ContentPadding';
-import Fade from '../components/layout/Fade';
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
@@ -47,129 +46,125 @@ const Welcome: React.FC = () => {
 
   return (
     <ContentPadding isFooterPresent>
-      <Fade visible={me.loaded && location.pathname === '/welcome'}>
-        {(ref) => (
-          <NarrowPageWrapper ref_={ref}>
-            <Title size="title">
-              반갑습니다
-              {' '}
-              <i className="twa twa-grinning" />
-            </Title>
-            <p className="text-emph text-center my-12">
-              서비스 이용에 필요한 정보를 채워주세요!
-            </p>
-            <div className="flex flex-col gap-8">
-              <div className="flex flex-col gap-2">
-                <span className="text-base text-left font-bold text-gray-800">이름</span>
-                <TextInput
-                  value={displayName}
-                  nextRef={idRef}
-                  onInput={setDisplayName}
-                  readOnly={isWaitingResponse}
-                  font="mono"
-                  icon={<ContactCard20Filled />}
-                  validator={(v) => !!v}
-                  filled
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <span className="text-base text-left font-bold text-gray-800">아이디</span>
-                <TextInput
-                  ref_={idRef}
-                  nextRef={buttonRef}
-                  value={stringId}
-                  onInput={setStringId}
-                  readOnly={isWaitingResponse}
-                  font="mono"
-                  icon={<ContactCard20Filled />}
-                  filled
-                  validator={(value) => new CancelablePromise<boolean>((
-                    resolve, reject, onCancel,
-                  ) => {
-                    if (!/^[\w\d._\-:]{3,}$/.test(value) || value === 'me' || !me.loaded || !me.info) {
-                      setStringIdValid(false);
-                      resolve(false);
-                      return;
-                    }
-                    if (value === me.info.stringId) {
-                      setStringIdValid(true);
-                      resolve(true);
-                      return;
-                    }
-                    if (isIdInitial && value !== me.info.stringId) {
-                      setIdInitial(false);
-                      setStringIdValid(true);
-                      resolve(true);
-                      return;
-                    }
+      <NarrowPageWrapper>
+        <Title size="title">
+          반갑습니다
+          {' '}
+          <i className="twa twa-grinning" />
+        </Title>
+        <p className="text-emph text-center my-12">
+          서비스 이용에 필요한 정보를 채워주세요!
+        </p>
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-2">
+            <span className="text-base text-left font-bold text-gray-800">이름</span>
+            <TextInput
+              value={displayName}
+              nextRef={idRef}
+              onInput={setDisplayName}
+              readOnly={isWaitingResponse}
+              font="mono"
+              icon={<ContactCard20Filled />}
+              validator={(v) => !!v}
+              filled
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="text-base text-left font-bold text-gray-800">아이디</span>
+            <TextInput
+              ref_={idRef}
+              nextRef={buttonRef}
+              value={stringId}
+              onInput={setStringId}
+              readOnly={isWaitingResponse}
+              font="mono"
+              icon={<ContactCard20Filled />}
+              filled
+              validator={(value) => new CancelablePromise<boolean>((
+                resolve, reject, onCancel,
+              ) => {
+                if (!/^[\w\d._\-:]{3,}$/.test(value) || value === 'me' || !me.loaded || !me.info) {
+                  setStringIdValid(false);
+                  resolve(false);
+                  return;
+                }
+                if (value === me.info.stringId) {
+                  setStringIdValid(true);
+                  resolve(true);
+                  return;
+                }
+                if (isIdInitial && value !== me.info.stringId) {
+                  setIdInitial(false);
+                  setStringIdValid(true);
+                  resolve(true);
+                  return;
+                }
 
-                    const timeout = setTimeout(() => {
-                      fetchAPI('GET /users/:id', { id: value })
-                        .then((response) => {
-                          setStringIdValid(!response.success);
-                          resolve(!response.success);
-                        })
-                        .catch((e) => {
-                          setStringIdValid(false);
-                          reject(e);
-                        });
-                    }, 250);
-                    onCancel(() => {
-                      clearTimeout(timeout);
+                const timeout = setTimeout(() => {
+                  fetchAPI('GET /users/:id', { id: value })
+                    .then((response) => {
+                      setStringIdValid(!response.success);
+                      resolve(!response.success);
+                    })
+                    .catch((e) => {
+                      setStringIdValid(false);
+                      reject(e);
                     });
-                  })}
-                />
-              </div>
-              <div className="mt-4 mb-16">
-                <Button
-                  ref_={buttonRef}
-                  width="full"
-                  type="primary"
-                  text={!isWaitingResponse ? '가입 완료하기' : undefined}
-                  icon={continueButtonIcon}
-                  disabled={!displayName || !isStringIdValid}
-                  className={isWaitingResponse ? 'pointer-events-none' : undefined}
-                  onClick={async () => {
-                    if (isWaitingResponse) return;
-                    try {
-                      setWaitingResponse(true);
-                      const response = await fetchAPI('PATCH /users/me', {}, { stringId, displayName });
-                      if (response.success) {
-                        if (me.loaded && !!me.info) {
-                          setMe({
-                            loaded: true,
-                            info: {
-                              ...me.info,
-                              stringId: response.payload.stringId,
-                              displayName: response.payload.displayName,
-                            },
-                          });
-                          const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-                          history.replace(`/welcome/done?redirect_uri=${query}`);
-                          console.log('replaced');
-                        }
-                      } else {
-                        setWaitingResponse(false);
-                        addToast({
-                          sentAt: new Date(),
-                          type: 'error',
-                          message: `[${response.error.code}] ${response.error.extra?.details ?? ''}`,
-                        });
-                      }
-                    } catch (e) {
-                      addToast({
-                        sentAt: new Date(),
-                        type: 'error',
-                        message: '알 수 없는 오류가 발생했습니다.',
+                }, 250);
+                onCancel(() => {
+                  clearTimeout(timeout);
+                });
+              })}
+            />
+          </div>
+          <div className="mt-4 mb-16">
+            <Button
+              ref_={buttonRef}
+              width="full"
+              type="primary"
+              text={!isWaitingResponse ? '가입 완료하기' : undefined}
+              icon={continueButtonIcon}
+              disabled={!displayName || !isStringIdValid}
+              className={isWaitingResponse ? 'pointer-events-none' : undefined}
+              onClick={async () => {
+                if (isWaitingResponse) return;
+                try {
+                  setWaitingResponse(true);
+                  const response = await fetchAPI('PATCH /users/me', {}, { stringId, displayName });
+                  if (response.success) {
+                    if (me.loaded && !!me.info) {
+                      setMe({
+                        loaded: true,
+                        info: {
+                          ...me.info,
+                          stringId: response.payload.stringId,
+                          displayName: response.payload.displayName,
+                        },
                       });
+                      const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
+                      history.replace(`/welcome/done?redirect_uri=${query}`);
+                      console.log('replaced');
                     }
-                  }}
-                />
-              </div>
-            </div>
-          </NarrowPageWrapper>
-        )}
-      </Fade>
+                  } else {
+                    setWaitingResponse(false);
+                    addToast({
+                      sentAt: new Date(),
+                      type: 'error',
+                      message: `[${response.error.code}] ${response.error.extra?.details ?? ''}`,
+                    });
+                  }
+                } catch (e) {
+                  addToast({
+                    sentAt: new Date(),
+                    type: 'error',
+                    message: '알 수 없는 오류가 발생했습니다.',
+                  });
+                }
+              }}
+            />
+          </div>
+        </div>
+      </NarrowPageWrapper>
     </ContentPadding>
   );
 };

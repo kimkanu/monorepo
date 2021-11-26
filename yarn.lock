@@ -3621,6 +3621,7 @@ __metadata:
     "@types/react-dom": ^17.0.0
     "@types/react-helmet": ^6.1.4
     "@types/react-router-dom": ^5.3.2
+    "@types/react-router-transition": ^2.1.1
     "@types/react-transition-group": ^4.4.4
     "@types/seedrandom": ^3.0.1
     "@types/youtube-player": ^5.5.5
@@ -3643,7 +3644,9 @@ __metadata:
     react-device-detect: ^2.1.2
     react-dom: ^17.0.2
     react-helmet: ^6.1.0
+    react-motion: ^0.5.2
     react-router-dom: ^5.3.0
+    react-router-transition: ^2.1.0
     react-scripts: 4.0.3
     react-scroll-restoration: ^1.0.8
     react-transition-group: ^4.4.2
@@ -4212,7 +4215,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-router-dom@npm:^5.3.2":
+"@types/react-motion@npm:*":
+  version: 0.0.32
+  resolution: "@types/react-motion@npm:0.0.32"
+  dependencies:
+    "@types/react": "*"
+  checksum: ee5954ab27b18476ef0ad0dd81d99fbf3641088c11894ec1ad52219f8981f82f30df6f05c0a8238ccb48c9741ca4398f287bd371e9f85c2a677c6be73f1d57b7
+  languageName: node
+  linkType: hard
+
+"@types/react-router-dom@npm:*, @types/react-router-dom@npm:^5.3.2":
   version: 5.3.2
   resolution: "@types/react-router-dom@npm:5.3.2"
   dependencies:
@@ -4220,6 +4232,17 @@ __metadata:
     "@types/react": "*"
     "@types/react-router": "*"
   checksum: 90f052dc5a43a77edaf41d2afa781c8ed2164cd7922b3cdf5daae446b02a2f279382425e6efc338260782c0a24d25a6101e3658acb41c8a053695968a351ea96
+  languageName: node
+  linkType: hard
+
+"@types/react-router-transition@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@types/react-router-transition@npm:2.1.1"
+  dependencies:
+    "@types/react": "*"
+    "@types/react-motion": "*"
+    "@types/react-router-dom": "*"
+  checksum: d9e58569f013008261ab3ca7827585b82fc0763e3afb00a14b3c84b67ee4183f383cb920db760841948d60a5e4a6c16d5bf443f5ad1481072d03e8a4c7b5d990
   languageName: node
   linkType: hard
 
@@ -15965,6 +15988,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"performance-now@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "performance-now@npm:0.2.0"
+  checksum: 2020aecc3980c280bf0a0382d476cf4e725a10433e853f853c57bc3ed084ab8aa880fac87e92d1b44d30138b8da2d2b77aad321ef3d7ce50b34500a4f4f84d0f
+  languageName: node
+  linkType: hard
+
 "performance-now@npm:^2.1.0":
   version: 2.1.0
   resolution: "performance-now@npm:2.1.0"
@@ -17251,7 +17281,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.7.2, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
+"prop-types@npm:15.7.2, prop-types@npm:^15.5.8, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
   dependencies:
@@ -17511,7 +17541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raf@npm:^3.4.1":
+"raf@npm:^3.1.0, raf@npm:^3.4.1":
   version: 3.4.1
   resolution: "raf@npm:3.4.1"
   dependencies:
@@ -17699,6 +17729,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-motion@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "react-motion@npm:0.5.2"
+  dependencies:
+    performance-now: ^0.2.0
+    prop-types: ^15.5.8
+    raf: ^3.1.0
+  peerDependencies:
+    react: ^0.14.9 || ^15.3.0 || ^16.0.0
+  checksum: b1b2ab15d0e7492be827576fa7238c11679b52495a640b1234400771fdeac9ded8909532135b4a84be28e21e63dc97d54758d08ba280f90409b54104730b29c0
+  languageName: node
+  linkType: hard
+
 "react-refresh@npm:^0.8.3":
   version: 0.8.3
   resolution: "react-refresh@npm:0.8.3"
@@ -17720,6 +17763,20 @@ __metadata:
   peerDependencies:
     react: ">=15"
   checksum: 47584fd629ecca52398d7888cab193b8a74057cc99a7ef44410c405d4082f618c3c0399db5325bc3524f9c511404086169570013b61a94dfa6acdfdc850d7a1f
+  languageName: node
+  linkType: hard
+
+"react-router-transition@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "react-router-transition@npm:2.1.0"
+  dependencies:
+    prop-types: ^15.7.2
+    react-motion: ^0.5.2
+  peerDependencies:
+    react: ^16.8.0
+    react-dom: ^16.8.0
+    react-router-dom: ^5.0.0
+  checksum: ca2b75146feb9651343a5a85fb80674d39d61ef7972f2cd4b7d934a019b0ecaa0451e11d847f2dc523814f9bac96d9dc392239eb9f7fd9ce214da9f32c502713
   languageName: node
   linkType: hard
 

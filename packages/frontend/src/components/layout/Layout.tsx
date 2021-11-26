@@ -5,7 +5,7 @@ import { mergeClassNames, Styled } from '../../utils/style';
 import Header from './Header';
 
 const Layout: React.FC<Styled<{}>> = ({ className, style, children }) => (
-  <div style={style} className={mergeClassNames('w-full h-full bg-white absolute top-0 overflow-auto', className)}>
+  <div style={style} className={mergeClassNames('w-full h-full bg-white absolute top-0 overflow-hidden', className)}>
     <Header />
     {/* Dummy Footer */}
     <div
@@ -15,6 +15,7 @@ const Layout: React.FC<Styled<{}>> = ({ className, style, children }) => (
 
     {/* Contents */}
     <div
+      className="absolute w-full"
       style={{
         paddingTop: 'calc(env(safe-area-inset-top, 0px) + 64px)',
         paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)',

@@ -7,8 +7,6 @@ import TempButton from '../components/buttons/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
 import ButtonTest from '../components/test/ButtonTest';
 import ChatBoxTest from '../components/test/ChatBoxTest';
-import ClassSettingPageTest from '../components/test/ClassSettingPageTest';
-import DropdownTest from '../components/test/DropdownTest';
 import JoinCreatePageTest from '../components/test/JoinCreatePageTest';
 import SocketStreamTest from '../components/test/SocketStreamTest';
 import TextInputTest from '../components/test/TextInputTest';
@@ -16,14 +14,12 @@ import ToastTest from '../components/test/ToastTest';
 
 /** 여기에 테스트할 컴포넌트를 넣어주세요! `pathname: ['설명', 컴포넌트]` 형식 */
 const componentsToTest: Record<string, [string, React.ReactElement]> = {
-  dropdown: ['Dropdown and Dialog', <DropdownTest />],
   'audio-visualizer': ['Audio Visualizer', <AudioVisualizerTest />],
   'socket-stream': ['Socket Stream', <SocketStreamTest />],
   toast: ['Toasts', <ToastTest />],
   joincreate: ['Join/Create Class', <JoinCreatePageTest />],
   buttons: ['Buttons', <ButtonTest />],
   chatbox: ['chatbox', <ChatBoxTest />],
-  classsetting: ['class setting', <ClassSettingPageTest />],
   'text-input': ['Text Input', <TextInputTest />],
 };
 
