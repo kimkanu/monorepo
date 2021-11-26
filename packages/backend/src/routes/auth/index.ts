@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import failed from './failed';
+import github from './github';
 import logout from './logout';
 import naver from './naver';
 import success from './success';
@@ -8,6 +9,7 @@ import success from './success';
 const router = Router();
 
 router.use('/naver', naver);
+router.use('/github', github);
 router.use('/logout', logout);
 router.use('/success', success);
 router.use('/failed', failed);
