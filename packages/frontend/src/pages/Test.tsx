@@ -11,6 +11,8 @@ import JoinCreatePageTest from '../components/test/JoinCreatePageTest';
 import SocketStreamTest from '../components/test/SocketStreamTest';
 import TextInputTest from '../components/test/TextInputTest';
 import ToastTest from '../components/test/ToastTest';
+import YouTubeSyncStudentTest from '../components/test/YouTubeSyncStudentTest';
+import YouTubeSyncTest from '../components/test/YouTubeSyncTest';
 
 /** 여기에 테스트할 컴포넌트를 넣어주세요! `pathname: ['설명', 컴포넌트]` 형식 */
 const componentsToTest: Record<string, [string, React.ReactElement]> = {
@@ -21,6 +23,8 @@ const componentsToTest: Record<string, [string, React.ReactElement]> = {
   buttons: ['Buttons', <ButtonTest />],
   chatbox: ['chatbox', <ChatBoxTest />],
   'text-input': ['Text Input', <TextInputTest />],
+  youtubesync: ['YouTube Sync', <YouTubeSyncTest />],
+  youtubestudent: ['YouTube Sync', <YouTubeSyncStudentTest />],
 };
 
 interface Props {

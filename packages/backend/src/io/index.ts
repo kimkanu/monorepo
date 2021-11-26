@@ -2,6 +2,7 @@ import Server from '../server';
 import { UserSocket } from '../types/socket';
 
 import ioVoiceHandler from './voice';
+import ioYouTubeHandler from './YouTube';
 
 const ioHandler = (server: Server) => {
   const { io, managers } = server;
@@ -17,8 +18,8 @@ const ioHandler = (server: Server) => {
       }
     });
   });
-
   ioVoiceHandler(io.of('/voice'), server);
+  ioYouTubeHandler(io.of('/youtube'), server);
 };
 
 export default ioHandler;

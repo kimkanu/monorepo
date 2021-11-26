@@ -1,8 +1,13 @@
-import React from 'react';
+import { SocketYouTube } from '@team-10/lib';
+import React, { useEffect } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
+
+import { useRecoilState } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
 
 import useSize from '../../hooks/useSize';
+import useSocket from '../../hooks/useSocket';
+import videoState from '../../recoil/video';
 import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
 
 import styles from './YTPlayer.module.css';
@@ -10,17 +15,107 @@ import styles from './YTPlayer.module.css';
 interface Props {
   videoId?: string | null;
   options?: YouTubeProps['opts'];
-  onReady?: (player: YouTubePlayer) => void;
-  onStateChange?: (state: number, player: YouTubePlayer) => void;
+  classroomHash?: string;
+  instructor?: boolean;
 }
 
 const YTPlayer: React.FC<Styled<Props>> = ({
-  style, className, videoId, options = {}, onReady, onStateChange,
+  style, className, videoId, options = {}, classroomHash, instructor,
 }) => {
   const aspectRatio = 16 / 9;
 
   const ref = React.useRef<HTMLDivElement>(null);
   const size = useSize(ref);
+
+  const [playStatus, setPlayStatus] = useRecoilState(videoState.statusSelector);
+  const [volume, setVolume] = useRecoilState(videoState.volumeSelector);
+  const [currentTime, setCurrentTime] = useRecoilState(videoState.timeSelector);
+  const [player, setPlayer] = React.useState<YouTubePlayer | undefined>(undefined);
+  const { socket, connected } = useSocket<SocketYouTube.Events.Response, SocketYouTube.Events.Request>('/youtube');
+  console.log('connected : ', connected);
+  console.log('connected socket id :', socket.id);
+  const onReadyHandler = (target: YouTubePlayer) => {
+    setPlayer(target);
+  };
+
+  const onStateChangeHandler = (target: YouTubePlayer, data: number) => {
+    if (instructor) {
+      if (data === YouTube.PlayerState.PLAYING) {
+        socket.emit('ChangeTime', {
+          classroomHash: classroomHash || '',
+          play: true,
+          videoId,
+          timeInYouTube: player?.getCurrentTime(),
+        });
+        socket.emit('ChangePlayStatus', {
+          classroomHash: classroomHash || '',
+          play: true,
+          videoId,
+          timeInYouTube: player?.getCurrentTime(),
+        });
+        setPlayStatus('playing');
+      } else if (data === YouTube.PlayerState.PAUSED) {
+        socket.emit('ChangePlayStatus', {
+          classroomHash: classroomHash || '',
+          play: false,
+          videoId,
+          timeInYouTube: player?.getCurrentTime(),
+        });
+        setPlayStatus('paused');
+      }
+      setCurrentTime(player?.getCurrentTime() || 0);
+    }
+  };
+  // when join class room now
+  useEffect(() => {
+    socket.emit('JoinClassroom', {
+      classroomHash: classroomHash || '',
+      userId: socket.id,
+      isInstructor: instructor || false,
+    });
+    console.log('join : ', instructor);
+  }, [connected, player]);
+
+  // when receive broadcast request
+  useEffect(() => {
+    socket.on('CurrentVideoPosition', ({
+      userId,
+    }: SocketYouTube.Response.CurrentVideoPosition) => {
+      console.log('send current info');
+      if (instructor) {
+        socket.emit('CurrentVideoPosition', {
+          userId,
+          classroomHash: classroomHash || '',
+          play: player?.getPlayerState() === YouTube.PlayerState.PLAYING,
+          videoId,
+          timeInYouTube: player?.getCurrentTime(),
+        });
+      }
+    });
+    socket.on('ChangePlayStatusBroadcast', ({
+      play, timeInYouTube,
+    }: SocketYouTube.Broadcast.ChangePlayStatus) => {
+      if (play) {
+        console.log('player : ', player);
+        player?.playVideo();
+        setPlayStatus('playing');
+        console.log('play!!');
+      } else {
+        player?.pauseVideo();
+        setPlayStatus('paused');
+        console.log('pause!!');
+      }
+      console.log('on play status change');
+    });
+    socket.on('ChangeTimeBroadcast', ({
+      play, timeInYouTube,
+    }: SocketYouTube.Broadcast.ChangeTime) => {
+      if (timeInYouTube !== undefined) {
+        player?.seekTo(timeInYouTube, false);
+        setCurrentTime(timeInYouTube);
+      }
+    });
+  }, [socket, player]);
 
   return (
     <div
@@ -46,15 +141,11 @@ const YTPlayer: React.FC<Styled<Props>> = ({
               width: '100%',
               ...options,
             }}
-            onReady={({ target: player }) => {
-              if (onReady) {
-                onReady(player);
-              }
+            onReady={({ target: youtubePlayer }) => {
+              onReadyHandler(youtubePlayer);
             }}
-            onStateChange={({ target: player, data: state }) => {
-              if (onStateChange) {
-                onStateChange(state, player);
-              }
+            onStateChange={({ target: youtubePlayer, data: state }) => {
+              onStateChangeHandler(youtubePlayer, state);
             }}
           />
         ) : (
