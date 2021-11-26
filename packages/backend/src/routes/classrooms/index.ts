@@ -32,7 +32,7 @@ export default function generateRoute(server: Server): Route {
       const classroom = await managers.classroom.create(user.stringId, name);
       return {
         success: true,
-        payload: (await managers.classroom.getClassroomJSON(user.stringId, classroom.hash))!,
+        payload: (await managers.classroom.getClassroomJSON(classroom.hash))!,
       };
     },
   );
@@ -99,7 +99,7 @@ export default function generateRoute(server: Server): Route {
         if (await managers.classroom.join(userId, hash)) {
           return {
             success: true,
-            payload: (await managers.classroom.getClassroomJSON(userId, hash))!,
+            payload: (await managers.classroom.getClassroomJSON(hash))!,
           };
         }
 

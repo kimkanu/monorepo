@@ -3,8 +3,8 @@ import { useLocation, useHistory } from 'react-router-dom';
 
 export default function useRedirect(
   condition: boolean,
-  dependencies: any[],
   to: string | null = null,
+  dependencies: any[] = [condition],
 ) {
   const location = useLocation();
   const history = useHistory();

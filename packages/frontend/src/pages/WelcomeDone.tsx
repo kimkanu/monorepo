@@ -33,6 +33,7 @@ const WelcomeDone: React.FC = () => {
                 온라인과 오프라인의 장점을 접목한
                 {' '}
                 <span
+                  className="font-black"
                   style={{
                     background: `linear-gradient(${['blue', 'green'].includes(theme) ? '#7C98FC' : '#AF83F9'}, ${['blue', 'green'].includes(theme) ? '#44D28E' : '#FF8AAD'})`,
                     WebkitBackgroundClip: 'text',
@@ -51,6 +52,7 @@ const WelcomeDone: React.FC = () => {
                   text="수업 추가하러 가기"
                   onClick={() => {
                     history.replace('/');
+                    history.push('/classrooms/new');
                   }}
                 />
                 <Button

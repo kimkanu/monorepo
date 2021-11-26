@@ -179,14 +179,13 @@ export default class ClassroomManager {
   }
 
   async getClassroomJSON(
-    userId: string, classroomHash: ClassroomHash,
+    classroomHash: ClassroomHash,
   ): Promise<ClassroomJSON | null> {
     if (!this.classrooms.has(classroomHash)) {
       await this.load(classroomHash);
     }
     const classroom = this.classrooms.get(classroomHash);
     if (!classroom) return null;
-    if (!classroom.hasMember(userId)) return null;
 
     return {
       hash: classroomHash,

@@ -85,7 +85,10 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
     }
   };
 
-  useRedirect(me.loaded && !!me.info && !me.info.initialized, [me], '/welcome');
+  useRedirect(
+    me.loaded && !!me.info && !me.info.initialized,
+    '/welcome',
+  );
 
   React.useEffect(() => {
     setLoading(true);
