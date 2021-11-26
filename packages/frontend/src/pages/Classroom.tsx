@@ -20,6 +20,10 @@ const Classroom: React.FC<Props> = ({ hash }) => {
   const mainClassroom = useMainClassroom();
   const me = useRecoilValue(meState.atom);
   const history = useHistory();
+  const { voiceBuffer, audioContext } = useRecoilValue(voiceState.atom);
+
+  const [amplitude, setAmplitude] = React.useState(0);
+  const [frequency, setFrequency] = React.useState(200);
 
   const [amplitude, setAmplitude] = React.useState(0);
   const [frequency, setFrequency] = React.useState(200);
