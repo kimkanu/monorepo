@@ -1,8 +1,6 @@
 import { SocketVoice, ClassroomHash } from '@team-10/lib';
 import { Namespace } from 'socket.io';
-import { getConnection } from 'typeorm';
 
-import UserEntity from '../entity/user';
 import Server from '../server';
 import { UserSocket } from '../types/socket';
 
@@ -13,40 +11,24 @@ const ioVoiceHandler = (
   type Socket = UserSocket<SocketVoice.Events.Request, SocketVoice.Events.Response>;
   type ClassroomVoiceState = {
     speaker: string | null; // speaker's `stringId`
+    startedAt: Date | null;
   };
-
-  const connection = getConnection();
-  const userRepository = connection.getRepository(UserEntity);
 
   const state: Record<ClassroomHash, ClassroomVoiceState> = {};
   const initializeClass = (classroomHash: ClassroomHash) => {
     if (!state[classroomHash]) {
       state[classroomHash] = {
         speaker: null,
+        startedAt: null,
       };
     }
   };
 
-  const isMember = (userId: string, classroomHash: ClassroomHash) => userRepository
-    .findOneOrFail({
-      where: {
-        stringId: userId,
-      },
-      join: {
-        alias: 'user',
-        leftJoinAndSelect: { classrooms: 'user.classrooms' },
-      },
-    })
-    .then(
-      ({ classrooms }) => classrooms.some((classroom) => classroom.hash === classroomHash),
-    );
+  const isMember = server.managers.classroom.isUserMember.bind(server.managers.classroom);
 
   io.on('connection', (socket: Socket) => {
     socket.on('StateChange', async ({ classroomHash, speaking }) => {
       initializeClass(classroomHash);
-
-      console.log('StateChange', classroomHash, speaking);
-      console.log('Speaker', state[classroomHash].speaker);
 
       // 로그인 상태가 아닐 시
       if (!socket.request.user) {
@@ -88,6 +70,7 @@ const ioVoiceHandler = (
       // 아무도 말하고 있지 않으면 말하기 요청 수락
       if ((state[classroomHash].speaker === null) && speaking) {
         state[classroomHash].speaker = userId;
+        state[classroomHash].startedAt = new Date();
         socket.emit('StateChange', {
           success: true,
           speaking: true,
@@ -95,24 +78,36 @@ const ioVoiceHandler = (
         io.emit('StateChangeBroadcast', {
           speaking: true,
           classroomHash,
-          userId: 'user',
+          userId,
           sentAt: Date.now(),
         });
+        // Main socket으로 업데이트
+        server.managers.user.makeSocketMain(userId, socket.id);
         return;
       }
 
       // 자신이 말하고 있을 때 말하기 중단 요청
       if (!speaking && state[classroomHash].speaker === userId) {
-        await new Promise((r) => setTimeout(r, 500));
-        state[classroomHash].speaker = null;
         socket.emit('StateChange', {
           success: true,
           speaking: false,
         });
+
+        if (state[classroomHash].startedAt) {
+          server.managers.classroom.recordVoiceHistory(
+            classroomHash,
+            userId,
+            state[classroomHash].startedAt!,
+            new Date(),
+          );
+          state[classroomHash].startedAt = null;
+        }
+        await new Promise((r) => setTimeout(r, 1000));
+        state[classroomHash].speaker = null;
         io.emit('StateChangeBroadcast', {
           speaking: false,
           classroomHash,
-          userId: 'user',
+          userId,
           reason: SocketVoice.StateChangeEndReason.NORMAL,
           sentAt: Date.now(),
         });
@@ -128,34 +123,19 @@ const ioVoiceHandler = (
           success: false,
           reason: SocketVoice.StreamSendDeniedReason.UNAUTHORIZED,
         });
-        console.log('UNAUTHORIZED');
         return;
       }
 
-      // 유저가 교실에 들어있지 않을 때
       const userId: string = socket.request.user.stringId;
-      if (!await isMember(userId, classroomHash)) {
-        socket.emit('StreamSend', {
-          success: false,
-          reason: SocketVoice.StreamSendDeniedReason.NOT_MEMBER,
-        });
-        console.log('NOT_MEMBER');
-        return;
-      }
-
       // 유저가 speaker가 아닐 때
       if (state[classroomHash].speaker !== userId) {
         socket.emit('StreamSend', {
           success: false,
           reason: SocketVoice.StreamSendDeniedReason.NOT_SPEAKER,
         });
-        console.log('NOT_SPEAKER');
         return;
       }
 
-      console.log('StreamSend', sequenceIndex, voices.map((voice) => voice.buffer.byteLength).reduce((a, b) => a + b, 0));
-
-      // TODO: 노이즈 제거 및 음성 변조 등
       socket.emit('StreamSend', {
         success: true,
         sequenceIndex,
