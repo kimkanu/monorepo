@@ -102,7 +102,6 @@ const TextInput: React.FC<Styled<Props>> = ({
     });
 
     return () => {
-      console.log('canceled');
       cancelablePromise.cancel();
     };
   }, [value]);
