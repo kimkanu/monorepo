@@ -30,6 +30,7 @@ services:
     networks:
       - mynetwork
     environment:
+      CHOKIDAR_USEPOLLING: 1
       PORT: ${FRONTEND_PORT}
       NODE_ENV: ${NODE_ENV}
       REACT_APP_PROXY_URL: ${REACT_APP_PROXY_URL}
