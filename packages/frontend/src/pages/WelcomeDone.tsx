@@ -38,7 +38,7 @@ const WelcomeDone: React.FC = () => {
             <span
               className="font-black"
               style={{
-                background: `linear-gradient(${['blue', 'green'].includes(theme) ? '#7C98FC' : '#AF83F9'}, ${['blue', 'green'].includes(theme) ? '#44D28E' : '#FF8AAD'})`,
+                background: `linear-gradient(90deg, ${['blue', 'green'].includes(theme) ? '#7C98FC' : '#AF83F9'}, ${['blue', 'green'].includes(theme) ? '#44D28E' : '#FF8AAD'})`,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -47,7 +47,7 @@ const WelcomeDone: React.FC = () => {
             </span>
             에서 즐겁고 편하게 공부하세요!
           </p>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 mb-16">
             <Button
               width="full"
               type="primary"

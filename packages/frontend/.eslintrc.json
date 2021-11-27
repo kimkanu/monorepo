@@ -49,6 +49,7 @@
         }
       }
     ],
-    "no-nested-ternary": "off"
+    "no-nested-ternary": "off",
+    "react/prop-types": "off"
   }
 }

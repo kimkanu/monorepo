@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
+import LogoAlt from '../../assets/logo-alt.svg';
 import Logo from '../../assets/logo.svg';
 import themeState from '../../recoil/theme';
 import { mergeClassNames } from '../../utils/style';
@@ -19,7 +20,7 @@ const LogoButton: React.FC<Props> = ({ onClick }) => {
       onClick={onClick}
       className={mergeClassNames(styles.button, styles[theme])}
     >
-      <img src={Logo} alt="Blearn! 로고" />
+      <img src={['violet', 'pink'].includes(theme) ? Logo : LogoAlt} alt="Blearn! 로고" />
     </button>
   );
 };

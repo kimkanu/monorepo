@@ -23,8 +23,8 @@ const Welcome: React.FC = () => {
   const idRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
-  const [displayName, setDisplayName] = React.useState('');
-  const [stringId, setStringId] = React.useState('');
+  const [displayName, setDisplayName] = React.useState<string | null>(null);
+  const [stringId, setStringId] = React.useState<string | null>(null);
   const [isIdInitial, setIdInitial] = React.useState(true);
   const [isWaitingResponse, setWaitingResponse] = React.useState(false);
   const continueButtonIcon = !isWaitingResponse ? undefined : <SpinnerIos20Regular className="animate-spin block text-white stroke-current" style={{ height: 20 }} />;
@@ -59,13 +59,27 @@ const Welcome: React.FC = () => {
           <div className="flex flex-col gap-2">
             <span className="text-base text-left font-bold text-gray-800">이름</span>
             <TextInput
-              value={displayName}
+              value={displayName ?? ''}
               nextRef={idRef}
               onInput={setDisplayName}
               readOnly={isWaitingResponse}
               font="mono"
               icon={<ContactCard20Filled />}
-              validator={(v) => !!v}
+              validator={(v) => new CancelablePromise<boolean>((
+                resolve, reject, onCancel,
+              ) => {
+                if (v === null) {
+                  const timeout = setTimeout(() => {
+                    resolve(true);
+                  }, 1e+9);
+                  onCancel(() => {
+                    clearTimeout(timeout);
+                  });
+                  return;
+                }
+
+                resolve(!!v);
+              })}
               filled
             />
           </div>
@@ -74,7 +88,7 @@ const Welcome: React.FC = () => {
             <TextInput
               ref_={idRef}
               nextRef={buttonRef}
-              value={stringId}
+              value={stringId ?? ''}
               onInput={setStringId}
               readOnly={isWaitingResponse}
               font="mono"
@@ -83,6 +97,16 @@ const Welcome: React.FC = () => {
               validator={(value) => new CancelablePromise<boolean>((
                 resolve, reject, onCancel,
               ) => {
+                if (value === null) {
+                  const timeout = setTimeout(() => {
+                    resolve(true);
+                  }, 1e+9);
+                  onCancel(() => {
+                    clearTimeout(timeout);
+                  });
+                  return;
+                }
+
                 if (!/^[\w\d._\-:]{3,}$/.test(value) || value === 'me' || !me.loaded || !me.info) {
                   setStringIdValid(false);
                   resolve(false);
@@ -106,9 +130,9 @@ const Welcome: React.FC = () => {
                       setStringIdValid(!response.success);
                       resolve(!response.success);
                     })
-                    .catch((e) => {
+                    .catch(() => {
                       setStringIdValid(false);
-                      reject(e);
+                      resolve(false);
                     });
                 }, 250);
                 onCancel(() => {
@@ -129,6 +153,7 @@ const Welcome: React.FC = () => {
               onClick={async () => {
                 if (isWaitingResponse) return;
                 try {
+                  if (!displayName || !stringId || !isStringIdValid) return;
                   setWaitingResponse(true);
                   const response = await fetchAPI('PATCH /users/me', {}, { stringId, displayName });
                   if (response.success) {
@@ -139,11 +164,11 @@ const Welcome: React.FC = () => {
                           ...me.info,
                           stringId: response.payload.stringId,
                           displayName: response.payload.displayName,
+                          initialized: true,
                         },
                       });
                       const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
                       history.replace(`/welcome/done?redirect_uri=${query}`);
-                      console.log('replaced');
                     }
                   } else {
                     setWaitingResponse(false);
