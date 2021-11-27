@@ -55,7 +55,7 @@
     "packages/lib/**/*.+(js|jsx|ts|tsx)": [
       "yarn workspace @team-10/lib eslint --fix"
     ],
-    "**/*.+(json|css)": [
+    "**/!(*min).+(json|css)": [
       "yarn prettier"
     ]
   }
