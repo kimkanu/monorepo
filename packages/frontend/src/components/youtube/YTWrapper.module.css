@@ -114,10 +114,10 @@
 .maxDesktop {
   transition: box-shadow 130ms cubic-bezier(0.4, 0, 0.2, 1),
     opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  width: calc(100vw - var(--chat-section-width--desktop));
+  width: calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - var(--chat-section-width--desktop));
   height: calc(100 * var(--wh) - var(--header-height) - var(--footer-height));
   transform: translate(
-    calc(100vw - var(--chat-section-width--desktop) - 100%),
+    calc(100vw - env(safe-area-inset-right, 0px) - var(--chat-section-width--desktop) - 100%),
     calc(100 * var(--wh) - var(--footer-height) - 100%)
   );
   border-radius: 0rem;
@@ -136,10 +136,10 @@
 
 .beingMaxDesktop {
   transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  width: calc(100vw - var(--chat-section-width--desktop));
+  width: calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - var(--chat-section-width--desktop));
   height: calc(100 * var(--wh) - var(--header-height) - var(--footer-height));
   transform: translate(
-    calc(100vw - var(--chat-section-width--desktop) - 100%),
+    calc(100vw - env(safe-area-inset-right, 0px) - var(--chat-section-width--desktop) - 100%),
     calc(100 * var(--wh) - var(--footer-height) - 100%)
   );
   border-radius: 0.5rem;

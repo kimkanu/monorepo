@@ -1,8 +1,9 @@
 import React from 'react';
 
 import {
-  TypedChatContent, ChatType, ChatContent, TextChatContent, PhotoChatContent,
+  ChatType, ChatContent, TextChatContent, PhotoChatContent,
 } from '../../types/chat';
+import { stringifyDateTime } from '../../utils/date';
 
 import OthersPhotoChat from './OthersPhotoChat';
 import OthersTextChat from './OthersTextChat';
@@ -30,15 +31,6 @@ interface Props {
   sender: ClassMember;
   chats: ChatContent[];
 }
-function calDate(content: ChatContent['content']) {
-  let result;
-  if (content.sentAt.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)) {
-    result = (content.sentAt.toLocaleString().charAt(21) === ':') ? content.sentAt.toLocaleString().slice(13, 21) : content.sentAt.toLocaleString().slice(13, 22);
-  } else {
-    result = content.sentAt.toLocaleString();
-  }
-  return result;
-}
 const OthersChatBox: React.FC<Props> = ({
   dark, sender, chats,
 }) => (
@@ -53,7 +45,7 @@ const OthersChatBox: React.FC<Props> = ({
       <div className="text-tiny text-gray-500" style={{ padding: '3px 4px' }}>
         {sender.displayName}
         {' ㆍ '}
-        {calDate(chats.slice(-1)?.[0].content)}
+        {stringifyDateTime(chats.slice(-1)[0].sentAt)}
       </div>
     </div>
   </div>
