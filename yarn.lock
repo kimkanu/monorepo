@@ -3566,6 +3566,7 @@ __metadata:
     "@types/morgan": ^1.9.3
     "@types/multer": ^1.4.7
     "@types/passport": ^1.0.7
+    "@types/passport-github": ^1.1.6
     "@types/passport-oauth2": ^1.4.11
     "@types/uuid": ^8.3.3
     "@typescript-eslint/eslint-plugin": ^5.1.0
@@ -3584,6 +3585,7 @@ __metadata:
     multer: ^1.4.3
     nodemon: ^2.0.14
     passport: ^0.5.0
+    passport-github: ^1.1.0
     passport-naver-v2: ^2.0.8
     passport-oauth2: ^1.6.1
     pg: ^8.7.1
@@ -4135,7 +4137,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-oauth2@npm:^1.4.11":
+"@types/passport-github@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "@types/passport-github@npm:1.1.6"
+  dependencies:
+    "@types/express": "*"
+    "@types/passport": "*"
+    "@types/passport-oauth2": "*"
+  checksum: 418ac477a9b450b321fbeef1ac0ac0046f997f077a4e9f95c9176e4df36be2fd44818ed012e68f41460ba460236b5188950168bbd0c19b61a470f58ff505f352
+  languageName: node
+  linkType: hard
+
+"@types/passport-oauth2@npm:*, @types/passport-oauth2@npm:^1.4.11":
   version: 1.4.11
   resolution: "@types/passport-oauth2@npm:1.4.11"
   dependencies:
@@ -15868,6 +15881,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-github@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "passport-github@npm:1.1.0"
+  dependencies:
+    passport-oauth2: 1.x.x
+  checksum: 934be3b16c698517cd479ea55c0a17424c402d9ed867bc16d320a9c0c05662d88d9f37bb8eef47db00c49b1fd37153e5e564959ce2c93a8fa810b30ff69b6c37
+  languageName: node
+  linkType: hard
+
 "passport-naver-v2@npm:^2.0.8":
   version: 2.0.8
   resolution: "passport-naver-v2@npm:2.0.8"
@@ -15877,7 +15899,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:^1.5.0, passport-oauth2@npm:^1.6.1":
+"passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.5.0, passport-oauth2@npm:^1.6.1":
   version: 1.6.1
   resolution: "passport-oauth2@npm:1.6.1"
   dependencies:
