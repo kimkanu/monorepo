@@ -8,13 +8,13 @@ import ContentPadding from '../components/layout/ContentPadding';
 import classroomsState from '../recoil/classrooms';
 import meState from '../recoil/me';
 
-const Main: React.FC = () => {
+const Main = React.forwardRef<HTMLDivElement>((props, ref) => {
   const classrooms = useRecoilValue(classroomsState.atom);
   const me = useRecoilValue(meState.atom);
   const history = useHistory();
 
   return (
-    <ContentPadding isFooterPresent>
+    <ContentPadding ref={ref} isFooterPresent>
       {!me.loaded ? null : me.info ? (
         <>
           <Title size="title">내 수업</Title>
@@ -33,6 +33,6 @@ const Main: React.FC = () => {
       )}
     </ContentPadding>
   );
-};
+});
 
 export default Main;

@@ -32,7 +32,7 @@ const JoinCreateContent: React.FC<Props> = ({
   return (
     <div>
       <section>
-        <Title size="sect" className="mb-6 mt-2">
+        <Title size="sect" className="mb-6">
           <div className="flex justify-between items-end">
             수업 참가하기
             <div className="w-8 h-8 relative">

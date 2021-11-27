@@ -51,7 +51,7 @@ function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJ
 const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style }) => {
   const history = useHistory();
   const location = useLocation();
-  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
+  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
 
   const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
   const toasts = useRecoilValue(toastState.atom);
