@@ -173,7 +173,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
       >
         <ProfileDropdownContent
           src={me.loaded ? me.info?.profileImage : undefined}
-          displayName={me.loaded ? (me.info?.profileImage ?? '') : ''}
+          displayName={me.loaded ? (me.info?.displayName ?? '') : ''}
           hideDropdowns={hideDropdowns}
         />
       </Dropdown>
