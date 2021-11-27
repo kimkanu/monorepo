@@ -25,7 +25,13 @@ import Dropdown from '../alert/Dropdown';
 import AmbientButton from '../buttons/AmbientButton';
 import LogoButton from '../buttons/LogoButton';
 
-const ProfileDropdownContent: React.FC<{ src?: string, hideDropdowns: () => void }> = ({ src, hideDropdowns }) => {
+interface ProfileDropdownContentProps {
+  src?: string;
+  displayName: string;
+  hideDropdowns: () => void;
+}
+
+const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, displayName, hideDropdowns }) => {
   const [theme, setTheme] = useRecoilState(themeState.atom);
 
   return (
@@ -39,7 +45,7 @@ const ProfileDropdownContent: React.FC<{ src?: string, hideDropdowns: () => void
       <span className="text-sub">
         안녕하세요,
         {' '}
-        <span className="font-bold">닉네임</span>
+        <span className="font-bold">{displayName}</span>
         {' '}
         님!
       </span>
@@ -165,7 +171,11 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
         onClose={() => setProfileDropdownVisible(false)}
         right={0}
       >
-        <ProfileDropdownContent src={me.loaded ? me.info?.profileImage : undefined} hideDropdowns={hideDropdowns} />
+        <ProfileDropdownContent
+          src={me.loaded ? me.info?.profileImage : undefined}
+          displayName={me.loaded ? (me.info?.profileImage ?? '') : ''}
+          hideDropdowns={hideDropdowns}
+        />
       </Dropdown>
 
       {/* Notification Dropdown */}
