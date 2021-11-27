@@ -2,8 +2,12 @@ import {
   PersonAccounts24Regular,
 } from '@fluentui/react-icons';
 import { SSOAccountJSON } from '@team-10/lib';
+import CancelablePromise from 'cancelable-promise';
 import React from 'react';
+import { useRecoilState } from 'recoil';
 
+import meState from '../../recoil/me';
+import fetchAPI from '../../utils/fetch';
 import NarrowPageWrapper from '../elements/NarrowPageWrapper';
 import Title from '../elements/Title';
 import TextInput from '../input/TextInput';
@@ -30,6 +34,7 @@ const ProfileSettingContent: React.FC<Props> = ({
   ssoAccounts,
   onSSOAccountsRemove,
 }) => {
+  const [me, setMe] = useRecoilState(meState.atom);
   const [displayName, setDisplayName] = React.useState(initialDisplayName);
 
   React.useEffect(() => {
@@ -60,7 +65,42 @@ const ProfileSettingContent: React.FC<Props> = ({
           )}
           placeholderText="이름"
           align="center"
-          validator={(v) => !!v}
+          validator={(newDisplayName) => new CancelablePromise<boolean>((
+            resolve, reject, onCancel,
+          ) => {
+            if (!newDisplayName || !me.loaded || !me.info) {
+              resolve(false);
+              return;
+            }
+            if (newDisplayName === initialDisplayName) {
+              resolve(true);
+              return;
+            }
+
+            const timeout = setTimeout(() => {
+              fetchAPI('PATCH /users/me', {}, {
+                displayName: newDisplayName,
+              })
+                .then((response) => {
+                  if (response.success) {
+                    setMe({
+                      loaded: true,
+                      info: me.info ? {
+                        ...me.info,
+                        displayName: response.payload.displayName,
+                      } : null,
+                    });
+                    resolve(response.success);
+                  }
+                })
+                .catch(() => {
+                  resolve(false);
+                });
+            }, 1500);
+            onCancel(() => {
+              clearTimeout(timeout);
+            });
+          })}
         />
         <Title size="sect" className="mb-12 mt-4">연결된 소셜 계정</Title>
         <SSOAccountList ssoAccounts={ssoAccounts} onRemove={onSSOAccountsRemove} />

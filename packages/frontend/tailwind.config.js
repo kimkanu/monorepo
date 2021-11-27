@@ -102,7 +102,7 @@ module.exports = {
       }],
       sub: ['1.5rem', {
         letterSpacing: '-0.03em',
-        lineHeight: 'rem',
+        lineHeight: '1.75rem',
       }],
       big: ['1.75rem', {
         letterSpacing: '-0.03em',

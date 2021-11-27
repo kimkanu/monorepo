@@ -106,9 +106,9 @@ const Welcome: React.FC = () => {
                       setStringIdValid(!response.success);
                       resolve(!response.success);
                     })
-                    .catch((e) => {
+                    .catch(() => {
                       setStringIdValid(false);
-                      reject(e);
+                      resolve(false);
                     });
                 }, 250);
                 onCancel(() => {

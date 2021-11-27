@@ -42,12 +42,10 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
         style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
         className="w-28 h-28 rounded-full overflow-hidden shadow-button object-cover object-center my-8"
       />
-      <span className="text-sub">
-        안녕하세요,
-        {' '}
-        <span className="font-bold">{displayName}</span>
-        {' '}
-        님!
+      <span className="text-sub inline-flex max-w-full whitespace-nowrap gap-1">
+        <span>안녕하세요, </span>
+        <span className="font-bold inline-block overflow-hidden overflow-ellipsis">{displayName}</span>
+        <span> 님!</span>
       </span>
       <div className="w-full flex flex-col justify-start mt-8">
         <span className="text-gray-800 font-bold">테마 선택</span>
