@@ -46,8 +46,6 @@ export default (connection: Connection) => {
     profile: NaverProfile,
     done: PassportOauth2.VerifyCallback,
   ) => {
-    console.log('req.user', req.user);
-
     const providerId = profile.email?.replace(/@.*$/, '') ?? profile.id;
 
     try {
@@ -97,9 +95,7 @@ export default (connection: Connection) => {
     passReqToCallback: true,
   },
   async (req, accessToken, refreshToken, profile, done) => {
-    console.log('req.user', req.user);
-
-    const providerId = profile.id;
+    const providerId = profile.username ?? profile.id;
 
     try {
       const ssoAccount = await ssoAccountRepository.findOne({

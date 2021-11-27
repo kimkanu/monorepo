@@ -37,8 +37,6 @@ export default class Classroom {
     public server: Server,
     public entity: ClassroomEntity,
     info: ClassroomInfo,
-    // Classroom 밖에 있는 client가 이 room에 메시지를 보낼 수 없도록 roomId는 숨겨야 합니다.
-    public roomId: string,
   ) {
     this.hash = info.hash;
     this.name = info.name;
@@ -69,14 +67,18 @@ export default class Classroom {
     this.name = name;
   }
 
-  start() {
+  async start() {
     this.isLive = true;
     this.updatedAt = new Date();
+    this.entity.updatedAt = this.updatedAt;
+    await this.entity.save();
   }
 
-  end() {
+  async end() {
     this.isLive = false;
     this.updatedAt = new Date();
+    this.entity.updatedAt = this.updatedAt;
+    await this.entity.save();
   }
 
   /**

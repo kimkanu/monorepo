@@ -4,7 +4,7 @@ import { getConnection } from 'typeorm';
 import { v4 as generateUUID } from 'uuid';
 
 import ClassroomEntity from '../entity/classroom';
-import HistoryEntity, { VoiceHistoryEntity } from '../entity/history';
+import { VoiceHistoryEntity } from '../entity/history';
 import UserEntity from '../entity/user';
 
 import Server from '../server';
@@ -48,8 +48,7 @@ export default class ClassroomManager {
       passcode: classroomEntity.passcode,
       updatedAt: classroomEntity.updatedAt,
     };
-    const roomId = generateUUID();
-    const classroom = new Classroom(this.server, classroomEntity, classroomInfo, roomId);
+    const classroom = new Classroom(this.server, classroomEntity, classroomInfo);
     this.classrooms.set(classroomHash, classroom);
 
     return true;
@@ -79,7 +78,6 @@ export default class ClassroomManager {
       }
     }
 
-    const roomId = generateUUID();
     const classroom = new Classroom(
       this.server,
       entity,
@@ -90,7 +88,7 @@ export default class ClassroomManager {
         memberIds: new Set([userId]),
         passcode: entity.passcode,
         updatedAt: entity.updatedAt,
-      }, roomId,
+      },
     );
 
     entity.passcode = classroom.regeneratePasscode();
@@ -169,14 +167,14 @@ export default class ClassroomManager {
     }
     const classroom = this.classrooms.get(classroomHash);
     if (!classroom) return false;
-    classroom.start();
+    await classroom.start();
     return true;
   }
 
-  endClassroom(classroomHash: ClassroomHash): boolean {
+  async endClassroom(classroomHash: ClassroomHash): Promise<boolean> {
     const classroom = this.classrooms.get(classroomHash);
     if (!classroom) return false;
-    classroom.end();
+    await classroom.end();
     return true;
   }
 
