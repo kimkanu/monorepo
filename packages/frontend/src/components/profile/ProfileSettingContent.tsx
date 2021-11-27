@@ -36,8 +36,12 @@ const ProfileSettingContent: React.FC<Props> = ({
 }) => {
   const [me, setMe] = useRecoilState(meState.atom);
   const [displayName, setDisplayName] = React.useState(initialDisplayName);
+  const [isInitial, setInitial] = React.useState(true);
 
   React.useEffect(() => {
+    if (!isInitial) return;
+    if (!initialDisplayName) return;
+    setInitial(false);
     setDisplayName(initialDisplayName);
   }, [initialDisplayName]);
 
@@ -52,7 +56,7 @@ const ProfileSettingContent: React.FC<Props> = ({
         />
         <TextInput
           containerClassName="my-16"
-          value={displayName}
+          value={displayName ?? ''}
           onInput={(newDisplayName) => {
             setDisplayName(newDisplayName);
             onDisplayNameChange(newDisplayName);
@@ -68,6 +72,16 @@ const ProfileSettingContent: React.FC<Props> = ({
           validator={(newDisplayName) => new CancelablePromise<boolean>((
             resolve, reject, onCancel,
           ) => {
+            if (!initialDisplayName) {
+              const timeout = setTimeout(() => {
+                resolve(true);
+              }, 1e+9);
+              onCancel(() => {
+                clearTimeout(timeout);
+              });
+              return;
+            }
+
             if (!newDisplayName || !me.loaded || !me.info) {
               resolve(false);
               return;
@@ -97,6 +111,7 @@ const ProfileSettingContent: React.FC<Props> = ({
                   resolve(false);
                 });
             }, 1500);
+
             onCancel(() => {
               clearTimeout(timeout);
             });
