@@ -32,6 +32,10 @@ const ProfileSettingContent: React.FC<Props> = ({
 }) => {
   const [displayName, setDisplayName] = React.useState(initialDisplayName);
 
+  React.useEffect(() => {
+    setDisplayName(initialDisplayName);
+  }, [initialDisplayName]);
+
   return (
     <NarrowPageWrapper>
       <section className="mb-16">

@@ -99,7 +99,10 @@ const Dropdown: React.FC<Styled<Props>> = ({
             className,
           )}
         >
-          <div className="px-8 py-8 w-full h-full overflow-auto">
+          <div
+            className="p-8 w-full h-full overflow-auto"
+            style={{ maxHeight: 'calc(90 * var(--wh) - 64px - env(safe-area-inset-top, 0px))' }}
+          >
             {children}
             <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />
           </div>

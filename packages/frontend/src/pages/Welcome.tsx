@@ -139,11 +139,11 @@ const Welcome: React.FC = () => {
                           ...me.info,
                           stringId: response.payload.stringId,
                           displayName: response.payload.displayName,
+                          initialized: true,
                         },
                       });
                       const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
                       history.replace(`/welcome/done?redirect_uri=${query}`);
-                      console.log('replaced');
                     }
                   } else {
                     setWaitingResponse(false);
