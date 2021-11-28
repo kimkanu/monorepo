@@ -1,40 +1,43 @@
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import LoginButton from '../components/buttons/LoginButton';
+import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
 
+import loadingState from '../recoil/loading';
 import meState from '../recoil/me';
 
 const Login: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const me = useRecoilValue(meState.atom);
+  const setLoading = useSetRecoilState(loadingState.atom);
 
   React.useEffect(() => {
     if (me.loaded && me.info) {
       const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-      history.replace(query);
+      console.log('replace(query);'); history.replace(query);
     }
   }, [me]);
 
   return (
     <ContentPadding isFooterPresent>
       <div className="mx-auto mb-16" style={{ maxWidth: 360 }}>
-        <h1 className="text-title my-16 font-bold text-center">
-          로그인
-        </h1>
+        <Title size="title">로그인</Title>
         <div className="flex flex-col gap-6">
           <LoginButton
             provider="naver"
             onClick={() => {
+              setLoading(true);
               window.location.pathname = '/api/auth/naver';
             }}
           />
           <LoginButton
             provider="github"
             onClick={() => {
+              setLoading(true);
               window.location.pathname = '/api/auth/github';
             }}
           />

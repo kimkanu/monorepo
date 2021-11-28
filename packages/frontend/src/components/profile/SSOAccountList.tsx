@@ -11,6 +11,7 @@ import Button from '../buttons/Button';
 
 interface ItemProps {
   ssoAccount: SSOAccountJSON;
+  removable: boolean;
   onRemove?: () => void;
 }
 
@@ -23,7 +24,7 @@ const providerClassName: Record<Provider, string> = {
   github: 'w-7 h-7',
 };
 
-const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, onRemove }) => (
+const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, removable, onRemove }) => (
   <div
     className={
       mergeClassNames(
@@ -42,27 +43,29 @@ const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, onRemove }) => (
       />
     </div>
     <span className="font-mono font-emph font-bold">{ssoAccount.providerId}</span>
-    <Button onClick={onRemove} className="absolute right-0 top-0" width="fit-content" type="destructive" icon={<Dismiss20Regular />} />
+    {removable && <Button onClick={onRemove} className="absolute right-0 top-0" width="fit-content" type="destructive" icon={<Dismiss20Regular />} />}
   </div>
 );
 
 interface Props {
   ssoAccounts: SSOAccountJSON[];
   onRemove: (ssoAccount: SSOAccountJSON) => void;
+  onAdd: () => void;
 }
 
-const SSOAccountList: React.FC<Props> = ({ ssoAccounts, onRemove }) => (
+const SSOAccountList: React.FC<Props> = ({ ssoAccounts, onRemove, onAdd }) => (
   <div className="flex flex-col gap-4">
     {ssoAccounts.map(
       (ssoAccount) => (
         <SSOAccountItem
           ssoAccount={ssoAccount}
+          removable={ssoAccounts.length > 1}
           onRemove={() => onRemove(ssoAccount)}
           key={`${ssoAccount.provider}:${ssoAccount.providerId}`}
         />
       ),
     )}
-    <Button width="full" type="primary" text="다른 소셜 계정 연결" icon={<Add20Regular />} />
+    <Button width="full" type="primary" text="다른 소셜 계정 연결" icon={<Add20Regular />} onClick={onAdd} />
   </div>
 );
 

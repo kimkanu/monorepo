@@ -1,21 +1,22 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { BrowserRouter as Router, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { AnimatedRoute } from 'react-router-transition';
-import { CSSTransition } from 'react-transition-group';
 import { useRecoilValue } from 'recoil';
 
 import Global from './components/layout/Global';
 import Layout from './components/layout/Layout';
 import Classroom from './pages/Classroom';
+import ClassroomMembers from './pages/ClassroomMembers';
+import ClassroomSettings from './pages/ClassroomSettings';
 import Login from './pages/Login';
 import Main from './pages/Main';
 import NewClassroom from './pages/NewClassroom';
 import Profile from './pages/Profile';
+import ProfileConnect from './pages/ProfileConnect';
 import Test from './pages/Test';
 import Welcome from './pages/Welcome';
 import WelcomeDone from './pages/WelcomeDone';
-import classroomsState from './recoil/classrooms';
 import themeState from './recoil/theme';
 import { clamp } from './utils/math';
 
@@ -80,6 +81,8 @@ const App: React.FC = () => {
           {...transitionProps()}
           className="w-full h-full"
         />
+        <ClassroomMembers />
+        <ClassroomSettings />
 
         {/* Login page */}
         <AnimatedRoute
@@ -93,11 +96,12 @@ const App: React.FC = () => {
         {/* Profile page */}
         <AnimatedRoute
           exact
-          path="/profile"
+          path={['/profile', '/profile/connect']}
           render={() => <Profile />}
           {...transitionProps()}
           className="w-full absolute"
         />
+        <ProfileConnect />
 
         {process.env.NODE_ENV === 'development' && (
           <>

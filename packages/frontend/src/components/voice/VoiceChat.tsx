@@ -225,7 +225,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
               message: '먼저 로그인 해주세요.',
             });
             redirectTo('/login');
-            console.log('failed to send stream: unauthorized! back to the main screen'); // TODO
           } else if (response.reason === SocketVoice.StreamSendDeniedReason.NOT_MEMBER) {
             addToast({
               type: 'error',

@@ -17,12 +17,12 @@ import SSOAccountList from './SSOAccountList';
 
 interface Props {
   initialDisplayName: string;
-  onDisplayNameChange: (displayName: string) => void;
   profileImage: string;
   isProfileImageChanging: boolean;
   onProfileImageEdit: (file: Blob) => void;
   ssoAccounts: SSOAccountJSON[];
   onSSOAccountsRemove: (ssoAccount: SSOAccountJSON) => void;
+  onSSOAccountsAdd: () => void;
 }
 
 const ProfileSettingContent: React.FC<Props> = ({
@@ -30,11 +30,11 @@ const ProfileSettingContent: React.FC<Props> = ({
   onProfileImageEdit,
   profileImage,
   isProfileImageChanging,
-  onDisplayNameChange,
   ssoAccounts,
   onSSOAccountsRemove,
+  onSSOAccountsAdd,
 }) => {
-  const [me, setMe] = useRecoilState(meState.atom);
+  const [meInfo, setMeInfo] = useRecoilState(meState.info);
   const [displayName, setDisplayName] = React.useState(initialDisplayName);
   const [isInitial, setInitial] = React.useState(true);
 
@@ -59,7 +59,6 @@ const ProfileSettingContent: React.FC<Props> = ({
           value={displayName ?? ''}
           onInput={(newDisplayName) => {
             setDisplayName(newDisplayName);
-            onDisplayNameChange(newDisplayName);
           }}
           icon={(
             <PersonAccounts24Regular
@@ -82,7 +81,7 @@ const ProfileSettingContent: React.FC<Props> = ({
               return;
             }
 
-            if (!newDisplayName || !me.loaded || !me.info) {
+            if (!newDisplayName || !meInfo) {
               resolve(false);
               return;
             }
@@ -97,13 +96,7 @@ const ProfileSettingContent: React.FC<Props> = ({
               })
                 .then((response) => {
                   if (response.success) {
-                    setMe({
-                      loaded: true,
-                      info: me.info ? {
-                        ...me.info,
-                        displayName: response.payload.displayName,
-                      } : null,
-                    });
+                    setMeInfo(response.payload);
                     resolve(response.success);
                   }
                 })
@@ -118,7 +111,7 @@ const ProfileSettingContent: React.FC<Props> = ({
           })}
         />
         <Title size="sect" className="mb-12 mt-4">연결된 소셜 계정</Title>
-        <SSOAccountList ssoAccounts={ssoAccounts} onRemove={onSSOAccountsRemove} />
+        <SSOAccountList onAdd={onSSOAccountsAdd} ssoAccounts={ssoAccounts} onRemove={onSSOAccountsRemove} />
       </section>
     </NarrowPageWrapper>
   );

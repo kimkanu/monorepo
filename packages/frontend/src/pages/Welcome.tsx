@@ -2,7 +2,7 @@ import { ContactCard20Filled, SpinnerIos20Regular } from '@fluentui/react-icons'
 import CancelablePromise from 'cancelable-promise';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 
 import Button from '../components/buttons/Button';
 import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
@@ -17,7 +17,8 @@ const Welcome: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const [me, setMe] = useRecoilState(meState.atom);
+  const me = useRecoilValue(meState.atom);
+  const [meInfo, setMeInfo] = useRecoilState(meState.info);
   const addToast = useSetRecoilState(toastState.new);
 
   const idRef = React.useRef<HTMLInputElement>(null);
@@ -25,24 +26,26 @@ const Welcome: React.FC = () => {
 
   const [displayName, setDisplayName] = React.useState<string | null>(null);
   const [stringId, setStringId] = React.useState<string | null>(null);
-  const [isIdInitial, setIdInitial] = React.useState(true);
+  const [initialId, setInitialId] = React.useState<string>('');
   const [isWaitingResponse, setWaitingResponse] = React.useState(false);
   const continueButtonIcon = !isWaitingResponse ? undefined : <SpinnerIos20Regular className="animate-spin block text-white stroke-current" style={{ height: 20 }} />;
   const [isStringIdValid, setStringIdValid] = React.useState(true);
+  const [isRedirectPrevented, setRedirectPrevented] = React.useState(false);
 
   React.useEffect(() => {
-    if (me.loaded && me.info) {
-      if (me.info.initialized) {
+    if (meInfo) {
+      if (meInfo.initialized && !isRedirectPrevented) {
         const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
         history.replace(query);
       } else {
-        setDisplayName(me.info.displayName);
-        setStringId(me.info.stringId);
+        setDisplayName(meInfo.displayName!);
+        setStringId(meInfo.stringId!);
+        setInitialId(meInfo.stringId!);
       }
     } else if (me.loaded) {
       history.replace('/login?redirect_uri=/welcome');
     }
-  }, [me.loaded]);
+  }, [me.loaded, meInfo]);
 
   return (
     <ContentPadding isFooterPresent>
@@ -59,7 +62,7 @@ const Welcome: React.FC = () => {
           <div className="flex flex-col gap-2">
             <span className="text-base text-left font-bold text-gray-800">이름</span>
             <TextInput
-              value={displayName ?? ''}
+              value={displayName}
               nextRef={idRef}
               onInput={setDisplayName}
               readOnly={isWaitingResponse}
@@ -88,7 +91,7 @@ const Welcome: React.FC = () => {
             <TextInput
               ref_={idRef}
               nextRef={buttonRef}
-              value={stringId ?? ''}
+              value={stringId}
               onInput={setStringId}
               readOnly={isWaitingResponse}
               font="mono"
@@ -112,13 +115,7 @@ const Welcome: React.FC = () => {
                   resolve(false);
                   return;
                 }
-                if (value === me.info.stringId) {
-                  setStringIdValid(true);
-                  resolve(true);
-                  return;
-                }
-                if (isIdInitial && value !== me.info.stringId) {
-                  setIdInitial(false);
+                if (stringId !== null && value === initialId) {
                   setStringIdValid(true);
                   resolve(true);
                   return;
@@ -157,19 +154,13 @@ const Welcome: React.FC = () => {
                   setWaitingResponse(true);
                   const response = await fetchAPI('PATCH /users/me', {}, { stringId, displayName });
                   if (response.success) {
-                    if (me.loaded && !!me.info) {
-                      setMe({
-                        loaded: true,
-                        info: {
-                          ...me.info,
-                          stringId: response.payload.stringId,
-                          displayName: response.payload.displayName,
-                          initialized: true,
-                        },
-                      });
-                      const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-                      history.replace(`/welcome/done?redirect_uri=${query}`);
-                    }
+                    setMeInfo({
+                      ...response.payload,
+                      initialized: true,
+                    });
+                    const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
+                    setRedirectPrevented(true);
+                    history.replace(`/welcome/done?redirect_uri=${query}`);
                   } else {
                     setWaitingResponse(false);
                     addToast({

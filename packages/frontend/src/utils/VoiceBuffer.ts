@@ -130,8 +130,10 @@ export default class VoiceBuffer {
         buffers.map((buffer) => this.audioContext.decodeAudioData(buffer)),
       );
     } catch (e) {
-      console.warn('Failed to append an audio segment.', e);
-      console.log(arrayBufferToString(buffers[0]));
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to append an audio segment.', e);
+        console.log(arrayBufferToString(buffers[0]));
+      }
       return [];
     }
   }

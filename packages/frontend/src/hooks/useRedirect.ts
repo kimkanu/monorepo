@@ -1,5 +1,8 @@
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+
+import meState from '../recoil/me';
 
 export default function useRedirect(
   condition: boolean,
@@ -19,4 +22,9 @@ export default function useRedirect(
       }
     }
   }, dependencies);
+}
+
+export function useRedirectUnauthorized() {
+  const me = useRecoilValue(meState.atom);
+  useRedirect(me.loaded && !me.info, '/');
 }
