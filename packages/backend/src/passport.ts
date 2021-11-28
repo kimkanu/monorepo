@@ -8,6 +8,8 @@ import { Connection } from 'typeorm';
 import SSOAccountEntity from './entity/sso-account';
 import UserEntity from './entity/user';
 
+import server from '.';
+
 import { Strategy as NaverStrategy, Profile as NaverProfile } from 'passport-naver-v2';
 
 export default (connection: Connection) => {
@@ -61,7 +63,14 @@ export default (connection: Connection) => {
 
       let user: UserEntity;
       if (ssoAccount) {
-        user = ssoAccount.user;
+        if (!req.user || req.user.id === ssoAccount.user.id) {
+          user = ssoAccount.user;
+        } else {
+          // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
+          const toast = '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.';
+          req.session.toast = toast;
+          user = req.user as UserEntity;
+        }
       } else {
         if (!req.user) {
           user = new UserEntity();
@@ -70,6 +79,7 @@ export default (connection: Connection) => {
           user.profileImage = profile.profileImage ?? null!;
           user.initialized = false;
           await user.save();
+          await server.managers.user.refreshUserInfo(user.stringId);
         } else {
           user = req.user as UserEntity;
         }
@@ -79,6 +89,7 @@ export default (connection: Connection) => {
         newSSOAccount.providerId = providerId;
         newSSOAccount.user = user;
         await newSSOAccount.save();
+        await server.managers.user.refreshUserInfo(user.stringId);
       }
       return done(null, user);
     } catch (error: any) {
@@ -111,7 +122,14 @@ export default (connection: Connection) => {
       let user: UserEntity;
       const placeholderProfileImage = 'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
       if (ssoAccount) {
-        user = ssoAccount.user;
+        if (!req.user || req.user.id === ssoAccount.user.id) {
+          user = ssoAccount.user;
+        } else {
+          // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
+          const toast = '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.';
+          req.session.toast = toast;
+          user = req.user as UserEntity;
+        }
       } else {
         if (!req.user) {
           user = new UserEntity();
@@ -120,6 +138,7 @@ export default (connection: Connection) => {
           user.profileImage = profile.photos?.[0]?.value ?? placeholderProfileImage;
           user.initialized = false;
           await user.save();
+          await server.managers.user.refreshUserInfo(user.stringId);
         } else {
           user = req.user as UserEntity;
         }
@@ -129,6 +148,7 @@ export default (connection: Connection) => {
         newSSOAccount.providerId = providerId;
         newSSOAccount.user = user;
         await newSSOAccount.save();
+        await server.managers.user.refreshUserInfo(user.stringId);
       }
       return done(null, user);
     } catch (error: any) {

@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { ClassroomHash, ClassroomJSON } from '@team-10/lib';
 import { getConnection } from 'typeorm';
-import { v4 as generateUUID } from 'uuid';
 
 import ClassroomEntity from '../entity/classroom';
 import { VoiceHistoryEntity } from '../entity/history';
@@ -91,8 +90,7 @@ export default class ClassroomManager {
       },
     );
 
-    entity.passcode = classroom.regeneratePasscode();
-    await entity.save();
+    await classroom.regeneratePasscode();
 
     return classroom;
   }
@@ -110,16 +108,11 @@ export default class ClassroomManager {
     const userEntity = await this.server.managers.user.getEntity(userId);
     if (!userEntity) return false;
 
-    const classroomRepository = getConnection().getRepository(ClassroomEntity);
-    const classroomEntity = await classroomRepository.findOneOrFail(
-      { where: { hash: classroomHash } },
-    );
-
     await getConnection()
       .createQueryBuilder()
       .relation(UserEntity, 'classrooms')
       .of(userEntity)
-      .add(classroomEntity.id);
+      .add(classroom.entity.id);
 
     await this.load(classroomHash);
 
@@ -127,6 +120,23 @@ export default class ClassroomManager {
   }
 
   // leave
+  async leave(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
+    const classroom = this.classrooms.get(classroomHash);
+    if (!classroom) return false;
+
+    const userEntity = await this.server.managers.user.getEntity(userId);
+    if (!userEntity) return false;
+
+    await getConnection()
+      .createQueryBuilder()
+      .relation(UserEntity, 'classrooms')
+      .of(userEntity)
+      .remove(classroom.entity.id);
+
+    await this.load(classroomHash);
+
+    return true;
+  }
 
   async isUserMember(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
     if (!this.classrooms.has(classroomHash)) {

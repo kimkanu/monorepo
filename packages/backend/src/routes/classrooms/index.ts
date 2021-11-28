@@ -1,4 +1,4 @@
-import { ClassroomsHashPatchResponse, Empty } from '@team-10/lib';
+import { Empty } from '@team-10/lib';
 
 import { isAuthenticatedOrFail } from '../../passport';
 
@@ -63,7 +63,7 @@ export default function generateRoute(server: Server): Route {
       }
 
       const { managers } = server;
-      const userId = req.user!.stringId;
+      const userId = user.stringId;
 
       const isPresent = await managers.classroom.isPresent(hash);
       if (!isPresent) {
@@ -114,14 +114,60 @@ export default function generateRoute(server: Server): Route {
       }
 
       if (operation === 'leave') {
+        if (await managers.classroom.leave(userId, hash)) {
+          return {
+            success: true,
+            payload: (await managers.classroom.getClassroomJSON(hash))!,
+          };
+        }
+
         return {
           success: false,
           error: {
             code: 'INTERNAL_SERVER_ERROR',
             statusCode: 500,
-            extra: {
-              details: 'Not implemented',
+            extra: {},
+          },
+        };
+      }
+
+      if (operation === 'reset_passcode') {
+        if (classroom.instructorId !== userId) {
+          return {
+            success: false,
+            error: {
+              code: 'FORBIDDEN',
+              statusCode: 403,
+              extra: {},
             },
+          };
+        }
+
+        return {
+          success: true,
+          payload: {
+            passcode: await classroom.regeneratePasscode(),
+          },
+        };
+      }
+
+      if (operation === 'rename') {
+        if (classroom.instructorId !== userId) {
+          return {
+            success: false,
+            error: {
+              code: 'FORBIDDEN',
+              statusCode: 403,
+              extra: {},
+            },
+          };
+        }
+
+        await classroom.rename(body.name);
+        return {
+          success: true,
+          payload: {
+            name: body.name,
           },
         };
       }
@@ -133,7 +179,7 @@ export default function generateRoute(server: Server): Route {
           statusCode: 400,
           extra: {
             field: 'operation',
-            details: 'Not a value of string type',
+            details: 'Operation should be one of `join`, `leave`, `reset_passcode`, or `rename`.',
           },
         },
       };

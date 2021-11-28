@@ -58,9 +58,17 @@ export default class Classroom {
     return this.memberIds.has(userId);
   }
 
-  regeneratePasscode(): string {
+  async regeneratePasscode(): Promise<string> {
     this.passcode = Crypto.randomInt(1e6).toString().padStart(6, '0');
+    this.entity.passcode = this.passcode;
+    await this.entity.save();
     return this.passcode;
+  }
+
+  async rename(name: string): Promise<void> {
+    this.name = name;
+    this.entity.name = name;
+    await this.entity.save();
   }
 
   setName(name: string) {
