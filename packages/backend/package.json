@@ -6,7 +6,7 @@
   "author": "Team 10",
   "license": "MIT",
   "scripts": {
-    "development": "yarn install && nodemon",
+    "development": "nodemon",
     "production": "ts-node --files src/index.ts",
     "dev": "yarn development",
     "prod": "yarn production",
