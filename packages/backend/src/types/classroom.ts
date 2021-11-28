@@ -71,10 +71,6 @@ export default class Classroom {
     await this.entity.save();
   }
 
-  setName(name: string) {
-    this.name = name;
-  }
-
   async start() {
     this.isLive = true;
     this.updatedAt = new Date();
