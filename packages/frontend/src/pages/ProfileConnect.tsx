@@ -7,6 +7,7 @@ import Dialog from '../components/alert/Dialog';
 import LoginButton from '../components/buttons/LoginButton';
 import loadingState from '../recoil/loading';
 import meState from '../recoil/me';
+import appHistory from '../utils/history';
 
 const ProfileConnect: React.FC = () => {
   const location = useLocation();
@@ -20,7 +21,7 @@ const ProfileConnect: React.FC = () => {
   return (
     <Dialog
       visible={!!meInfo && location.pathname === '/profile/connect'}
-      onClose={() => (history.length > 0 ? history.goBack() : history.replace('/profile'))}
+      onClose={() => appHistory.goBack(history)}
     >
       <div className="flex flex-col gap-6">
         {
@@ -30,11 +31,7 @@ const ProfileConnect: React.FC = () => {
               provider={provider}
               onClick={() => {
                 setLoading(true);
-                if (history.length > 0) {
-                  history.goBack();
-                } else {
-                  history.replace('/profile');
-                }
+                appHistory.goBack(history);
                 window.location.href = `/api/auth/${provider}?redirect_uri=/profile`;
               }}
             />

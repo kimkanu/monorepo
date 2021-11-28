@@ -21,6 +21,7 @@ import themeState from '../../recoil/theme';
 import toastState from '../../recoil/toast';
 import ScreenType from '../../types/screen';
 import { Theme } from '../../types/theme';
+import appHistory from '../../utils/history';
 import { mergeClassNames } from '../../utils/style';
 import Dropdown from '../alert/Dropdown';
 import AmbientButton from '../buttons/AmbientButton';
@@ -73,7 +74,7 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
             onClick={() => {
               if (meInfo?.initialized) {
                 hideDropdowns();
-                history.push('/profile');
+                appHistory.push('/profile', history);
               } else {
                 addToast({
                   type: 'error',
@@ -229,20 +230,14 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
               )}
                 onClick={() => {
                   hideDropdowns();
-                  if (history.length > 0) {
-                    history.goBack();
-                  } else {
-                    history.push('/');
-                  }
+                  appHistory.goBack(history);
                 }}
               />
             ) : (
               <LogoButton
                 onClick={() => {
                   hideDropdowns();
-                  if (me.loaded && (!me.info || me.info.initialized) && location.pathname !== '/') {
-                    history.push('/');
-                  }
+                  appHistory.goMain(history);
                 }}
               />
             )}
@@ -282,7 +277,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
               icon={<People24Filled />}
               filled
               onClick={() => {
-                history.push(`/classrooms/${classroomHash!}/members`);
+                appHistory.push(`/classrooms/${classroomHash!}/members`, history);
               }}
             />
             <AmbientButton
@@ -291,7 +286,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
               icon={<Settings24Filled />}
               filled
               onClick={() => {
-                history.push(`/classrooms/${classroomHash!}/settings`);
+                appHistory.push(`/classrooms/${classroomHash!}/settings`, history);
               }}
             />
           </>
@@ -357,8 +352,8 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
                 icon={<DoorArrowLeft24Regular />}
                 onClick={() => {
                   hideDropdowns();
-                  if (location.pathname !== '/login') {
-                    history.push(`/login?redirect_uri=${location.pathname}`);
+                  if (appHistory.pathname !== '/login') {
+                    appHistory.push(`/login?redirect_uri=${appHistory.pathname}`, history);
                   }
                 }}
               />

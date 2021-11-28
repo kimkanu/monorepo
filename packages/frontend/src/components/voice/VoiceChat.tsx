@@ -12,6 +12,7 @@ import useSocket from '../../hooks/useSocket';
 import toastState from '../../recoil/toast';
 import ScreenType from '../../types/screen';
 import { concatArrayBuffer } from '../../utils/arrayBuffer';
+import appHistory from '../../utils/history';
 import { sum } from '../../utils/math';
 import { Styled } from '../../utils/style';
 import VoiceBuffer from '../../utils/VoiceBuffer';
@@ -58,7 +59,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
    * ******* */
 
   const history = useHistory();
-  const redirectTo = (path: string) => history.push(path);
+  const redirectTo = (path: string) => appHistory.push(path, history);
 
   /* ************* *
    * Global States *

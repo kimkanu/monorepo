@@ -8,6 +8,7 @@ import ClassroomSettingsContent from '../components/classroom/ClassroomSettingsC
 import classroomsState from '../recoil/classrooms';
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
+import appHistory from '../utils/history';
 
 const ClassroomSettings: React.FC = () => {
   const location = useLocation();
@@ -22,7 +23,7 @@ const ClassroomSettings: React.FC = () => {
   return (
     <Dialog
       visible={me.loaded && !!me.info && !!hash}
-      onClose={() => (history.length > 0 ? history.goBack() : history.replace(`/classrooms/${hash}`))}
+      onClose={() => appHistory.goBack(history)}
     >
       {!!classroom && (
         <ClassroomSettingsContent

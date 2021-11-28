@@ -9,6 +9,7 @@ import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
 import meState from '../recoil/me';
 import themeState from '../recoil/theme';
+import appHistory from '../utils/history';
 
 const WelcomeDone: React.FC = () => {
   const theme = useRecoilValue(themeState.atom);
@@ -53,8 +54,7 @@ const WelcomeDone: React.FC = () => {
               icon={<Add20Regular />}
               text="수업 추가하러 가기"
               onClick={() => {
-                history.replace('/');
-                history.push('/classrooms/new');
+                appHistory.replace('/classrooms/new', history);
               }}
             />
             <Button
@@ -64,7 +64,7 @@ const WelcomeDone: React.FC = () => {
               text="이전 페이지로 돌아가기"
               onClick={() => {
                 const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-                history.replace(query);
+                appHistory.replace(query, history);
               }}
             />
           </div>

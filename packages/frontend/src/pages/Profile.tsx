@@ -8,6 +8,7 @@ import ProfileSettingContent from '../components/profile/ProfileSettingContent';
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
+import appHistory from '../utils/history';
 
 const Profile: React.FC = () => {
   const [meInfo, setMeInfo] = useRecoilState(meState.info);
@@ -21,7 +22,7 @@ const Profile: React.FC = () => {
   React.useEffect(() => {
     const toast = new URLSearchParams(location.search).get('toast');
     if (toast) {
-      history.replace('/profile');
+      appHistory.replace('/profile', history);
       addToast({
         type: 'error',
         sentAt: new Date(),
@@ -83,7 +84,7 @@ const Profile: React.FC = () => {
           }
         }}
         onSSOAccountsAdd={() => {
-          history.push('/profile/connect');
+          appHistory.push('/profile/connect', history);
         }}
       />
     </ContentPadding>

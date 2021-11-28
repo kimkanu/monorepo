@@ -8,6 +8,7 @@ import ContentPadding from '../components/layout/ContentPadding';
 
 import loadingState from '../recoil/loading';
 import meState from '../recoil/me';
+import appHistory from '../utils/history';
 
 const Login: React.FC = () => {
   const location = useLocation();
@@ -18,7 +19,7 @@ const Login: React.FC = () => {
   React.useEffect(() => {
     if (me.loaded && me.info) {
       const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-      history.replace(query);
+      appHistory.replace(query, history);
     }
   }, [me]);
 

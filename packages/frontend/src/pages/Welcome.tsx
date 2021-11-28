@@ -12,6 +12,7 @@ import ContentPadding from '../components/layout/ContentPadding';
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
+import appHistory from '../utils/history';
 
 const Welcome: React.FC = () => {
   const history = useHistory();
@@ -36,7 +37,7 @@ const Welcome: React.FC = () => {
     if (meInfo) {
       if (meInfo.initialized && !isRedirectPrevented) {
         const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-        history.replace(query);
+        appHistory.replace(query, history);
       } else {
         setDisplayName(meInfo.displayName!);
         setStringId(meInfo.stringId!);
@@ -158,7 +159,7 @@ const Welcome: React.FC = () => {
                     });
                     const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
                     setRedirectPrevented(true);
-                    history.replace(`/welcome/done?redirect_uri=${query}`);
+                    appHistory.replace(`/welcome/done?redirect_uri=${query}`, history);
                   } else {
                     setWaitingResponse(false);
                     addToast({

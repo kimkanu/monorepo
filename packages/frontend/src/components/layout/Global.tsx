@@ -1,13 +1,9 @@
 /* istanbul ignore file */
 import { ClassroomJSON } from '@team-10/lib';
 import React from 'react';
-import {
-  useLocation,
-  useHistory,
-} from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useLocation, useHistory } from 'react-router-dom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import useRedirect from '../../hooks/useRedirect';
 import useSocket from '../../hooks/useSocket';
 
 import classroomsState from '../../recoil/classrooms';
@@ -17,6 +13,7 @@ import toastState from '../../recoil/toast';
 import { Theme } from '../../types/theme';
 
 import fetchAPI from '../../utils/fetch';
+import appHistory, { classroomPrefixRegex } from '../../utils/history';
 import { Styled } from '../../utils/style';
 
 import ToastDisplay from '../alert/ToastDisplay';
@@ -25,8 +22,8 @@ import YTWrapper from '../youtube/YTWrapper';
 
 import Debug from './Debug';
 import DynamicManifest from './DynamicManifest';
+import HistoryListener from './HistoryListener';
 import Loading from './Loading';
-import Redirection from './Redirection';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
 
 function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJSON[] {
@@ -50,12 +47,12 @@ function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJ
 const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style }) => {
   const history = useHistory();
   const location = useLocation();
-  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
+  const inClassroom = classroomPrefixRegex.test(location.pathname);
 
   const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
   const toasts = useRecoilValue(toastState.atom);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
-  const [me, setMe] = useRecoilState(meState.atom);
+  const setMe = useSetRecoilState(meState.atom);
 
   const { connected } = useSocket('/');
 
@@ -64,8 +61,6 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       setLoading(!connected);
     }
   }, [connected]);
-
-  useRedirect(me.loaded && !!me.info && !me.info.initialized, '/welcome');
 
   React.useEffect(() => {
     setLoading(true);
@@ -91,8 +86,8 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
 
   return (
     <div className={className} style={style}>
-      {/* Redirection */}
-      <Redirection />
+      {/* History Listener */}
+      <HistoryListener />
 
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
@@ -110,7 +105,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
         inClassroom={inClassroom}
         onClick={() => {
           if (classrooms[0]?.hash) {
-            history.push(`/classrooms/${classrooms[0]?.hash}`);
+            appHistory.push(`/classrooms/${classrooms[0]?.hash}`, history);
           }
         }}
       >

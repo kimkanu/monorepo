@@ -13,6 +13,7 @@ import mainClassroomHashState from '../recoil/mainClassroomHash';
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
+import appHistory from '../utils/history';
 
 const ClassroomMembers: React.FC = () => {
   const classrooms = useRecoilValue(classroomsState.atom);
@@ -27,7 +28,7 @@ const ClassroomMembers: React.FC = () => {
   return (
     <Dialog
       visible={me.loaded && !!me.info && !!hash}
-      onClose={() => (history.length > 0 ? history.goBack() : history.replace(`/classrooms/${hash}`))}
+      onClose={() => appHistory.goBack(history)}
     >
       dialog
     </Dialog>
