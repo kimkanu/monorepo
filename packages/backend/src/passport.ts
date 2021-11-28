@@ -52,7 +52,7 @@ export default (connection: Connection) => {
 
     try {
       const ssoAccount = await ssoAccountRepository.findOne({
-        where: { provider: profile.provider, providerId },
+        where: { provider: profile.provider },
         join: {
           alias: 'ssoAccount',
           leftJoinAndSelect: {
@@ -63,7 +63,11 @@ export default (connection: Connection) => {
 
       let user: UserEntity;
       if (ssoAccount) {
-        if (!req.user || req.user.id === ssoAccount.user.id) {
+        if (ssoAccount.providerId !== providerId) {
+          const toast = '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.';
+          req.session.toast = toast;
+          user = req.user as UserEntity;
+        } else if (!req.user || req.user.id === ssoAccount.user.id) {
           user = ssoAccount.user;
         } else {
           // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
@@ -110,7 +114,7 @@ export default (connection: Connection) => {
 
     try {
       const ssoAccount = await ssoAccountRepository.findOne({
-        where: { provider: profile.provider, providerId },
+        where: { provider: profile.provider },
         join: {
           alias: 'ssoAccount',
           leftJoinAndSelect: {
@@ -122,7 +126,11 @@ export default (connection: Connection) => {
       let user: UserEntity;
       const placeholderProfileImage = 'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
       if (ssoAccount) {
-        if (!req.user || req.user.id === ssoAccount.user.id) {
+        if (ssoAccount.providerId !== providerId) {
+          const toast = '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.';
+          req.session.toast = toast;
+          user = req.user as UserEntity;
+        } else if (!req.user || req.user.id === ssoAccount.user.id) {
           user = ssoAccount.user;
         } else {
           // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때

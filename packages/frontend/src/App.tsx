@@ -17,6 +17,7 @@ import ProfileConnect from './pages/ProfileConnect';
 import Test from './pages/Test';
 import Welcome from './pages/Welcome';
 import WelcomeDone from './pages/WelcomeDone';
+import meState from './recoil/me';
 import themeState from './recoil/theme';
 import { clamp } from './utils/math';
 
@@ -39,6 +40,7 @@ const transitionProps = (additionalMapStyles: (progress: number) => any = () => 
 
 const App: React.FC = () => {
   const theme = useRecoilValue(themeState.atom);
+  const meInfo = useRecoilValue(meState.info);
 
   return (
     <Router>
@@ -54,36 +56,6 @@ const App: React.FC = () => {
         />
         <NewClassroom />
 
-        {/* Welcome pages */}
-        <AnimatedRoute
-          exact
-          path="/welcome"
-          render={() => <Welcome />}
-          {...transitionProps()}
-          className="w-full absolute"
-        />
-        <AnimatedRoute
-          exact
-          path="/welcome/done"
-          render={() => <WelcomeDone />}
-          {...transitionProps()}
-          className="w-full absolute"
-        />
-
-        {/* Classroom page */}
-        <AnimatedRoute
-          path="/classrooms/:hash"
-          render={({ match }) => (
-            classroomHashRegex.test(match.params.hash!)
-              ? <Classroom hash={match.params.hash!} />
-              : null
-          )}
-          {...transitionProps()}
-          className="w-full h-full"
-        />
-        <ClassroomMembers />
-        <ClassroomSettings />
-
         {/* Login page */}
         <AnimatedRoute
           exact
@@ -93,10 +65,40 @@ const App: React.FC = () => {
           className="w-full absolute"
         />
 
+        {/* Welcome pages */}
+        <AnimatedRoute
+          exact
+          path={meInfo ? ['/welcome'] : []}
+          render={() => <Welcome />}
+          {...transitionProps()}
+          className="w-full absolute"
+        />
+        <AnimatedRoute
+          exact
+          path={meInfo ? ['/welcome/done'] : []}
+          render={() => <WelcomeDone />}
+          {...transitionProps()}
+          className="w-full absolute"
+        />
+
+        {/* Classroom page */}
+        <AnimatedRoute
+          path={meInfo ? ['/classrooms/:hash'] : []}
+          render={({ match }) => (
+            classroomHashRegex.test(match.params.hash ?? '')
+              ? <Classroom hash={match.params.hash ?? ''} />
+              : null
+          )}
+          {...transitionProps()}
+          className="w-full h-full"
+        />
+        <ClassroomMembers />
+        <ClassroomSettings />
+
         {/* Profile page */}
         <AnimatedRoute
           exact
-          path={['/profile', '/profile/connect']}
+          path={meInfo ? ['/profile', '/profile/connect'] : []}
           render={() => <Profile />}
           {...transitionProps()}
           className="w-full absolute"

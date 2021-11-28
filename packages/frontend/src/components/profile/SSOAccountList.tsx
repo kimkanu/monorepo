@@ -1,7 +1,7 @@
 import {
   Add20Regular, Dismiss20Regular,
 } from '@fluentui/react-icons';
-import { Provider, SSOAccountJSON } from '@team-10/lib';
+import { Provider, providers, SSOAccountJSON } from '@team-10/lib';
 import React from 'react';
 
 import GitHubLogo from '../../assets/github-logo.svg';
@@ -65,7 +65,7 @@ const SSOAccountList: React.FC<Props> = ({ ssoAccounts, onRemove, onAdd }) => (
         />
       ),
     )}
-    <Button width="full" type="primary" text="다른 소셜 계정 연결" icon={<Add20Regular />} onClick={onAdd} />
+    {ssoAccounts.length < providers.length && <Button width="full" type="primary" text="다른 소셜 계정 연결" icon={<Add20Regular />} onClick={onAdd} />}
   </div>
 );
 

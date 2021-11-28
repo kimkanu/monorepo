@@ -4,7 +4,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import ContentPadding from '../components/layout/ContentPadding';
 import ProfileSettingContent from '../components/profile/ProfileSettingContent';
-import { useRedirectUnauthorized } from '../hooks/useRedirect';
+import useRedirect, { useRedirectUnauthorized } from '../hooks/useRedirect';
 
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
@@ -20,6 +20,7 @@ const Profile: React.FC = () => {
   const [isProfileImageChanging, setProfileImageChanging] = React.useState(false);
 
   useRedirectUnauthorized();
+  useRedirect(!!meInfo && !meInfo.initialized, '/welcome?redirect_uri=/profile');
 
   React.useEffect(() => {
     const toast = new URLSearchParams(location.search).get('toast');
@@ -74,7 +75,17 @@ const Profile: React.FC = () => {
         }}
         isProfileImageChanging={isProfileImageChanging}
         ssoAccounts={meInfo?.ssoAccounts ?? []}
-        onSSOAccountsRemove={() => {}}
+        onSSOAccountsRemove={async ({ provider }) => {
+          const response = await fetchAPI(
+            'DELETE /users/me/sso-accounts/:provider',
+            { provider },
+          );
+          if (response.success) {
+            setMeInfo({
+              ssoAccounts: meInfo?.ssoAccounts?.filter(({ provider: p }) => p !== provider) ?? [],
+            });
+          }
+        }}
         onSSOAccountsAdd={() => {
           history.push('/profile/connect');
         }}

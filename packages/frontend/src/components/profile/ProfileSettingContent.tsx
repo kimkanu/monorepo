@@ -111,7 +111,11 @@ const ProfileSettingContent: React.FC<Props> = ({
           })}
         />
         <Title size="sect" className="mb-12 mt-4">연결된 소셜 계정</Title>
-        <SSOAccountList onAdd={onSSOAccountsAdd} ssoAccounts={ssoAccounts} onRemove={onSSOAccountsRemove} />
+        <SSOAccountList
+          onAdd={onSSOAccountsAdd}
+          ssoAccounts={ssoAccounts}
+          onRemove={onSSOAccountsRemove}
+        />
       </section>
     </NarrowPageWrapper>
   );

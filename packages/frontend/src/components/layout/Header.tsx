@@ -11,13 +11,14 @@ import {
   SignOut24Filled,
 } from '@fluentui/react-icons';
 import React from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 
 import useMainClassroom from '../../hooks/useMainClassroom';
 import useScreenType from '../../hooks/useScreenType';
 import meState from '../../recoil/me';
 import themeState from '../../recoil/theme';
+import toastState from '../../recoil/toast';
 import ScreenType from '../../types/screen';
 import { Theme } from '../../types/theme';
 import { mergeClassNames } from '../../utils/style';
@@ -33,6 +34,9 @@ interface ProfileDropdownContentProps {
 
 const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, displayName, hideDropdowns }) => {
   const [theme, setTheme] = useRecoilState(themeState.atom);
+  const meInfo = useRecoilValue(meState.info);
+  const history = useHistory();
+  const addToast = useSetRecoilState(toastState.new);
 
   return (
     <div className="flex flex-col items-center">
@@ -60,21 +64,28 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
       <div className="w-full flex flex-col justify-start mt-8">
         <span className="text-gray-800 font-bold">계정 관리</span>
         <div className="flex flex-col gap-1 mt-3">
-          <Link to="/profile">
-            <button
-              type="button"
-              className="flex w-full items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-6 py-3"
-              style={{
-                transitionProperty: 'background-color, border-color, color, fill, stroke',
-              }}
-              onClick={() => {
+          <button
+            type="button"
+            className="flex w-full items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-6 py-3"
+            style={{
+              transitionProperty: 'background-color, border-color, color, fill, stroke',
+            }}
+            onClick={() => {
+              if (meInfo?.initialized) {
                 hideDropdowns();
-              }}
-            >
-              <Person24Filled className="mr-6 text-gray-700" />
-              <span className="text-emph">내 프로필 보기</span>
-            </button>
-          </Link>
+                history.push('/profile');
+              } else {
+                addToast({
+                  type: 'error',
+                  sentAt: new Date(),
+                  message: '서비스 이용에 필요한 정보를 먼저 입력해 주세요!',
+                });
+              }
+            }}
+          >
+            <Person24Filled className="mr-6 text-gray-700" />
+            <span className="text-emph">내 프로필 보기</span>
+          </button>
           <button
             type="button"
             className="flex w-full items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-6 py-3"
