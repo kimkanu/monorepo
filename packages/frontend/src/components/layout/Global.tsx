@@ -70,7 +70,8 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
           response.payload.forEach((toast, i) => {
             addToast({
               ...toast,
-              sentAt: new Date(Date.now() + i), // `+ i` to ensure the key is unique
+              // `+ i * 1000` to ensure the key is unique & give user more time to read toasts
+              sentAt: new Date(Date.now() + i * 1000),
             });
           });
         }
