@@ -7,14 +7,11 @@ import Button from '../components/buttons/Button';
 import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
 import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
-import { useRedirectUnauthorized } from '../hooks/useRedirect';
 import meState from '../recoil/me';
 import themeState from '../recoil/theme';
 
 const WelcomeDone: React.FC = () => {
   const theme = useRecoilValue(themeState.atom);
-
-  useRedirectUnauthorized();
 
   const history = useHistory();
   const location = useLocation();

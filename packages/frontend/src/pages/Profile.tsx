@@ -4,7 +4,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import ContentPadding from '../components/layout/ContentPadding';
 import ProfileSettingContent from '../components/profile/ProfileSettingContent';
-import useRedirect, { useRedirectUnauthorized } from '../hooks/useRedirect';
 
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
@@ -18,9 +17,6 @@ const Profile: React.FC = () => {
 
   const [profileImage, setProfileImage] = React.useState('');
   const [isProfileImageChanging, setProfileImageChanging] = React.useState(false);
-
-  useRedirectUnauthorized();
-  useRedirect(!!meInfo && !meInfo.initialized, '/welcome?redirect_uri=/profile');
 
   React.useEffect(() => {
     const toast = new URLSearchParams(location.search).get('toast');

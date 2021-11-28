@@ -181,20 +181,10 @@ const Classroom: React.FC<Props> = ({ hash }) => {
   const [frequency, setFrequency] = React.useState(200);
 
   React.useEffect(() => {
-    if (me.loaded) {
-      if (me.info) {
-        const classroom = classrooms.find((c) => c.hash === hash);
-        if (!classroom) {
-          if (history.length > 0) {
-            history.goBack();
-          } else {
-            history.replace('/');
-          }
-        } else {
-          setMainClassroomHash(hash);
-        }
-      } else {
-        history.replace(`/login?redirect_uri=/classrooms/${hash}`);
+    if (me.loaded && me.info) {
+      const classroom = classrooms.find((c) => c.hash === hash);
+      if (classroom) {
+        setMainClassroomHash(hash);
       }
     }
   }, [me, classrooms, hash]);

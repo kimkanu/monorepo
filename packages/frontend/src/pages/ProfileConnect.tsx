@@ -26,6 +26,7 @@ const ProfileConnect: React.FC = () => {
         {
           providers.map((provider) => (!myProviders.includes(provider) ? (
             <LoginButton
+              key={provider}
               provider={provider}
               onClick={() => {
                 setLoading(true);

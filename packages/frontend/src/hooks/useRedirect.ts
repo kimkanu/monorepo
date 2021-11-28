@@ -26,5 +26,5 @@ export default function useRedirect(
 
 export function useRedirectUnauthorized() {
   const me = useRecoilValue(meState.atom);
-  useRedirect(!me.loaded || !me.info, '/');
+  useRedirect(me.loaded && !me.info, '/');
 }

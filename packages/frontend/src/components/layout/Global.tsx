@@ -19,8 +19,6 @@ import { Theme } from '../../types/theme';
 import fetchAPI from '../../utils/fetch';
 import { Styled } from '../../utils/style';
 
-import Dialog from '../alert/Dialog';
-import Dropdown from '../alert/Dropdown';
 import ToastDisplay from '../alert/ToastDisplay';
 import YTPlayer from '../youtube/YTPlayer';
 import YTWrapper from '../youtube/YTWrapper';
@@ -28,6 +26,7 @@ import YTWrapper from '../youtube/YTWrapper';
 import Debug from './Debug';
 import DynamicManifest from './DynamicManifest';
 import Loading from './Loading';
+import Redirection from './Redirection';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
 
 function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJSON[] {
@@ -92,6 +91,9 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
 
   return (
     <div className={className} style={style}>
+      {/* Redirection */}
+      <Redirection />
+
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
 

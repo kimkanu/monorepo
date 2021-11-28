@@ -42,8 +42,6 @@ const Welcome: React.FC = () => {
         setStringId(meInfo.stringId!);
         setInitialId(meInfo.stringId!);
       }
-    } else if (me.loaded) {
-      history.replace('/login?redirect_uri=/welcome');
     }
   }, [me.loaded, meInfo]);
 

@@ -18,7 +18,7 @@ const Login: React.FC = () => {
   React.useEffect(() => {
     if (me.loaded && me.info) {
       const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-      console.log('replace(query);'); history.replace(query);
+      history.replace(query);
     }
   }, [me]);
 
