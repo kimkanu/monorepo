@@ -6,8 +6,8 @@ import { guardRecoilDefaultValue } from '..';
 
 import meAtom from './atom';
 
-const removeSSOAccountSelector = selector<SSOAccountJSON>({
-  key: 'removeSSOAccountSelector',
+const meRemoveSSOAccountSelector = selector<SSOAccountJSON>({
+  key: 'meRemoveSSOAccountSelector',
   get: () => {
     throw new Error('No getter');
   },
@@ -24,4 +24,4 @@ const removeSSOAccountSelector = selector<SSOAccountJSON>({
   },
 });
 
-export default removeSSOAccountSelector;
+export default meRemoveSSOAccountSelector;

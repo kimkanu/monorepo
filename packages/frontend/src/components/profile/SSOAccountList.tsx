@@ -1,7 +1,7 @@
 import {
   Add20Regular, Dismiss20Regular,
 } from '@fluentui/react-icons';
-import { Provider, SSOAccountJSON } from '@team-10/lib';
+import { Provider, providers, SSOAccountJSON } from '@team-10/lib';
 import React from 'react';
 
 import GitHubLogo from '../../assets/github-logo.svg';
@@ -11,6 +11,7 @@ import Button from '../buttons/Button';
 
 interface ItemProps {
   ssoAccount: SSOAccountJSON;
+  removable: boolean;
   onRemove?: () => void;
 }
 
@@ -23,7 +24,7 @@ const providerClassName: Record<Provider, string> = {
   github: 'w-7 h-7',
 };
 
-const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, onRemove }) => (
+const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, removable, onRemove }) => (
   <div
     className={
       mergeClassNames(
@@ -31,7 +32,7 @@ const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, onRemove }) => (
       )
     }
     style={{
-      backgroundColor: ssoAccount.provider === 'naver' ? '#00c73c' : '#000',
+      backgroundColor: ssoAccount.provider === 'naver' ? 'rgb(3, 199, 90)' : '#000',
     }}
   >
     <div style={{ width: 62 }} className="absolute h-12 left-0 top-0 flex justify-center items-center">
@@ -42,27 +43,29 @@ const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, onRemove }) => (
       />
     </div>
     <span className="font-mono font-emph font-bold">{ssoAccount.providerId}</span>
-    <Button onClick={onRemove} className="absolute right-0 top-0" width="fit-content" type="destructive" icon={<Dismiss20Regular />} />
+    {removable && <Button onClick={onRemove} className="absolute right-0 top-0" width="fit-content" type="destructive" icon={<Dismiss20Regular />} />}
   </div>
 );
 
 interface Props {
   ssoAccounts: SSOAccountJSON[];
   onRemove: (ssoAccount: SSOAccountJSON) => void;
+  onAdd: () => void;
 }
 
-const SSOAccountList: React.FC<Props> = ({ ssoAccounts, onRemove }) => (
+const SSOAccountList: React.FC<Props> = ({ ssoAccounts, onRemove, onAdd }) => (
   <div className="flex flex-col gap-4">
     {ssoAccounts.map(
       (ssoAccount) => (
         <SSOAccountItem
           ssoAccount={ssoAccount}
+          removable={ssoAccounts.length > 1}
           onRemove={() => onRemove(ssoAccount)}
           key={`${ssoAccount.provider}:${ssoAccount.providerId}`}
         />
       ),
     )}
-    <Button width="full" type="primary" text="다른 소셜 계정 연결" icon={<Add20Regular />} />
+    {ssoAccounts.length < providers.length && <Button width="full" type="primary" text="다른 소셜 계정 연결" icon={<Add20Regular />} onClick={onAdd} />}
   </div>
 );
 

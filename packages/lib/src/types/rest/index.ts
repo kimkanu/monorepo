@@ -5,6 +5,12 @@ import {
   ClassroomsResponseType,
 } from './classrooms';
 import {
+  ToastsEndpoints,
+  ToastsPathParams,
+  ToastsRequestBodyType,
+  ToastsResponseType,
+} from './toasts';
+import {
   UsersEndpoints,
   UsersPathParams,
   UsersRequestBodyType,
@@ -49,19 +55,24 @@ export type FetchMethods = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 export type Endpoints =
   | 'GET /'
   | UsersEndpoints
-  | ClassroomsEndpoints;
+  | ClassroomsEndpoints
+  | ToastsEndpoints;
 export type PathParams =
   { 'GET /': Empty }
   & UsersPathParams
-  & ClassroomsPathParams;
+  & ClassroomsPathParams
+  & ToastsPathParams;
 export type RequestBodyType =
   { 'GET /': Empty }
   & UsersRequestBodyType
-  & ClassroomsRequestBodyType;
+  & ClassroomsRequestBodyType
+  & ToastsRequestBodyType;
 export type ResponseType =
   { 'GET /': Response<Empty, never> }
   & UsersResponseType
-  & ClassroomsResponseType;
+  & ClassroomsResponseType
+  & ToastsResponseType;
 
 export * from './users';
 export * from './classrooms';
+export * from './toasts';

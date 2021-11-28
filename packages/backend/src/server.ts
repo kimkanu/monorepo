@@ -24,7 +24,7 @@ import initializePassport from './passport';
 import mainRouter from './routes';
 import frontendRouter from './routes/frontend';
 
-const DROP_SCHEMA = true;
+const DROP_SCHEMA = false;
 
 /** Class representing a server stack. */
 export default class Server {

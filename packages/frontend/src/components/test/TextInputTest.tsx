@@ -14,7 +14,9 @@ import TextInput from '../input/TextInput';
 
 import { RadioInput } from './TestComponents';
 
-function emailValidator(emailAddress: string) {
+function emailValidator(emailAddress: string | null) {
+  if (emailAddress === null) return false;
+
   const sQtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]';
   const sDtext = '[^\\x0d\\x5b-\\x5d\\x80-\\xff]';
   const sAtom = '[^\\x00-\\x20\\x22\\x28\\x29\\x2c\\x2e\\x3a-\\x3c\\x3e\\x40\\x5b-\\x5d\\x7f-\\xff]+';
