@@ -6,16 +6,12 @@ export namespace SocketYouTube {
       JoinClassroom: (params: SocketYouTube.Request.JoinClassroom) => void;
       CurrentVideoPosition: (params: SocketYouTube.Request.CurrentVideoPosition) => void;
       ChangePlayStatus: (params: SocketYouTube.Request.ChangePlayStatus) => void;
-      ChangeTime: (params: SocketYouTube.Request.ChangeTime) => void;
-
     }
     export interface Response {
       JoinClassroom: (params: SocketYouTube.Response.JoinClassroom) => void;
       CurrentVideoPosition: (params: SocketYouTube.Response.CurrentVideoPosition) => void;
       ChangePlayStatus: (params: SocketYouTube.Response.ChangePlayStatus) => void;
-      ChangeTime: (params: SocketYouTube.Response.ChangeTime) => void;
       ChangePlayStatusBroadcast: (params: SocketYouTube.Broadcast.ChangePlayStatus) => void;
-      ChangeTimeBroadcast: (params: SocketYouTube.Broadcast.ChangeTime) => void;
     }
   }
 
@@ -23,17 +19,14 @@ export namespace SocketYouTube {
     export type JoinClassroom = JoinClassRoomRequest;
     export type CurrentVideoPosition = CurrentVideoPositionRequest;
     export type ChangePlayStatus = ChangePlayStatusRequest;
-    export type ChangeTime = ChangeTimeRequest;
   }
   export namespace Response {
     export type JoinClassroom = JoinClassRoomResponse;
     export type CurrentVideoPosition = CurrentVideoPositionResponse;
     export type ChangePlayStatus = ChangePlayStatusResponse;
-    export type ChangeTime = ChangeTimeResponse;
   }
   export namespace Broadcast {
     export type ChangePlayStatus = ChangePlayStatusBroadcast;
-    export type ChangeTime = ChangeTimeBroadcast;
   }
 }
 
@@ -54,14 +47,6 @@ export interface CurrentVideoPositionRequest {
 
 // send play or stop requset
 export interface ChangePlayStatusRequest {
-  classroomHash: ClassroomHash;
-  play: boolean;
-  videoId: string | null | undefined;
-  timeInYouTube: number | undefined;
-}
-
-// send time change request
-export interface ChangeTimeRequest {
   classroomHash: ClassroomHash;
   play: boolean;
   videoId: string | null | undefined;
@@ -93,33 +78,8 @@ export const ChangePlayStatusFailReason = {
   TODO: 0 as 0, // ToDo
 };
 
-// time change response
-export type ChangeTimeResponse =
-| ChangeTimeSuccessResponse
-| ChangeTimeFailResponse;
-
-export interface ChangeTimeSuccessResponse {
-  success: true;
-  timeInYouTube: number | undefined;
-}
-export interface ChangeTimeFailResponse {
-  success: false;
-  reason: typeof ChangeTimeFailReason[keyof typeof ChangeTimeFailReason];
-}
-export const ChangeTimeFailReason = {
-  TODO: 0 as 0, // ToDo
-};
-
 // play status Broadcast
 export interface ChangePlayStatusBroadcast {
-  classroomHash: ClassroomHash;
-  play: boolean;
-  videoId: string | null | undefined;
-  timeInYouTube: number | undefined;
-}
-
-// time change Broadcast
-export interface ChangeTimeBroadcast {
   classroomHash: ClassroomHash;
   play: boolean;
   videoId: string | null | undefined;

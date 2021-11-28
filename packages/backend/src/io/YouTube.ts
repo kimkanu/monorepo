@@ -23,12 +23,14 @@ const ioYouTubeHandler = (
     socket.on('CurrentVideoPosition', async ({
       userId, classroomHash, play, videoId, timeInYouTube,
     }) => {
-      io.to(userId).emit('ChangePlayStatusBroadcast', {
-        classroomHash,
-        play,
-        videoId,
-        timeInYouTube,
-      });
+      if (timeInYouTube !== undefined) {
+        io.to(userId).emit('ChangePlayStatusBroadcast', {
+          classroomHash,
+          play,
+          videoId,
+          timeInYouTube,
+        });
+      }
       console.log('current paly : ', play);
       console.log('current time : ', timeInYouTube);
     });
@@ -37,17 +39,6 @@ const ioYouTubeHandler = (
     }) => {
       console.log('broadcast change status');
       socket.broadcast.to(classroomHash).emit('ChangePlayStatusBroadcast', {
-        classroomHash,
-        play,
-        videoId,
-        timeInYouTube,
-      });
-    });
-    socket.on('ChangeTime', async ({
-      classroomHash, play, videoId, timeInYouTube,
-    }) => {
-      console.log('broadcast change time');
-      socket.broadcast.to(classroomHash).emit('ChangeTimeBroadcast', {
         classroomHash,
         play,
         videoId,

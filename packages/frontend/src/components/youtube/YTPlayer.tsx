@@ -1,3 +1,4 @@
+import { Sleep24Regular } from '@fluentui/react-icons/lib/cjs/index';
 import { SocketYouTube } from '@team-10/lib';
 import React, { useEffect } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
@@ -9,6 +10,8 @@ import useSize from '../../hooks/useSize';
 import useSocket from '../../hooks/useSocket';
 import videoState from '../../recoil/video';
 import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
+
+import Button from '../buttons/Button';
 
 import styles from './YTPlayer.module.css';
 
@@ -36,22 +39,17 @@ const YTPlayer: React.FC<Styled<Props>> = ({
   console.log('connected socket id :', socket.id);
   const onReadyHandler = (target: YouTubePlayer) => {
     setPlayer(target);
+    console.log('ready');
   };
 
   const onStateChangeHandler = (target: YouTubePlayer, data: number) => {
     if (instructor) {
       if (data === YouTube.PlayerState.PLAYING) {
-        socket.emit('ChangeTime', {
-          classroomHash: classroomHash || '',
-          play: true,
-          videoId,
-          timeInYouTube: player?.getCurrentTime(),
-        });
         socket.emit('ChangePlayStatus', {
           classroomHash: classroomHash || '',
           play: true,
           videoId,
-          timeInYouTube: player?.getCurrentTime(),
+          timeInYouTube: target.getCurrentTime(),
         });
         setPlayStatus('playing');
       } else if (data === YouTube.PlayerState.PAUSED) {
@@ -59,11 +57,11 @@ const YTPlayer: React.FC<Styled<Props>> = ({
           classroomHash: classroomHash || '',
           play: false,
           videoId,
-          timeInYouTube: player?.getCurrentTime(),
+          timeInYouTube: target.getCurrentTime(),
         });
         setPlayStatus('paused');
       }
-      setCurrentTime(player?.getCurrentTime() || 0);
+      setCurrentTime(target.getCurrentTime() || 0);
     }
   };
   // when join class room now
@@ -73,7 +71,6 @@ const YTPlayer: React.FC<Styled<Props>> = ({
       userId: socket.id,
       isInstructor: instructor || false,
     });
-    console.log('join : ', instructor);
   }, [connected, player]);
 
   // when receive broadcast request
@@ -81,7 +78,6 @@ const YTPlayer: React.FC<Styled<Props>> = ({
     socket.on('CurrentVideoPosition', ({
       userId,
     }: SocketYouTube.Response.CurrentVideoPosition) => {
-      console.log('send current info');
       if (instructor) {
         socket.emit('CurrentVideoPosition', {
           userId,
@@ -90,6 +86,7 @@ const YTPlayer: React.FC<Styled<Props>> = ({
           videoId,
           timeInYouTube: player?.getCurrentTime(),
         });
+        console.log('send current info');
       }
     });
     socket.on('ChangePlayStatusBroadcast', ({
@@ -99,19 +96,14 @@ const YTPlayer: React.FC<Styled<Props>> = ({
         console.log('player : ', player);
         player?.playVideo();
         setPlayStatus('playing');
-        console.log('play!!');
+        console.log('play!!', player?.getPlayerState() === YouTube.PlayerState.PLAYING);
       } else {
         player?.pauseVideo();
         setPlayStatus('paused');
-        console.log('pause!!');
+        console.log('pause!!', player?.getPlayerState() === YouTube.PlayerState.PAUSED);
       }
-      console.log('on play status change');
-    });
-    socket.on('ChangeTimeBroadcast', ({
-      play, timeInYouTube,
-    }: SocketYouTube.Broadcast.ChangeTime) => {
       if (timeInYouTube !== undefined) {
-        player?.seekTo(timeInYouTube, false);
+        player?.seekTo(timeInYouTube, true);
         setCurrentTime(timeInYouTube);
       }
     });
