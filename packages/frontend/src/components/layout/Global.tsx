@@ -51,6 +51,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
 
   const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
   const toasts = useRecoilValue(toastState.atom);
+  const addToast = useSetRecoilState(toastState.new);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
   const setMe = useSetRecoilState(meState.atom);
 
@@ -61,6 +62,20 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       setLoading(!connected);
     }
   }, [connected]);
+
+  React.useEffect(() => {
+    fetchAPI('GET /toasts')
+      .then((response) => {
+        if (response.success) {
+          response.payload.forEach((toast, i) => {
+            addToast({
+              ...toast,
+              sentAt: new Date(Date.now() + i), // `+ i` to ensure the key is unique
+            });
+          });
+        }
+      });
+  }, []);
 
   React.useEffect(() => {
     setLoading(true);

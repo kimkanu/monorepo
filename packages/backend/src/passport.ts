@@ -60,20 +60,31 @@ export default (connection: Connection) => {
           },
         },
       });
-      console.log(ssoAccount);
 
       let user: UserEntity;
       if (ssoAccount) {
         if (ssoAccount.providerId !== providerId) {
-          const toast = '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.';
-          req.session.toast = toast;
+          const toast = {
+            type: 'error',
+            message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
+          };
+          req.session.toast = JSON.stringify([
+            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+            toast,
+          ]);
           user = req.user as UserEntity;
         } else if (!req.user || req.user.id === ssoAccount.user.id) {
           user = ssoAccount.user;
         } else {
           // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
-          const toast = '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.';
-          req.session.toast = toast;
+          const toast = {
+            type: 'error',
+            message: '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.',
+          };
+          req.session.toast = JSON.stringify([
+            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+            toast,
+          ]);
           user = req.user as UserEntity;
         }
       } else {
@@ -133,15 +144,27 @@ export default (connection: Connection) => {
       const placeholderProfileImage = 'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
       if (ssoAccount) {
         if (ssoAccount.providerId !== providerId) {
-          const toast = '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.';
-          req.session.toast = toast;
+          const toast = {
+            type: 'error',
+            message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
+          };
+          req.session.toast = JSON.stringify([
+            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+            toast,
+          ]);
           user = req.user as UserEntity;
         } else if (!req.user || req.user.id === ssoAccount.user.id) {
           user = ssoAccount.user;
         } else {
           // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
-          const toast = '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.';
-          req.session.toast = toast;
+          const toast = {
+            type: 'error',
+            message: '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.',
+          };
+          req.session.toast = JSON.stringify([
+            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+            toast,
+          ]);
           user = req.user as UserEntity;
         }
       } else {

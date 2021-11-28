@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import ContentPadding from '../components/layout/ContentPadding';
@@ -14,22 +14,9 @@ const Profile: React.FC = () => {
   const [meInfo, setMeInfo] = useRecoilState(meState.info);
   const addToast = useSetRecoilState(toastState.new);
   const history = useHistory();
-  const location = useLocation();
 
   const [profileImage, setProfileImage] = React.useState('');
   const [isProfileImageChanging, setProfileImageChanging] = React.useState(false);
-
-  React.useEffect(() => {
-    const toast = new URLSearchParams(location.search).get('toast');
-    if (toast) {
-      appHistory.replace('/profile', history);
-      addToast({
-        type: 'error',
-        sentAt: new Date(),
-        message: toast,
-      });
-    }
-  });
 
   React.useEffect(() => {
     if (meInfo) {

@@ -38,6 +38,13 @@ const HistoryListener: React.FC = () => {
     }
   }, [me.loaded, meInfo, location.pathname]);
 
+  React.useEffect(() => {
+    // Redirect to / if user is somewhere else than / and /login
+    if (!['/', '/login'].includes(location.pathname) && me.loaded && !meInfo) {
+      appHistory.reset(`/?redirect_uri=${location.pathname}`, history);
+    }
+  }, [me.loaded, meInfo, location.pathname]);
+
   return null;
 };
 

@@ -32,7 +32,7 @@ const SSOAccountItem: React.FC<ItemProps> = ({ ssoAccount, removable, onRemove }
       )
     }
     style={{
-      backgroundColor: ssoAccount.provider === 'naver' ? '#00c73c' : '#000',
+      backgroundColor: ssoAccount.provider === 'naver' ? 'rgb(3, 199, 90)' : '#000',
     }}
   >
     <div style={{ width: 62 }} className="absolute h-12 left-0 top-0 flex justify-center items-center">
