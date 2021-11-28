@@ -66,10 +66,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
     }
   }, [connected]);
 
-  useRedirect(
-    me.loaded && !!me.info && !me.info.initialized,
-    '/welcome',
-  );
+  useRedirect(me.loaded && !!me.info && !me.info.initialized, '/welcome');
 
   React.useEffect(() => {
     setLoading(true);
@@ -85,7 +82,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
           setMe({ loaded: true, info: null });
         }
       })
-      .catch((e) => {
+      .catch(() => {
         setMe({ loaded: true, info: null });
       })
       .finally(() => {

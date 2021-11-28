@@ -17,16 +17,10 @@ const toastNewSelector = selector<Toast | null>({
   set: ({ set }, newToast) => {
     if (guardRecoilDefaultValue(newToast)) return;
     if (newToast === null || !newToast.message) return;
-    set(toastAtom, (toasts) => {
-      console.log([
-        ...toasts.filter((toast) => Date.now() - toast.sentAt.getTime() < TOAST_MILLIS),
-        newToast,
-      ]);
-      return [
-        ...toasts.filter((toast) => Date.now() - toast.sentAt.getTime() < TOAST_MILLIS),
-        newToast,
-      ];
-    });
+    set(toastAtom, (toasts) => [
+      ...toasts.filter((toast) => Date.now() - toast.sentAt.getTime() < TOAST_MILLIS),
+      newToast,
+    ]);
   },
 });
 

@@ -1,4 +1,4 @@
-import { ClassroomJSON } from '@team-10/lib';
+import { ClassroomJSON, ClassroomsHashPatchResponse, ClassroomsHashPatchResponsePayload } from '@team-10/lib';
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -35,9 +35,9 @@ const NewClassroom: React.FC = () => {
         onJoin={(hash, passcode) => {
           setLoadingJoin(true);
           fetchAPI('PATCH /classrooms/:hash', { hash }, { operation: 'join', passcode })
-            .then((response) => {
+            .then((response_) => {
+              const response = response_ as ClassroomsHashPatchResponse<'join'>;
               if (response.success) {
-                console.log('PATCH /classrooms/:hash', response.payload);
                 addClassroom(response.payload);
                 setMainClassroomHash(response.payload.hash);
                 history.replace('/');
@@ -48,7 +48,7 @@ const NewClassroom: React.FC = () => {
                 addToast({
                   sentAt: new Date(),
                   type: 'error',
-                  message: `[${response.error.code}] ${response.error.extra?.details ?? ''}`,
+                  message: `[${response.error.code}]`,
                 });
               }
             })

@@ -229,7 +229,6 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
               <LogoButton
                 onClick={() => {
                   hideDropdowns();
-                  console.log(me.loaded && (!me.info || me.info.initialized), location.pathname !== '/');
                   if (me.loaded && (!me.info || me.info.initialized) && location.pathname !== '/') {
                     history.push('/');
                   }

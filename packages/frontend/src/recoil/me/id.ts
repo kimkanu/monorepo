@@ -14,9 +14,10 @@ const meIdSelector = selector<string | null>({
   },
   set: ({ set }, a) => {
     if (guardRecoilDefaultValue(a)) return;
+    if (!a) return;
     set(meAtom, (me) => {
-      if (!me.loaded || !me.info || !!a) return me;
-      return { loaded: true as true, info: { ...me.info, stringId: a! } };
+      if (!me.loaded || !me.info) return me;
+      return { loaded: true as true, info: { ...me.info, stringId: a } };
     });
   },
 });

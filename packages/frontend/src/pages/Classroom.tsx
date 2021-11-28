@@ -1,7 +1,8 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
+import Dialog from '../components/alert/Dialog';
 import FeedChatBox from '../components/chat/FeedChatBox';
 import MyChatBox from '../components/chat/MyChatBox';
 import OthersChatBox from '../components/chat/OthersChatBox';
@@ -114,8 +115,6 @@ const ClassroomChat: React.FC<ClassroomChatProps> = ({ dark, visible, hash }) =>
   const myId = useRecoilValue(meState.id);
   const isFooterPresent = true;
   const screenType = useScreenType();
-
-  console.log(chunkChats(chats));
 
   return (
     <div

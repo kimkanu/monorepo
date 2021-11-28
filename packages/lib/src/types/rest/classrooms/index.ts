@@ -33,14 +33,30 @@ export type ClassroomsPostError = {
 };
 
 /* PATCH /classrooms/:hash */
-export type ClassroomsHashPatchResponse
-  = Response<ClassroomJSON, ClassroomsHashPatchError>;
+export type ClassroomsHashPatchResponse<T extends ClassroomsHashPatchRequest['operation'] = ClassroomsHashPatchRequest['operation']>
+  = Response<ClassroomsHashPatchResponsePayload<T>, ClassroomsHashPatchError>;
 export type ClassroomsHashPatchRequest = {
   operation: 'join';
   passcode: string;
 } | {
   operation: 'leave';
+} | {
+  operation: 'reset_passcode';
+} | {
+  operation: 'rename';
+  name: string;
 };
+/* eslint-disable @typescript-eslint/indent */
+export type ClassroomsHashPatchResponsePayload<T extends ClassroomsHashPatchRequest['operation']>
+  = T extends 'join'
+  ? ClassroomJSON
+  : T extends 'leave'
+  ? Empty
+  : T extends 'reset_passcode'
+  ? { passcode: string }
+  : T extends 'rename'
+  ? { name: string }
+  : never;
 export type ClassroomsHashPatchError = {
   code: 'NONEXISTENT_CLASSROOM';
   statusCode: 400;
@@ -52,4 +68,8 @@ export type ClassroomsHashPatchError = {
     field: KeysOfUnion<ClassroomsHashPatchRequest>;
     details: string;
   }
+} | {
+  code: 'FORBIDDEN';
+  statusCode: 403;
+  extra: {}
 };
