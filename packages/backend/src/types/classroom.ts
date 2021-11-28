@@ -37,8 +37,6 @@ export default class Classroom {
     public server: Server,
     public entity: ClassroomEntity,
     info: ClassroomInfo,
-    // Classroom 밖에 있는 client가 이 room에 메시지를 보낼 수 없도록 roomId는 숨겨야 합니다.
-    public roomId: string,
   ) {
     this.hash = info.hash;
     this.name = info.name;
@@ -60,23 +58,31 @@ export default class Classroom {
     return this.memberIds.has(userId);
   }
 
-  regeneratePasscode(): string {
+  async regeneratePasscode(): Promise<string> {
     this.passcode = Crypto.randomInt(1e6).toString().padStart(6, '0');
+    this.entity.passcode = this.passcode;
+    await this.entity.save();
     return this.passcode;
   }
 
-  setName(name: string) {
+  async rename(name: string): Promise<void> {
     this.name = name;
+    this.entity.name = name;
+    await this.entity.save();
   }
 
-  start() {
+  async start() {
     this.isLive = true;
     this.updatedAt = new Date();
+    this.entity.updatedAt = this.updatedAt;
+    await this.entity.save();
   }
 
-  end() {
+  async end() {
     this.isLive = false;
     this.updatedAt = new Date();
+    this.entity.updatedAt = this.updatedAt;
+    await this.entity.save();
   }
 
   /**

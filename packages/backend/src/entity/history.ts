@@ -30,7 +30,7 @@ export default class HistoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Classroom, (classroom) => classroom.histories)
+  @ManyToOne(() => Classroom, (classroom) => classroom.histories, { onDelete: 'CASCADE' })
   classroom: Classroom;
 }
 
@@ -53,6 +53,6 @@ export class VoiceHistoryEntity extends HistoryEntity {
   @Column({ type: 'timestamptz' })
   endedAt: Date;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   speaker: UserEntity;
 }

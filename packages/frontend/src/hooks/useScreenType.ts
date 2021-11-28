@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import screenSizeState from '../recoil/screenSize';
 import ScreenType from '../types/screen';
 
-const CHAT_SECTION_HEIGHT_THRESHOLD = 80;
+const CHAT_SECTION_HEIGHT_THRESHOLD = 240;
 
 const useScreenType: () => ScreenType = () => {
   const {

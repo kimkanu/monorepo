@@ -1,13 +1,9 @@
 /* istanbul ignore file */
 import { ClassroomJSON } from '@team-10/lib';
 import React from 'react';
-import {
-  useLocation,
-  useHistory,
-} from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useLocation, useHistory } from 'react-router-dom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import useRedirect from '../../hooks/useRedirect';
 import useSocket from '../../hooks/useSocket';
 
 import classroomsState from '../../recoil/classrooms';
@@ -17,16 +13,16 @@ import toastState from '../../recoil/toast';
 import { Theme } from '../../types/theme';
 
 import fetchAPI from '../../utils/fetch';
+import appHistory, { classroomPrefixRegex } from '../../utils/history';
 import { Styled } from '../../utils/style';
 
-import Dialog from '../alert/Dialog';
-import Dropdown from '../alert/Dropdown';
 import ToastDisplay from '../alert/ToastDisplay';
 import YTPlayer from '../youtube/YTPlayer';
 import YTWrapper from '../youtube/YTWrapper';
 
 import Debug from './Debug';
 import DynamicManifest from './DynamicManifest';
+import HistoryListener from './HistoryListener';
 import Loading from './Loading';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
 
@@ -51,12 +47,13 @@ function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJ
 const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style }) => {
   const history = useHistory();
   const location = useLocation();
-  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
+  const inClassroom = classroomPrefixRegex.test(location.pathname);
 
   const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
   const toasts = useRecoilValue(toastState.atom);
+  const addToast = useSetRecoilState(toastState.new);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
-  const [me, setMe] = useRecoilState(meState.atom);
+  const setMe = useSetRecoilState(meState.atom);
 
   const { connected } = useSocket('/');
 
@@ -66,10 +63,20 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
     }
   }, [connected]);
 
-  useRedirect(
-    me.loaded && !!me.info && !me.info.initialized,
-    '/welcome',
-  );
+  React.useEffect(() => {
+    fetchAPI('GET /toasts')
+      .then((response) => {
+        if (response.success) {
+          response.payload.forEach((toast, i) => {
+            addToast({
+              ...toast,
+              // `+ i * 1000` to ensure the key is unique & give user more time to read toasts
+              sentAt: new Date(Date.now() + i * 1000),
+            });
+          });
+        }
+      });
+  }, []);
 
   React.useEffect(() => {
     setLoading(true);
@@ -85,7 +92,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
           setMe({ loaded: true, info: null });
         }
       })
-      .catch((e) => {
+      .catch(() => {
         setMe({ loaded: true, info: null });
       })
       .finally(() => {
@@ -95,6 +102,9 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
 
   return (
     <div className={className} style={style}>
+      {/* History Listener */}
+      <HistoryListener />
+
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
 
@@ -111,7 +121,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
         inClassroom={inClassroom}
         onClick={() => {
           if (classrooms[0]?.hash) {
-            history.push(`/classrooms/${classrooms[0]?.hash}`);
+            appHistory.push(`/classrooms/${classrooms[0]?.hash}`, history);
           }
         }}
       >
