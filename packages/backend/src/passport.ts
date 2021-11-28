@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import GitHubStrategy from 'passport-github';
-
 import PassportOauth2 from 'passport-oauth2';
 import { Connection } from 'typeorm';
+import uuid from 'uuid';
 
 import SSOAccountEntity from './entity/sso-account';
 import UserEntity from './entity/user';
@@ -60,6 +60,7 @@ export default (connection: Connection) => {
           },
         },
       });
+      console.log(ssoAccount);
 
       let user: UserEntity;
       if (ssoAccount) {
@@ -78,11 +79,16 @@ export default (connection: Connection) => {
       } else {
         if (!req.user) {
           user = new UserEntity();
-          user.stringId = `${profile.provider}:${providerId}`;
           user.displayName = profile.name ?? profile.nickname!;
           user.profileImage = profile.profileImage ?? null!;
           user.initialized = false;
-          await user.save();
+          try {
+            user.stringId = `${profile.provider}:${providerId}`;
+            await user.save();
+          } catch (e) {
+            user.stringId = uuid.v4();
+            await user.save();
+          }
           await server.managers.user.refreshUserInfo(user.stringId);
         } else {
           user = req.user as UserEntity;
