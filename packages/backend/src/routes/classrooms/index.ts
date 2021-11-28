@@ -12,7 +12,6 @@ export default function generateRoute(server: Server): Route {
     'POST /classrooms',
     isAuthenticatedOrFail,
     async (params, body, user) => {
-      // TODO: validation
       const { name } = body;
       if (!name) {
         return {
@@ -38,10 +37,49 @@ export default function generateRoute(server: Server): Route {
   );
 
   route.accept(
+    'DELETE /classrooms/:hash',
+    isAuthenticatedOrFail,
+    async (params, body, user) => {
+      const { managers } = server;
+      const userId = user.stringId;
+      const { hash } = params;
+
+      const isPresent = await managers.classroom.isPresent(hash);
+      if (!isPresent) {
+        return {
+          success: false,
+          error: {
+            code: 'NONEXISTENT_CLASSROOM',
+            statusCode: 400,
+            extra: {} as Empty,
+          },
+        };
+      }
+
+      const classroom = managers.classroom.getRaw(hash)!;
+      if (classroom.instructorId !== userId) {
+        return {
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            statusCode: 403,
+            extra: {},
+          },
+        };
+      }
+
+      await managers.classroom.remove(hash);
+      return {
+        success: true,
+        payload: {},
+      };
+    },
+  );
+
+  route.accept(
     'PATCH /classrooms/:hash',
     isAuthenticatedOrFail,
     async (params, body, user, req, res, next) => {
-      // TODO: validation
       const { hash } = params;
       const { operation } = body;
       if (!hash) {

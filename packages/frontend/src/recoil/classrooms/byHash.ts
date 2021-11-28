@@ -13,7 +13,7 @@ const classroomsByHashSelector = selectorFamily<Partial<ClassroomJSON> | null, s
     if (guardRecoilDefaultValue(partialClassroom)) return;
     if (partialClassroom === null) return;
     set(classroomsAtom, (classrooms) => classrooms.map((c) => (
-      c.hash === hash ? { ...c, partialClassroom } : c
+      c.hash === hash ? { ...c, ...partialClassroom } as ClassroomJSON : c
     )));
   },
 });

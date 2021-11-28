@@ -103,7 +103,7 @@ const ProfileSettingContent: React.FC<Props> = ({
                 .catch(() => {
                   resolve(false);
                 });
-            }, 1500);
+            }, 1000);
 
             onCancel(() => {
               clearTimeout(timeout);

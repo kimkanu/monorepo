@@ -6,11 +6,14 @@ import { clamp } from './math';
 type History = ReturnType<typeof useHistory>;
 
 const classroomHashSyllableRegex = '[BHJKLMNPST][AEIOU][KLMNPSTZ]';
-const classroomHashRegex = `(${classroomHashSyllableRegex}-${classroomHashSyllableRegex}-${classroomHashSyllableRegex})`;
+export const classroomHashRegex = `(${classroomHashSyllableRegex}-${classroomHashSyllableRegex}-${classroomHashSyllableRegex})`;
 export const classroomPrefixRegex = new RegExp(`^/classrooms/${classroomHashRegex}`);
 const classroomRegex = new RegExp(`^/classrooms/${classroomHashRegex}$`);
 const classroomMembersRegex = new RegExp(`^/classrooms/${classroomHashRegex}/members$`);
 const classroomSettingsRegex = new RegExp(`^/classrooms/${classroomHashRegex}/settings$`);
+const classroomSettingsRemoveRegex = new RegExp(`^/classrooms/${classroomHashRegex}/settings/remove$`);
+const classroomSettingsLeaveRegex = new RegExp(`^/classrooms/${classroomHashRegex}/settings/leave$`);
+const classroomShareRegex = new RegExp(`^/classrooms/${classroomHashRegex}/share$`);
 
 class AppHistory {
   history: string[] = [];
@@ -41,16 +44,23 @@ class AppHistory {
       return ['/'];
     }
 
-    // /classrooms/:hash/members
-    if (classroomMembersRegex.test(pathname)) {
-      const hash = pathname.match(classroomRegex)![1];
+    // /classrooms/:hash/{members,settings,share}
+    if (
+      classroomMembersRegex.test(pathname)
+      || classroomSettingsRegex.test(pathname)
+      || classroomShareRegex.test(pathname)
+    ) {
+      const hash = pathname.match(classroomPrefixRegex)![1];
       return ['/', `/classrooms/${hash}`, pathname];
     }
 
-    // /classrooms/:hash/settings
-    if (classroomSettingsRegex.test(pathname)) {
-      const hash = pathname.match(classroomRegex)![1];
-      return ['/', `/classrooms/${hash}`, pathname];
+    // /classrooms/:hash/settings/{remove,leave}
+    if (
+      classroomSettingsRemoveRegex.test(pathname)
+      || classroomSettingsLeaveRegex.test(pathname)
+    ) {
+      const hash = pathname.match(classroomPrefixRegex)![1];
+      return ['/', `/classrooms/${hash}`, `/classrooms/${hash}/settings`, pathname];
     }
 
     // /profile/connect

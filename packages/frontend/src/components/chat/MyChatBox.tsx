@@ -30,7 +30,7 @@ const MyChatBox: React.FC<Props> = ({
   dark, chats,
 }) => (
   <div className="w-full flex justify-end gap-2">
-    <div className="flex flex-col gap-1.5 items-end" style={{ maxWidth: 'calc(100% - 80px)' }}>
+    <div className="flex flex-col gap-1.5 items-end" style={{ maxWidth: 'calc(100% - 40px)' }}>
       {chats.map((chat) => (
         <MyChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
       ))}

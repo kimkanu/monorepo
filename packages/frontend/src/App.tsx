@@ -9,6 +9,8 @@ import Layout from './components/layout/Layout';
 import Classroom from './pages/Classroom';
 import ClassroomMembers from './pages/ClassroomMembers';
 import ClassroomSettings from './pages/ClassroomSettings';
+import ClassroomSettingsLeave from './pages/ClassroomSettingsLeave';
+import ClassroomShare from './pages/ClassroomShare';
 import Login from './pages/Login';
 import Main from './pages/Main';
 import NewClassroom from './pages/NewClassroom';
@@ -19,9 +21,8 @@ import Welcome from './pages/Welcome';
 import WelcomeDone from './pages/WelcomeDone';
 import meState from './recoil/me';
 import themeState from './recoil/theme';
+import { classroomHashRegex } from './utils/history';
 import { clamp } from './utils/math';
-
-const classroomHashRegex = new RegExp('[BHJKLMNPST][AEIOU][KLMNPSTZ]-[BHJKLMNPST][AEIOU][KLMNPSTZ]-[BHJKLMNPST][AEIOU][KLMNPSTZ]');
 
 const transitionProps = (additionalMapStyles: (progress: number) => any = () => {}) => ({
   style: { top: 'calc(env(safe-area-inset-top, 0px) + 64px)' },
@@ -85,7 +86,7 @@ const App: React.FC = () => {
         <AnimatedRoute
           path={meInfo ? ['/classrooms/:hash'] : []}
           render={({ match }) => (
-            classroomHashRegex.test(match.params.hash ?? '')
+            new RegExp(classroomHashRegex).test(match.params.hash ?? '')
               ? <Classroom hash={match.params.hash ?? ''} />
               : null
           )}
@@ -94,6 +95,8 @@ const App: React.FC = () => {
         />
         <ClassroomMembers />
         <ClassroomSettings />
+        <ClassroomSettingsLeave />
+        <ClassroomShare />
 
         {/* Profile page */}
         <AnimatedRoute

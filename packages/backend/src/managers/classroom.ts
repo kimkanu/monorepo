@@ -95,7 +95,13 @@ export default class ClassroomManager {
     return classroom;
   }
 
-  // remove
+  async remove(classroomHash: ClassroomHash) {
+    const classroom = this.getRaw(classroomHash);
+    if (!classroom) return;
+
+    await classroom.entity.remove();
+    this.classrooms.delete(classroomHash);
+  }
 
   async join(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
     if (!this.classrooms.has(classroomHash)) {

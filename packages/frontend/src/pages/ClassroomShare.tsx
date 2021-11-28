@@ -15,7 +15,7 @@ import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
 import appHistory, { classroomPrefixRegex } from '../utils/history';
 
-const ClassroomMembers: React.FC = () => {
+const ClassroomShare: React.FC = () => {
   const classrooms = useRecoilValue(classroomsState.atom);
   const me = useRecoilValue(meState.atom);
   const addClassroom = useSetRecoilState(classroomsState.new);
@@ -24,7 +24,7 @@ const ClassroomMembers: React.FC = () => {
   const history = useHistory();
 
   const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
-  const isVisible = /^\/classrooms\/(\w{3}-\w{3}-\w{3})\/members\/?$/.test(location.pathname);
+  const isVisible = /^\/classrooms\/(\w{3}-\w{3}-\w{3})\/share\/?$/.test(location.pathname);
 
   return (
     <Dialog
@@ -36,4 +36,4 @@ const ClassroomMembers: React.FC = () => {
   );
 };
 
-export default ClassroomMembers;
+export default ClassroomShare;

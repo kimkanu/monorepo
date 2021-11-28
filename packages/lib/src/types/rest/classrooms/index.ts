@@ -4,18 +4,22 @@ import { ClassroomJSON } from '../../classroom';
 
 export type ClassroomsEndpoints =
   | 'POST /classrooms'
-  | 'PATCH /classrooms/:hash';
+  | 'PATCH /classrooms/:hash'
+  | 'DELETE /classrooms/:hash';
 export type ClassroomsPathParams = {
   'POST /classrooms': Empty;
   'PATCH /classrooms/:hash': { hash: string };
+  'DELETE /classrooms/:hash': { hash: string };
 };
 export type ClassroomsRequestBodyType = {
   'POST /classrooms': ClassroomsPostRequest;
   'PATCH /classrooms/:hash': ClassroomsHashPatchRequest;
+  'DELETE /classrooms/:hash': Empty;
 };
 export type ClassroomsResponseType = {
   'POST /classrooms': ClassroomsPostResponse;
   'PATCH /classrooms/:hash': ClassroomsHashPatchResponse;
+  'DELETE /classrooms/:hash': ClassroomsHashDeleteResponse;
 };
 
 /* POST /classrooms */
@@ -68,6 +72,17 @@ export type ClassroomsHashPatchError = {
     field: KeysOfUnion<ClassroomsHashPatchRequest>;
     details: string;
   }
+} | {
+  code: 'FORBIDDEN';
+  statusCode: 403;
+  extra: {}
+};
+
+export type ClassroomsHashDeleteResponse = Response<Empty, ClassroomsHashDeleteError>;
+export type ClassroomsHashDeleteError = {
+  code: 'NONEXISTENT_CLASSROOM';
+  statusCode: 400;
+  extra: Empty;
 } | {
   code: 'FORBIDDEN';
   statusCode: 403;

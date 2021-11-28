@@ -14,7 +14,7 @@ export default class SSOAccountEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.ssoAccounts)
+  @ManyToOne(() => User, (user) => user.ssoAccounts, { onDelete: 'CASCADE' })
   @JoinTable()
   user: User;
 
