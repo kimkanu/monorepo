@@ -52,7 +52,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
    * Socket *
    * ****** */
 
-  const { socket, connected } = useSocket<SocketVoice.Events.Response, SocketVoice.Events.Request>('/voice');
+  const { socket, connected } = useSocket<SocketVoice.Events.Response, SocketVoice.Events.Request>('/');
 
   /* ******* *
    * Routing *
@@ -195,8 +195,8 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
     data.arrayBuffer().then((buffer) => {
       if (stateWrapper.isSpeaking !== 'requesting') {
-        socket.emit('StreamSend', {
-          classroomHash: mainClassroom.hash, // TODO
+        socket.emit('voice/StreamSend', {
+          hash: mainClassroom.hash, // TODO
           voices: type === 'opus'
             ? [
               {
@@ -216,7 +216,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
         stateWrapper.voicesRequestingPermission = [];
         stateWrapper.sequenceIndex += 1;
 
-        socket.once('StreamSend', (response) => {
+        socket.once('voice/StreamSend', (response) => {
           if (response.success) return;
 
           if (response.reason === SocketVoice.StreamSendDeniedReason.UNAUTHORIZED) {
@@ -276,8 +276,8 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     }
 
     if (isSpeaking !== 'none') {
-      socket.emit('StateChange', {
-        classroomHash: mainClassroom.hash,
+      socket.emit('voice/StateChange', {
+        hash: mainClassroom.hash,
         speaking: false,
       });
       setTimeout(() => {
@@ -291,14 +291,14 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
     if (isSpeaking !== 'none') return;
 
-    socket.emit('StateChange', {
-      classroomHash: mainClassroom.hash,
+    socket.emit('voice/StateChange', {
+      hash: mainClassroom.hash,
       speaking: true,
     });
     setRequestingPermissionInterval(
       setInterval(() => {
-        socket.emit('StateChange', {
-          classroomHash: mainClassroom.hash,
+        socket.emit('voice/StateChange', {
+          hash: mainClassroom.hash,
           speaking: true,
         });
       }, REQUESTING_PERMISSION_INTERVAL),
@@ -353,7 +353,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   // socket이 보낸 StateChange 요청에 대한 응답 listen하기
   React.useEffect(() => {
-    const listener: SocketVoice.Events.Response['StateChange'] = (response) => {
+    const listener: SocketVoice.Events.Response['voice/StateChange'] = (response) => {
       if (isSpeaking === 'requesting') {
         if (response.success) {
           setSpeaking('speaking');
@@ -375,10 +375,10 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       }
     };
 
-    socket.on('StateChange', listener);
+    socket.on('voice/StateChange', listener);
 
     return () => {
-      socket.off('StateChange', listener);
+      socket.off('voice/StateChange', listener);
     };
   }, [socket, isSpeaking]);
 
@@ -404,7 +404,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   // StateChangeBroadcast listener
   React.useEffect(() => {
-    socket.on('StateChangeBroadcast', ({
+    socket.on('voice/StateChangeBroadcast', ({
       speaking, userId: id,
     }: SocketVoice.Broadcast.StateChange) => {
       setSpeakerId(speaking ? id : null);
@@ -416,7 +416,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   // StreamReceiveBroadcast listener
   React.useEffect(() => {
-    const listener: SocketVoice.Events.Response['StreamReceiveBroadcast'] = async (response) => {
+    const listener: SocketVoice.Events.Response['voice/StreamReceiveBroadcast'] = async (response) => {
       // 정상적인 상황
       if (stateWrapper.nextSequenceIndex === response.sequenceIndex) {
         // eslint-disable-next-line no-restricted-syntax
@@ -469,10 +469,10 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       }
     };
 
-    socket.on('StreamReceiveBroadcast', listener);
+    socket.on('voice/StreamReceiveBroadcast', listener);
 
     return () => {
-      socket.off('StreamReceiveBroadcast', listener);
+      socket.off('voice/StreamReceiveBroadcast', listener);
     };
   }, [socket]);
 

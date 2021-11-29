@@ -22,11 +22,7 @@ const YouTubeSyncStudentTest: React.FC = () => {
         }
       }}
     >
-      <YTPlayer
-        videoId="lIKmm-G7YVQ"
-        classroomHash="BAL-BAT-KIP"
-        instructor={false}
-      />
+      <YTPlayer videoId="lIKmm-G7YVQ" />
     </YTWrapper>
   );
 };

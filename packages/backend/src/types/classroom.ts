@@ -14,6 +14,18 @@ export interface ClassroomInfo {
   updatedAt: Date;
 }
 
+export interface ClassroomVoiceState {
+  speaker: string | null; // speaker's `stringId`
+  startedAt: Date | null;
+}
+
+export interface ClassroomYouTubeState {
+  responseTime: Date | null;
+  videoId: string | null;
+  currentTime: number | null;
+  play: boolean;
+}
+
 export default class Classroom {
   hash: string;
 
@@ -21,9 +33,8 @@ export default class Classroom {
 
   instructorId: string;
 
+  // 등록된 멤버
   memberIds: Set<string>;
-
-  connectedMemberIds: Set<string> = new Set();
 
   passcode: string;
 
@@ -32,6 +43,15 @@ export default class Classroom {
   video: YouTubeVideo | null = null;
 
   isLive: boolean = false;
+
+  state: {
+    // 현재 연결되어 있는 멤버
+    connectedMemberIds: Set<string>;
+
+    voice: ClassroomVoiceState;
+
+    youtube: ClassroomYouTubeState;
+  };
 
   constructor(
     public server: Server,
@@ -44,14 +64,27 @@ export default class Classroom {
     this.memberIds = info.memberIds;
     this.passcode = info.passcode;
     this.updatedAt = info.updatedAt;
+    this.state = {
+      connectedMemberIds: new Set(),
+      voice: {
+        speaker: null,
+        startedAt: null,
+      },
+      youtube: {
+        responseTime: null,
+        videoId: null,
+        currentTime: null,
+        play: false,
+      },
+    };
   }
 
   connectMember(userId: string) {
-    this.connectedMemberIds.add(userId);
+    this.state.connectedMemberIds.add(userId);
   }
 
   disconnectMember(userId: string) {
-    this.connectedMemberIds.delete(userId);
+    this.state.connectedMemberIds.delete(userId);
   }
 
   hasMember(userId: string) {
@@ -117,6 +150,7 @@ export default class Classroom {
       .filter(({ info }) => !userIds.includes(info.stringId))
       .flatMap(({ sockets: userSockets }) => userSockets);
     sockets.forEach((socket) => {
+      console.log(`emit ${eventName} ${JSON.stringify(message)} to ${socket.id}`);
       socket.emit(eventName, message);
     });
   }

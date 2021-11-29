@@ -1,48 +1,116 @@
 import { SocketYouTube } from '@team-10/lib';
-import { Namespace } from 'socket.io';
+import { Server as IOServer } from 'socket.io';
 
 import Server from '../server';
 import { UserSocket } from '../types/socket';
 
 const ioYouTubeHandler = (
-  io: Namespace<SocketYouTube.Events.Request, SocketYouTube.Events.Response>,
+  io: IOServer<SocketYouTube.Events.Request, SocketYouTube.Events.Response>,
   server: Server,
 ) => {
   type Socket = UserSocket<SocketYouTube.Events.Request, SocketYouTube.Events.Response>;
-  const { managers } = server;
+
   io.on('connection', (socket: Socket) => {
-    console.log('connected youtube : ', socket.id);
-    socket.on('JoinClassroom', async ({ classroomHash, userId, isInstructor }) => {
-      socket.join(classroomHash);
-      console.log(isInstructor);
-      if (!isInstructor) {
-        io.emit('CurrentVideoPosition', { userId });
-        console.log('give current info');
-      }
-    });
-    socket.on('CurrentVideoPosition', async ({
-      userId, classroomHash, play, videoId, timeInYouTube,
-    }) => {
-      if (timeInYouTube !== undefined) {
-        io.to(userId).emit('ChangePlayStatusBroadcast', {
-          classroomHash,
-          play,
-          videoId,
-          timeInYouTube,
+    socket.on('youtube/JoinClassroom', async ({ hash }) => {
+      // 로그인 상태가 아닐 시
+      if (!socket.request.user) {
+        socket.emit('youtube/JoinClassroom', {
+          success: false,
+          reason: SocketYouTube.JoinClassroomFailReason.UNAUTHORIZED,
         });
+        return;
       }
-      console.log('current paly : ', play);
-      console.log('current time : ', timeInYouTube);
+
+      // 없는 수업일 때
+      if (!await server.managers.classroom.isPresent(hash)) {
+        socket.emit('youtube/JoinClassroom', {
+          success: false,
+          reason: SocketYouTube.JoinClassroomFailReason.NOT_MEMBER,
+        });
+        return;
+      }
+
+      // 유저가 교실에 들어있지 않을 때
+      const userId: string = socket.request.user.stringId;
+      const classroom = server.managers.classroom.getRaw(hash)!;
+
+      if (!classroom.hasMember(userId)) {
+        socket.emit('youtube/JoinClassroom', {
+          success: false,
+          reason: SocketYouTube.JoinClassroomFailReason.NOT_MEMBER,
+        });
+        return;
+      }
+
+      const { youtube } = classroom.state;
+      socket.emit('youtube/JoinClassroom', {
+        success: true,
+        hash,
+        play: youtube.play,
+        // eslint-disable-next-line no-nested-ternary
+        time: youtube.currentTime === null
+          ? null
+          : youtube.play
+            ? youtube.currentTime
+              + (Date.now() - (youtube.responseTime?.getTime() ?? Date.now())) / 1000
+            : youtube.currentTime,
+        videoId: youtube.videoId,
+      });
     });
-    socket.on('ChangePlayStatus', async ({
-      classroomHash, play, videoId, timeInYouTube,
+
+    socket.on('youtube/ChangePlayStatus', async ({
+      hash, play, videoId, time,
     }) => {
-      console.log('broadcast change status');
-      socket.broadcast.to(classroomHash).emit('ChangePlayStatusBroadcast', {
-        classroomHash,
+      // 로그인 상태가 아닐 시
+      if (!socket.request.user) {
+        socket.emit('youtube/ChangePlayStatus', {
+          success: false,
+          reason: SocketYouTube.ChangePlayStatusFailReason.UNAUTHORIZED,
+        });
+        return;
+      }
+
+      // 없는 수업일 때
+      if (!await server.managers.classroom.isPresent(hash)) {
+        socket.emit('youtube/ChangePlayStatus', {
+          success: false,
+          reason: SocketYouTube.ChangePlayStatusFailReason.NOT_MEMBER,
+        });
+        return;
+      }
+
+      // 유저가 교실에 들어있지 않을 때
+      const userId: string = socket.request.user.stringId;
+      const classroom = server.managers.classroom.getRaw(hash)!;
+
+      if (!classroom.hasMember(userId)) {
+        socket.emit('youtube/ChangePlayStatus', {
+          success: false,
+          reason: SocketYouTube.ChangePlayStatusFailReason.NOT_MEMBER,
+        });
+        return;
+      }
+
+      // 유저가 instructor가 아닐 때
+      if (!classroom.hasMember(userId)) {
+        socket.emit('youtube/ChangePlayStatus', {
+          success: false,
+          reason: SocketYouTube.ChangePlayStatusFailReason.PERMISSION_DENIED,
+        });
+        return;
+      }
+
+      classroom.state.youtube = {
+        responseTime: new Date(),
+        play,
+        currentTime: time,
+        videoId,
+      };
+      classroom.broadcastExcept('youtube/ChangePlayStatusBroadcast', [classroom.instructorId], {
+        hash,
         play,
         videoId,
-        timeInYouTube,
+        time,
       });
     });
   });

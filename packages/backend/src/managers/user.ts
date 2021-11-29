@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { Provider, SSOAccountJSON, UserInfoJSON } from '@team-10/lib';
 import { Socket } from 'socket.io';
-import { getConnection, Repository } from 'typeorm';
+import { getConnection } from 'typeorm';
 
 import UserEntity from '../entity/user';
 

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import Dialog from '../components/alert/Dialog';
+import Button from '../components/buttons/Button';
 import FeedChatBox from '../components/chat/FeedChatBox';
 import MyChatBox from '../components/chat/MyChatBox';
 import OthersChatBox from '../components/chat/OthersChatBox';
@@ -15,7 +16,7 @@ import mainClassroomHashState from '../recoil/mainClassroomHash';
 import meState from '../recoil/me';
 import { ChatContent, ChatType, FeedType } from '../types/chat';
 import { clamp } from '../utils/math';
-import { conditionalStyle } from '../utils/style';
+import { conditionalClassName, conditionalStyle } from '../utils/style';
 
 /**
  * chats를 FeedChat끼리 또는 같은 sender끼리 묶어 chunking합니다.
@@ -35,12 +36,15 @@ function chunkChats(chats: ChatContent[]): ChatContent[][] {
 }
 
 interface ClassroomChatProps {
+  isInstructor: boolean;
   dark: boolean;
   visible: boolean;
   hash: string;
 }
 
-const ClassroomChat: React.FC<ClassroomChatProps> = ({ dark, visible, hash }) => {
+const ClassroomChat: React.FC<ClassroomChatProps> = ({
+  isInstructor, dark, visible, hash,
+}) => {
   const user1 = {
     userId: 'user1',
     displayName: '닉네임',
@@ -131,6 +135,7 @@ const ClassroomChat: React.FC<ClassroomChatProps> = ({ dark, visible, hash }) =>
           width: '100%',
           height: `calc(100 * var(--vh) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - ${isFooterPresent ? 140 : 64}px - 56.25vw)`,
           overflow: 'auto',
+          paddingTop: isInstructor ? 68 : 0,
         },
       })(screenType)}
     >
@@ -171,23 +176,23 @@ interface Props {
 }
 
 const Classroom: React.FC<Props> = ({ hash }) => {
-  const classrooms = useRecoilValue(classroomsState.atom);
+  const [classroom, setClassroom] = useRecoilState(classroomsState.byHash(hash));
   const setMainClassroomHash = useSetRecoilState(mainClassroomHashState.atom);
   const mainClassroom = useMainClassroom();
   const me = useRecoilValue(meState.atom);
-  const history = useHistory();
+  const myId = useRecoilValue(meState.id);
 
   const [amplitude, setAmplitude] = React.useState(0);
   const [frequency, setFrequency] = React.useState(200);
+  const screenType = useScreenType();
+
+  const isInstructor = !!mainClassroom && mainClassroom.instructorId === myId;
 
   React.useEffect(() => {
-    if (me.loaded && me.info) {
-      const classroom = classrooms.find((c) => c.hash === hash);
-      if (classroom) {
-        setMainClassroomHash(hash);
-      }
+    if (me.loaded && me.info && classroom) {
+      setMainClassroomHash(hash);
     }
-  }, [me, classrooms, hash]);
+  }, [me, classroom, hash]);
 
   return (
     <>
@@ -208,7 +213,36 @@ const Classroom: React.FC<Props> = ({ hash }) => {
           />
           <WaveVisualizer amplitude={amplitude} frequency={frequency} />
 
-          <ClassroomChat dark={false} visible hash={hash} />
+          <div
+            style={conditionalStyle({
+              mobilePortrait: {
+                position: 'absolute',
+                top: 'calc(env(safe-area-inset-top, 0px) + 64px + 56.25vw)',
+              },
+            })(screenType)}
+            className={conditionalClassName({
+              mobilePortrait: 'absolute w-full p-4 flex justify-end',
+            })(screenType)}
+          >
+            <Button
+              type="primary"
+              width="fit-content"
+              height={36}
+              text="Set Video"
+              onClick={() => {
+                if (!classroom) return;
+                setClassroom((c) => ({
+                  ...c,
+                  video: {
+                    type: 'single',
+                    videoId: 'lIKmm-G7YVQ',
+                  },
+                }));
+              }}
+            />
+
+          </div>
+          <ClassroomChat isInstructor={isInstructor} dark={false} visible hash={hash} />
         </>
       )}
     </>
