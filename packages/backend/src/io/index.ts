@@ -9,17 +9,21 @@ const ioHandler = (server: Server) => {
 
   io.on('connection', async (socket: UserSocket) => {
     if (socket.request.user) {
-      await managers.user.add(socket.request.user.stringId, socket);
+      const userId = socket.request.user.stringId;
+      await managers.user.add(userId, socket);
+      await managers.classroom.connectMemberToAll(userId);
     }
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       if (socket.request.user) {
+        const userId = socket.request.user.stringId;
+        await managers.classroom.disconnectMemberFromAll(userId);
         managers.user.remove(socket.request.user.stringId, socket);
       }
     });
   });
-  ioVoiceHandler(io.of('/voice'), server);
-  ioYouTubeHandler(io.of('/youtube'), server);
+  ioVoiceHandler(io, server);
+  ioYouTubeHandler(io, server);
 };
 
 export default ioHandler;

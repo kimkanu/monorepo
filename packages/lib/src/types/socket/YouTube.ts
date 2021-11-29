@@ -3,85 +3,75 @@ import { ClassroomHash } from './common';
 export namespace SocketYouTube {
   export namespace Events {
     export interface Request {
-      JoinClassroom: (params: SocketYouTube.Request.JoinClassroom) => void;
-      CurrentVideoPosition: (params: SocketYouTube.Request.CurrentVideoPosition) => void;
-      ChangePlayStatus: (params: SocketYouTube.Request.ChangePlayStatus) => void;
+      'youtube/JoinClassroom': (params: SocketYouTube.Request.JoinClassroom) => void;
+      'youtube/ChangePlayStatus': (params: SocketYouTube.Request.ChangePlayStatus) => void;
     }
     export interface Response {
-      JoinClassroom: (params: SocketYouTube.Response.JoinClassroom) => void;
-      CurrentVideoPosition: (params: SocketYouTube.Response.CurrentVideoPosition) => void;
-      ChangePlayStatus: (params: SocketYouTube.Response.ChangePlayStatus) => void;
-      ChangePlayStatusBroadcast: (params: SocketYouTube.Broadcast.ChangePlayStatus) => void;
+      'youtube/JoinClassroom': (params: SocketYouTube.Response.JoinClassroom) => void;
+      'youtube/ChangePlayStatus': (params: SocketYouTube.Response.ChangePlayStatus) => void;
+      'youtube/ChangePlayStatusBroadcast': (params: SocketYouTube.Broadcast.ChangePlayStatus) => void;
     }
   }
 
   export namespace Request {
-    export type JoinClassroom = JoinClassRoomRequest;
-    export type CurrentVideoPosition = CurrentVideoPositionRequest;
+    export type JoinClassroom = JoinClassroomRequest;
     export type ChangePlayStatus = ChangePlayStatusRequest;
   }
   export namespace Response {
-    export type JoinClassroom = JoinClassRoomResponse;
-    export type CurrentVideoPosition = CurrentVideoPositionResponse;
+    export type JoinClassroom = JoinClassroomResponse;
     export type ChangePlayStatus = ChangePlayStatusResponse;
   }
   export namespace Broadcast {
     export type ChangePlayStatus = ChangePlayStatusBroadcast;
   }
-}
 
-export interface JoinClassRoomRequest {
-  classroomHash: ClassroomHash;
-  userId: string;
-  isInstructor: boolean;
-}
+  export interface JoinClassroomRequest {
+    hash: ClassroomHash;
+  }
 
-// send play status and current time to new user
-export interface CurrentVideoPositionRequest {
-  userId: string; // ID of new user
-  classroomHash: ClassroomHash;
-  play: boolean;
-  videoId: string | null | undefined;
-  timeInYouTube: number | undefined;
-}
+  // send play or stop requset
+  export interface ChangePlayStatusRequest {
+    hash: ClassroomHash;
+    play: boolean;
+    videoId: string | null;
+    time: number | null;
+  }
 
-// send play or stop requset
-export interface ChangePlayStatusRequest {
-  classroomHash: ClassroomHash;
-  play: boolean;
-  videoId: string | null | undefined;
-  timeInYouTube: number | undefined;
-}
+  export type JoinClassroomResponse =
+    | ({ success: true } & ChangePlayStatusBroadcast)
+    | {
+      success: false;
+      reason: typeof JoinClassroomFailReason[keyof typeof JoinClassroomFailReason];
+    };
+  export const JoinClassroomFailReason = {
+    UNAUTHORIZED: -1 as -1,
+    NOT_MEMBER: -2 as -2,
+  };
 
-export interface JoinClassRoomResponse {
-  success: boolean;
-}
+  // play status response
+  export type ChangePlayStatusResponse =
+    | ChangePlayStatusSuccessResponse
+    | ChangePlayStatusFailResponse;
 
-export interface CurrentVideoPositionResponse {
-  userId: string;
-}
+  export interface ChangePlayStatusSuccessResponse {
+    success: true;
+    play: boolean;
+  }
+  export interface ChangePlayStatusFailResponse {
+    success: false;
+    reason: typeof ChangePlayStatusFailReason[keyof typeof ChangePlayStatusFailReason];
+  }
+  export const ChangePlayStatusFailReason = {
+    UNAUTHORIZED: -1 as -1,
+    NOT_MEMBER: -2 as -2,
+    PERMISSION_DENIED: -3 as -3,
+  };
 
-// play status response
-export type ChangePlayStatusResponse =
-  | ChangePlayStatusSuccessResponse
-  | ChangePlayStatusFailResponse;
-
-export interface ChangePlayStatusSuccessResponse {
-  success: true;
-  play: boolean;
-}
-export interface ChangePlayStatusFailResponse {
-  success: false;
-  reason: typeof ChangePlayStatusFailReason[keyof typeof ChangePlayStatusFailReason];
-}
-export const ChangePlayStatusFailReason = {
-  TODO: 0 as 0, // ToDo
-};
-
-// play status Broadcast
-export interface ChangePlayStatusBroadcast {
-  classroomHash: ClassroomHash;
-  play: boolean;
-  videoId: string | null | undefined;
-  timeInYouTube: number | undefined;
+  // play status Broadcast
+  export interface ChangePlayStatusBroadcast {
+    hash: ClassroomHash;
+    play: boolean;
+    videoId: string | null;
+    time: number | null;
+  }
 }
