@@ -178,74 +178,53 @@ interface Props {
 const Classroom: React.FC<Props> = ({ hash }) => {
   const [classroom, setClassroom] = useRecoilState(classroomsState.byHash(hash));
   const setMainClassroomHash = useSetRecoilState(mainClassroomHashState.atom);
-  const mainClassroom = useMainClassroom();
-  const me = useRecoilValue(meState.atom);
+  const meInfo = useRecoilValue(meState.info);
   const myId = useRecoilValue(meState.id);
-
-  const [amplitude, setAmplitude] = React.useState(0);
-  const [frequency, setFrequency] = React.useState(200);
   const screenType = useScreenType();
 
-  const isInstructor = !!mainClassroom && mainClassroom.instructorId === myId;
+  const isInstructor = !!classroom && classroom.instructorId === myId;
 
   React.useEffect(() => {
-    if (me.loaded && me.info && classroom) {
+    if (meInfo && classroom) {
       setMainClassroomHash(hash);
     }
-  }, [me, classroom, hash]);
+  }, [meInfo, classroom, hash]);
 
   return (
-    <>
-      {me.loaded && !!me.info && mainClassroom && (
-        <>
-          {/* TODO: footer로 가져가 주세요 */}
-          <VoiceChat
-            userId={me.info.stringId}
-            mainClassroom={mainClassroom}
-            className="absolute z-layout-3 right-4"
-            style={{
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
-            }}
-            onVoice={(amp, freq) => {
-              setAmplitude(clamp(0, amp, 200));
-              setFrequency(clamp(100, freq, 500));
+    meInfo && classroom ? (
+      <>
+        <div
+          style={conditionalStyle({
+            mobilePortrait: {
+              position: 'absolute',
+              top: 'calc(env(safe-area-inset-top, 0px) + 64px + 56.25vw)',
+            },
+          })(screenType)}
+          className={conditionalClassName({
+            mobilePortrait: 'absolute w-full p-4 flex justify-end',
+          })(screenType)}
+        >
+          <Button
+            type="primary"
+            width="fit-content"
+            height={36}
+            text="Set Video"
+            onClick={() => {
+              if (!classroom) return;
+              setClassroom((c) => ({
+                ...c,
+                video: {
+                  type: 'single',
+                  videoId: 'lIKmm-G7YVQ',
+                },
+              }));
             }}
           />
-          <WaveVisualizer amplitude={amplitude} frequency={frequency} />
 
-          <div
-            style={conditionalStyle({
-              mobilePortrait: {
-                position: 'absolute',
-                top: 'calc(env(safe-area-inset-top, 0px) + 64px + 56.25vw)',
-              },
-            })(screenType)}
-            className={conditionalClassName({
-              mobilePortrait: 'absolute w-full p-4 flex justify-end',
-            })(screenType)}
-          >
-            <Button
-              type="primary"
-              width="fit-content"
-              height={36}
-              text="Set Video"
-              onClick={() => {
-                if (!classroom) return;
-                setClassroom((c) => ({
-                  ...c,
-                  video: {
-                    type: 'single',
-                    videoId: 'lIKmm-G7YVQ',
-                  },
-                }));
-              }}
-            />
-
-          </div>
-          <ClassroomChat isInstructor={isInstructor} dark={false} visible hash={hash} />
-        </>
-      )}
-    </>
+        </div>
+        <ClassroomChat isInstructor={isInstructor} dark={false} visible hash={hash} />
+      </>
+    ) : null
   );
 };
 

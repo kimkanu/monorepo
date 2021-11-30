@@ -84,7 +84,6 @@ export default function generateRoute(server: Server): Route {
       }
 
       await ssoAccount.remove();
-      console.log('repo', await ssoAccountRepository.find());
       return {
         success: true,
         payload: {},
