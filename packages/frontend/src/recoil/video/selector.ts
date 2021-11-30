@@ -4,7 +4,7 @@ import { guardRecoilDefaultValue } from '..';
 
 import VideoAtom from './atom';
 
-type playStatus = 'playing' | 'paused' | 'buffering';
+type playStatus = 'playing' | 'paused';
 export const statusSelector = selector<playStatus>({
   key: 'statusSelector',
   get: ({ get }) => {
@@ -17,7 +17,7 @@ export const statusSelector = selector<playStatus>({
   },
 });
 
-export const volumeSelector = selector<number>({
+export const volumeSelector = selector<number | null>({
   key: 'volumeSelector',
   get: ({ get }) => {
     const video = get(VideoAtom);
@@ -38,5 +38,17 @@ export const timeSelector = selector<number>({
   set: ({ set }, timeInYouTube) => {
     if (guardRecoilDefaultValue(timeInYouTube)) return;
     set(VideoAtom, (video) => ({ ...video, timeInYouTube }));
+  },
+});
+
+export const durationSelector = selector<number>({
+  key: 'durationSelector',
+  get: ({ get }) => {
+    const video = get(VideoAtom);
+    return video.duration;
+  },
+  set: ({ set }, duration) => {
+    if (guardRecoilDefaultValue(duration)) return;
+    set(VideoAtom, (video) => ({ ...video, duration }));
   },
 });

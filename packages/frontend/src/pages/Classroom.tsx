@@ -7,6 +7,7 @@ import Button from '../components/buttons/Button';
 import FeedChatBox from '../components/chat/FeedChatBox';
 import MyChatBox from '../components/chat/MyChatBox';
 import OthersChatBox from '../components/chat/OthersChatBox';
+import TextInput from '../components/input/TextInput';
 import VoiceChat from '../components/voice/VoiceChat';
 import WaveVisualizer from '../components/voice/WaveVisualizer';
 import useMainClassroom from '../hooks/useMainClassroom';
@@ -184,6 +185,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
 
   const [amplitude, setAmplitude] = React.useState(0);
   const [frequency, setFrequency] = React.useState(200);
+  const [videoId, setVideoId] = React.useState('');
   const screenType = useScreenType();
 
   const isInstructor = !!mainClassroom && mainClassroom.instructorId === myId;
@@ -224,23 +226,36 @@ const Classroom: React.FC<Props> = ({ hash }) => {
               mobilePortrait: 'absolute w-full p-4 flex justify-end',
             })(screenType)}
           >
-            <Button
-              type="primary"
-              width="fit-content"
-              height={36}
-              text="Set Video"
-              onClick={() => {
-                if (!classroom) return;
-                setClassroom((c) => ({
-                  ...c,
-                  video: {
-                    type: 'single',
-                    videoId: 'lIKmm-G7YVQ',
-                  },
-                }));
-              }}
+            <TextInput
+              value={videoId}
+              font="sans"
+              align="left"
+              onInput={(newText) => { setVideoId(newText); }}
+              placeholderText="YouTube Video ID"
+              className="absolute right-0"
+              style={{ width: '40%', height: '36px' }}
+              button={(
+                <div className="absolute h-12 right-0" style={{ width: 136 }}>
+                  <Button
+                    type="primary"
+                    width="full"
+                    height={36}
+                    text="Set Video"
+                    className="absolute right-0 z-5 w-2/5 font-sans"
+                    onClick={() => {
+                      if (!classroom) return;
+                      setClassroom((c) => ({
+                        ...c,
+                        video: {
+                          type: 'single',
+                          videoId,
+                        },
+                      }));
+                    }}
+                  />
+                </div>
+              )}
             />
-
           </div>
           <ClassroomChat isInstructor={isInstructor} dark={false} visible hash={hash} />
         </>

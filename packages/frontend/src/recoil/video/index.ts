@@ -1,7 +1,9 @@
 import atom from './atom';
-import { statusSelector, volumeSelector, timeSelector } from './selector';
+import {
+  statusSelector, volumeSelector, timeSelector, durationSelector,
+} from './selector';
 
-const dialogState = {
-  atom, statusSelector, volumeSelector, timeSelector,
+const videoState = {
+  atom, statusSelector, volumeSelector, timeSelector, durationSelector,
 };
-export default dialogState;
+export default videoState;
