@@ -11,7 +11,8 @@ import {
   UsersOtherResponseType,
 } from './other';
 
-export type Provider = 'naver' | 'github';
+export const providers = ['naver' as 'naver', 'github' as 'github'];
+export type Provider = typeof providers extends (infer T)[] ? T : never;
 
 export interface SSOAccountJSON {
   provider: Provider;

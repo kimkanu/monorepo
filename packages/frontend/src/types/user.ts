@@ -7,3 +7,9 @@ export interface MeInfo {
   initialized: boolean;
   ssoAccounts: SSOAccountJSON[];
 }
+
+export interface ClassroomMember {
+  userId: string;
+  displayName: string;
+  profileImage: string;
+}

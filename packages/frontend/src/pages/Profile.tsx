@@ -1,34 +1,33 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import ContentPadding from '../components/layout/ContentPadding';
 import ProfileSettingContent from '../components/profile/ProfileSettingContent';
-import useRedirect from '../hooks/useRedirect';
 
 import meState from '../recoil/me';
 import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
+import appHistory from '../utils/history';
 
 const Profile: React.FC = () => {
-  const [me, setMe] = useRecoilState(meState.atom);
+  const [meInfo, setMeInfo] = useRecoilState(meState.info);
   const addToast = useSetRecoilState(toastState.new);
-
-  useRedirect(me.loaded && !me.info);
+  const history = useHistory();
 
   const [profileImage, setProfileImage] = React.useState('');
   const [isProfileImageChanging, setProfileImageChanging] = React.useState(false);
 
   React.useEffect(() => {
-    if (me.loaded && !!me.info) {
-      setProfileImage(me.info.profileImage);
+    if (meInfo) {
+      setProfileImage(meInfo.profileImage!);
     }
-  }, [me]);
+  }, [meInfo]);
 
   return (
     <ContentPadding isFooterPresent>
       <ProfileSettingContent
-        initialDisplayName={(me.loaded ? me.info?.displayName : null) ?? ''}
-        onDisplayNameChange={() => {}}
+        initialDisplayName={meInfo?.displayName ?? ''}
         profileImage={profileImage}
         onProfileImageEdit={(file) => {
           setProfileImageChanging(true);
@@ -41,14 +40,8 @@ const Profile: React.FC = () => {
           ).then((response) => {
             setProfileImageChanging(false);
             if (response.success) {
-              if (me.loaded && me.info) {
-                setMe({
-                  loaded: true,
-                  info: {
-                    ...me.info,
-                    ...response.payload,
-                  },
-                });
+              if (meInfo) {
+                setMeInfo(response.payload);
                 addToast({
                   sentAt: new Date(),
                   type: 'info',
@@ -65,8 +58,21 @@ const Profile: React.FC = () => {
           });
         }}
         isProfileImageChanging={isProfileImageChanging}
-        ssoAccounts={!me.loaded ? [] : me.info?.ssoAccounts ?? []}
-        onSSOAccountsRemove={() => {}}
+        ssoAccounts={meInfo?.ssoAccounts ?? []}
+        onSSOAccountsRemove={async ({ provider }) => {
+          const response = await fetchAPI(
+            'DELETE /users/me/sso-accounts/:provider',
+            { provider },
+          );
+          if (response.success) {
+            setMeInfo({
+              ssoAccounts: meInfo?.ssoAccounts?.filter(({ provider: p }) => p !== provider) ?? [],
+            });
+          }
+        }}
+        onSSOAccountsAdd={() => {
+          appHistory.push('/profile/connect', history);
+        }}
       />
     </ContentPadding>
   );

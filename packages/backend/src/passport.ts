@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import GitHubStrategy from 'passport-github';
-
+import { Strategy as NaverStrategy, Profile as NaverProfile } from 'passport-naver-v2';
 import PassportOauth2 from 'passport-oauth2';
 import { Connection } from 'typeorm';
+import uuid from 'uuid';
 
 import SSOAccountEntity from './entity/sso-account';
 import UserEntity from './entity/user';
 
-import { Strategy as NaverStrategy, Profile as NaverProfile } from 'passport-naver-v2';
+import server from '.';
 
 export default (connection: Connection) => {
   const userRepository = connection.getRepository(UserEntity);
@@ -63,16 +64,54 @@ export default (connection: Connection) => {
 
       let user: UserEntity;
       if (ssoAccount) {
-        user = ssoAccount.user;
+        if (!req.user || req.user.id === ssoAccount.user.id) {
+          user = ssoAccount.user;
+        } else {
+          // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
+          const toast = {
+            type: 'error',
+            message: '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.',
+          };
+          req.session.toast = JSON.stringify([
+            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+            toast,
+          ]);
+          user = req.user as UserEntity;
+        }
       } else {
         if (!req.user) {
           user = new UserEntity();
-          user.stringId = `${profile.provider}:${providerId}`;
           user.displayName = profile.name ?? profile.nickname!;
           user.profileImage = profile.profileImage ?? null!;
           user.initialized = false;
-          await user.save();
+          try {
+            user.stringId = `${profile.provider}:${providerId}`;
+            await user.save();
+          } catch (e) {
+            user.stringId = uuid.v4();
+            await user.save();
+          }
+          await server.managers.user.refreshUserInfo(user.stringId);
         } else {
+          // check for other sso account with same provider
+          const otherSSOAccountCount = await ssoAccountRepository
+            .createQueryBuilder('ssoAccount')
+            .innerJoinAndSelect('ssoAccount.user', 'user')
+            .where('user.id = :me', { me: req.user.id })
+            .getCount();
+
+          if (otherSSOAccountCount > 0) {
+            const toast = {
+              type: 'error',
+              message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
+            };
+            req.session.toast = JSON.stringify([
+              ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+              toast,
+            ]);
+            return done(null, req.user);
+          }
+
           user = req.user as UserEntity;
         }
 
@@ -81,6 +120,7 @@ export default (connection: Connection) => {
         newSSOAccount.providerId = providerId;
         newSSOAccount.user = user;
         await newSSOAccount.save();
+        await server.managers.user.refreshUserInfo(user.stringId);
       }
       return done(null, user);
     } catch (error: any) {
@@ -97,9 +137,7 @@ export default (connection: Connection) => {
     passReqToCallback: true,
   },
   async (req, accessToken, refreshToken, profile, done) => {
-    console.log('req.user', req.user);
-
-    const providerId = profile.id;
+    const providerId = profile.username ?? profile.id;
 
     try {
       const ssoAccount = await ssoAccountRepository.findOne({
@@ -115,7 +153,20 @@ export default (connection: Connection) => {
       let user: UserEntity;
       const placeholderProfileImage = 'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
       if (ssoAccount) {
-        user = ssoAccount.user;
+        if (!req.user || req.user.id === ssoAccount.user.id) {
+          user = ssoAccount.user;
+        } else {
+          // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
+          const toast = {
+            type: 'error',
+            message: '이미 다른 계정에 연결되어 있는 소셜 계정과 연결할 수 없습니다. 소셜 계정과 연결된 계정을 탈퇴한 후 다시 시도해 주세요.',
+          };
+          req.session.toast = JSON.stringify([
+            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+            toast,
+          ]);
+          user = req.user as UserEntity;
+        }
       } else {
         if (!req.user) {
           user = new UserEntity();
@@ -124,7 +175,27 @@ export default (connection: Connection) => {
           user.profileImage = profile.photos?.[0]?.value ?? placeholderProfileImage;
           user.initialized = false;
           await user.save();
+          await server.managers.user.refreshUserInfo(user.stringId);
         } else {
+          // check for other sso account with same provider
+          const otherSSOAccountCount = await ssoAccountRepository
+            .createQueryBuilder('ssoAccount')
+            .innerJoinAndSelect('ssoAccount.user', 'user')
+            .where('user.id = :me', { me: req.user.id })
+            .getCount();
+
+          if (otherSSOAccountCount > 0) {
+            const toast = {
+              type: 'error',
+              message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
+            };
+            req.session.toast = JSON.stringify([
+              ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+              toast,
+            ]);
+            return done(null, req.user);
+          }
+
           user = req.user as UserEntity;
         }
 
@@ -133,6 +204,7 @@ export default (connection: Connection) => {
         newSSOAccount.providerId = providerId;
         newSSOAccount.user = user;
         await newSSOAccount.save();
+        await server.managers.user.refreshUserInfo(user.stringId);
       }
       return done(null, user);
     } catch (error: any) {

@@ -7,6 +7,7 @@ import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
 import classroomsState from '../recoil/classrooms';
 import meState from '../recoil/me';
+import appHistory from '../utils/history';
 
 const Main = React.forwardRef<HTMLDivElement>((props, ref) => {
   const classrooms = useRecoilValue(classroomsState.atom);
@@ -21,8 +22,8 @@ const Main = React.forwardRef<HTMLDivElement>((props, ref) => {
           <ClassList
             userId={me.info.stringId}
             classrooms={classrooms}
-            onClickClassroom={(classroom) => history.push(`/classrooms/${classroom.hash}`)}
-            onJoinOrCreate={() => history.push('/classrooms/new')}
+            onClickClassroom={(classroom) => appHistory.push(`/classrooms/${classroom.hash}`, history)}
+            onJoinOrCreate={() => appHistory.push('/classrooms/new', history)}
           />
           <div className="transition-all duration-300" style={{ height: classrooms[0]?.video ? 152 : 64 }} />
         </>

@@ -1,14 +1,11 @@
 /* eslint-disable class-methods-use-this */
 import { ClassroomHash, ClassroomJSON } from '@team-10/lib';
 import { getConnection } from 'typeorm';
-import { v4 as generateUUID } from 'uuid';
 
 import ClassroomEntity from '../entity/classroom';
-import HistoryEntity, { VoiceHistoryEntity } from '../entity/history';
-import UserEntity from '../entity/user';
 
 import Server from '../server';
-import Classroom, { ClassroomInfo } from '../types/classroom';
+import Classroom from '../types/classroom';
 import { generateClassroomHash } from '../utils/classroom';
 
 export default class ClassroomManager {
@@ -16,20 +13,30 @@ export default class ClassroomManager {
 
   constructor(public server: Server) {}
 
-  getRaw(classroomHash: ClassroomHash): Classroom | null {
-    return this.classrooms.get(classroomHash) ?? null;
+  getWithoutLoad(hash: ClassroomHash): Classroom | null {
+    return this.classrooms.get(hash) ?? null;
   }
 
-  async isPresent(classroomHash: ClassroomHash): Promise<boolean> {
-    if (this.classrooms.has(classroomHash)) return true;
-    return this.load(classroomHash);
+  async get(hash: ClassroomHash): Promise<Classroom | null> {
+    if (this.classrooms.has(hash)) {
+      return this.classrooms.get(hash)!;
+    }
+    await this.load(hash);
+    return this.classrooms.get(hash) ?? null;
   }
 
-  async load(classroomHash: ClassroomHash): Promise<boolean> {
+  async isPresent(hash: ClassroomHash): Promise<boolean> {
+    if (this.classrooms.has(hash)) return true;
+    return this.load(hash);
+  }
+
+  async load(hash: ClassroomHash): Promise<boolean> {
+    if (this.classrooms.has(hash)) return true;
+
     const connection = getConnection();
     const classroomRepository = connection.getRepository(ClassroomEntity);
     const classroomEntity = await classroomRepository.findOne({
-      where: { hash: classroomHash },
+      where: { hash },
       join: {
         alias: 'classroom',
         leftJoinAndSelect: {
@@ -40,17 +47,9 @@ export default class ClassroomManager {
     });
     if (!classroomEntity) return false;
 
-    const classroomInfo: ClassroomInfo = {
-      hash: classroomHash,
-      name: classroomEntity.name,
-      instructorId: classroomEntity.instructor.stringId,
-      memberIds: new Set(classroomEntity.members.map((member) => member.stringId)),
-      passcode: classroomEntity.passcode,
-      updatedAt: classroomEntity.updatedAt,
-    };
-    const roomId = generateUUID();
-    const classroom = new Classroom(this.server, classroomEntity, classroomInfo, roomId);
-    this.classrooms.set(classroomHash, classroom);
+    const classroom = new Classroom(this.server, classroomEntity);
+    await classroom.initialize();
+    this.classrooms.set(hash, classroom);
 
     return true;
   }
@@ -79,121 +78,137 @@ export default class ClassroomManager {
       }
     }
 
-    const roomId = generateUUID();
-    const classroom = new Classroom(
-      this.server,
-      entity,
-      {
-        hash: entity.hash,
-        name: entity.name,
-        instructorId: userId,
-        memberIds: new Set([userId]),
-        passcode: entity.passcode,
-        updatedAt: entity.updatedAt,
-      }, roomId,
-    );
-
-    entity.passcode = classroom.regeneratePasscode();
-    await entity.save();
+    const classroom = new Classroom(this.server, entity);
+    await classroom.initialize();
 
     return classroom;
   }
 
-  // remove
+  async remove(hash: ClassroomHash) {
+    const classroom = this.classrooms.get(hash);
+    if (!classroom) return;
 
-  async join(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      await this.load(classroomHash);
+    await classroom.entity.remove();
+    this.classrooms.delete(hash);
+  }
+
+  async join(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      await this.load(hash);
     }
-    const classroom = this.classrooms.get(classroomHash);
+
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    if (classroom.memberIds.has(userId)) return true;
+    if (classroom.hasMember(userId)) return true;
 
     const userEntity = await this.server.managers.user.getEntity(userId);
     if (!userEntity) return false;
 
-    const classroomRepository = getConnection().getRepository(ClassroomEntity);
-    const classroomEntity = await classroomRepository.findOneOrFail(
-      { where: { hash: classroomHash } },
-    );
-
-    await getConnection()
-      .createQueryBuilder()
-      .relation(UserEntity, 'classrooms')
-      .of(userEntity)
-      .add(classroomEntity.id);
-
-    await this.load(classroomHash);
-
+    await classroom.letMemberJoin(userEntity);
     return true;
   }
 
   // leave
-
-  async isUserMember(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
-    }
-    const classroom = this.classrooms.get(classroomHash);
-    return classroom?.memberIds.has(userId) ?? false;
-  }
-
-  async isUserInstructor(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
-    }
-    const classroom = this.classrooms.get(classroomHash);
-    return classroom?.instructorId === userId;
-  }
-
-  async connectMember(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
-    }
-    const classroom = this.classrooms.get(classroomHash);
+  async leave(userId: string, hash: ClassroomHash): Promise<boolean> {
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    classroom.connectedMemberIds.add(userId);
+    if (classroom.hasMember(userId)) return true;
+
+    const userEntity = await this.server.managers.user.getEntity(userId);
+    if (!userEntity) return false;
+
+    await classroom.letMemberLeave(userEntity);
     return true;
   }
 
-  disconnectMember(userId: string, classroomHash: ClassroomHash): boolean {
-    const classroom = this.classrooms.get(classroomHash);
-    if (!classroom) return false;
-    classroom.connectedMemberIds.delete(userId);
-    return true;
-  }
-
-  async startClassroom(classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
+  async isUserMember(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      if (await this.load(hash)) return false;
     }
-    const classroom = this.classrooms.get(classroomHash);
+    const classroom = this.classrooms.get(hash);
+    return classroom?.hasMember(userId) ?? false;
+  }
+
+  async isUserInstructor(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      await this.load(hash);
+    }
+    const classroom = this.classrooms.get(hash);
+    return classroom?.instructor.stringId === userId;
+  }
+
+  async connectMember(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      if (await this.load(hash)) return false;
+    }
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    classroom.start();
+    classroom.connectMember(userId);
     return true;
   }
 
-  endClassroom(classroomHash: ClassroomHash): boolean {
-    const classroom = this.classrooms.get(classroomHash);
+  async connectMemberToAll(userId: string): Promise<void> {
+    const user = await this.server.managers.user.getSerializableUserInfoFromStringIdAsync(userId);
+    if (!user) return;
+
+    user.classroomHashes.forEach((hash) => {
+      const classroom = this.classrooms.get(hash);
+      if (!classroom) return false;
+      classroom.connectMember(userId);
+    });
+  }
+
+  disconnectMember(userId: string, hash: ClassroomHash): boolean {
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    classroom.end();
+    classroom.disconnectMember(userId);
+    return true;
+  }
+
+  async disconnectMemberFromAll(userId: string): Promise<void> {
+    const user = await this.server.managers.user.getSerializableUserInfoFromStringIdAsync(userId);
+    if (!user) return;
+
+    user.classroomHashes.forEach((hash) => {
+      const classroom = this.classrooms.get(hash);
+      if (!classroom) return false;
+      classroom.disconnectMember(userId);
+    });
+  }
+
+  async startClassroom(hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      if (await this.load(hash)) return false;
+    }
+    const classroom = this.classrooms.get(hash);
+    if (!classroom) return false;
+    await classroom.start();
+    return true;
+  }
+
+  async endClassroom(hash: ClassroomHash): Promise<boolean> {
+    const classroom = this.classrooms.get(hash);
+    if (!classroom) return false;
+    await classroom.end();
     return true;
   }
 
   async getClassroomJSON(
-    classroomHash: ClassroomHash,
+    hash: ClassroomHash,
   ): Promise<ClassroomJSON | null> {
-    if (!this.classrooms.has(classroomHash)) {
-      await this.load(classroomHash);
+    if (!this.classrooms.has(hash)) {
+      await this.load(hash);
     }
-    const classroom = this.classrooms.get(classroomHash);
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return null;
 
+    console.log(classroom);
+
     return {
-      hash: classroomHash,
+      hash,
       name: classroom.name,
-      instructorId: classroom.instructorId,
-      memberIds: Array.from(classroom.memberIds),
+      instructorId: classroom.instructor.stringId,
+      memberIds: Array.from(classroom.members.map(({ stringId }) => stringId)),
       video: classroom.video,
       isLive: classroom.isLive,
       passcode: classroom.passcode,
@@ -202,28 +217,14 @@ export default class ClassroomManager {
   }
 
   async recordVoiceHistory(
-    classroomHash: ClassroomHash,
+    hash: ClassroomHash,
     speakerId: string,
     startedAt: Date,
     endedAt: Date,
   ): Promise<boolean> {
-    const userEntity = await this.server.managers.user.getEntity(speakerId);
-    if (!userEntity) return false;
+    const classroom = await this.get(hash);
+    if (!classroom) return false;
 
-    const voiceHistoryEntity = new VoiceHistoryEntity();
-    let classroomEntity = this.classrooms.get(classroomHash)?.entity;
-    if (!classroomEntity) {
-      await this.load(classroomHash);
-      classroomEntity = this.classrooms.get(classroomHash)?.entity;
-    }
-    if (!classroomEntity) return false;
-
-    voiceHistoryEntity.classroom = classroomEntity;
-    voiceHistoryEntity.speaker = userEntity;
-    voiceHistoryEntity.startedAt = startedAt;
-    voiceHistoryEntity.endedAt = endedAt;
-    await voiceHistoryEntity.save();
-
-    return true;
+    return classroom.recordVoiceHistory(speakerId, startedAt, endedAt);
   }
 }
