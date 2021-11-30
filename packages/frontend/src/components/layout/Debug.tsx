@@ -4,6 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilSnapshot, useSetRecoilState } from 'recoil';
 
+import useMainClassroom from '../../hooks/useMainClassroom';
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
 import loadingState from '../../recoil/loading';
@@ -29,6 +30,8 @@ const Debug: React.FC = () => {
   const screenType = useScreenType();
   const setLoading = useSetRecoilState(loadingState.atom);
 
+  const mainClassroom = useMainClassroom();
+
   const { connected } = useSocket('/');
 
   return (
@@ -51,11 +54,9 @@ const Debug: React.FC = () => {
         {ScreenType[screenType]}
       </span>
       <br />
-      <Link to="/">to main</Link>
-      <br />
-      <Link to="/welcome/done">to welcome done</Link>
-      <br />
       <button type="button" onClick={() => setLoading((l) => !l)}>toggle loading</button>
+      <br />
+      {mainClassroom?.name}
     </DebugWrapper>
   );
 };
