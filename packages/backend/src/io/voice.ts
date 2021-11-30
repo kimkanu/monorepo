@@ -22,7 +22,8 @@ const ioVoiceHandler = (
       }
 
       // 없는 수업일 때
-      if (!await server.managers.classroom.isPresent(hash)) {
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
         socket.emit('voice/StateChange', {
           success: false,
           reason: SocketVoice.PermissionDeniedReason.NOT_MEMBER,
@@ -32,8 +33,6 @@ const ioVoiceHandler = (
 
       // 유저가 교실에 들어있지 않을 때
       const userId: string = socket.request.user.stringId;
-      const classroom = server.managers.classroom.getRaw(hash)!;
-
       if (!classroom.hasMember(userId)) {
         socket.emit('voice/StateChange', {
           success: false,
@@ -43,7 +42,7 @@ const ioVoiceHandler = (
       }
 
       // 이미 유저가 말하고 있으면 말하기 요청 무시
-      if (speaking && classroom.state.voice.speaker === userId) {
+      if (speaking && classroom.voice.speaker === userId) {
         socket.emit('voice/StateChange', {
           success: true,
           speaking,
@@ -52,7 +51,7 @@ const ioVoiceHandler = (
       }
 
       // 자신이 아닌 누군가 말하고 있으면 요청 거절
-      if (!!classroom.state.voice.speaker && classroom.state.voice.speaker !== userId) {
+      if (!!classroom.voice.speaker && classroom.voice.speaker !== userId) {
         socket.emit('voice/StateChange', {
           success: false,
           reason: SocketVoice.PermissionDeniedReason.SOMEONE_IS_SPEAKING,
@@ -61,9 +60,9 @@ const ioVoiceHandler = (
       }
 
       // 아무도 말하고 있지 않으면 말하기 요청 수락
-      if ((classroom.state.voice.speaker === null) && speaking) {
-        classroom.state.voice.speaker = userId;
-        classroom.state.voice.startedAt = new Date();
+      if ((classroom.voice.speaker === null) && speaking) {
+        classroom.voice.speaker = userId;
+        classroom.voice.startedAt = new Date();
         socket.emit('voice/StateChange', {
           success: true,
           speaking: true,
@@ -80,23 +79,23 @@ const ioVoiceHandler = (
       }
 
       // 자신이 말하고 있을 때 말하기 중단 요청
-      if (!speaking && classroom.state.voice.speaker === userId) {
+      if (!speaking && classroom.voice.speaker === userId) {
         socket.emit('voice/StateChange', {
           success: true,
           speaking: false,
         });
 
-        if (classroom.state.voice.startedAt) {
+        if (classroom.voice.startedAt) {
           server.managers.classroom.recordVoiceHistory(
             hash,
             userId,
-            classroom.state.voice.startedAt!,
+            classroom.voice.startedAt!,
             new Date(),
           );
-          classroom.state.voice.startedAt = null;
+          classroom.voice.startedAt = null;
         }
         await new Promise((r) => setTimeout(r, 1000));
-        classroom.state.voice.speaker = null;
+        classroom.voice.speaker = null;
         classroom.broadcast('voice/StateChangeBroadcast', {
           speaking: false,
           hash,
@@ -118,7 +117,8 @@ const ioVoiceHandler = (
       }
 
       // 없는 수업일 때
-      if (!await server.managers.classroom.isPresent(hash)) {
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
         socket.emit('voice/StreamSend', {
           success: false,
           reason: SocketVoice.PermissionDeniedReason.NOT_MEMBER,
@@ -126,12 +126,9 @@ const ioVoiceHandler = (
         return;
       }
 
-      // 유저가 교실에 들어있지 않을 때
-      const userId: string = socket.request.user.stringId;
-      const classroom = server.managers.classroom.getRaw(hash)!;
-
       // 유저가 speaker가 아닐 때
-      if (classroom.state.voice.speaker !== userId) {
+      const userId: string = socket.request.user.stringId;
+      if (classroom.voice.speaker !== userId) {
         socket.emit('voice/StreamSend', {
           success: false,
           reason: SocketVoice.StreamSendDeniedReason.NOT_SPEAKER,
