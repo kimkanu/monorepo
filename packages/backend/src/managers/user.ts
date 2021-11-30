@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { Provider, SSOAccountJSON, UserInfoJSON } from '@team-10/lib';
 import { Socket } from 'socket.io';
-import { getConnection, Repository } from 'typeorm';
+import { getConnection } from 'typeorm';
 
 import UserEntity from '../entity/user';
 
@@ -24,13 +24,13 @@ interface SerializableUserInfo {
 }
 
 export default class UserManager {
-  private users: Map<string, UserEntry> = new Map();
+  public readonly users: Map<string, UserEntry> = new Map();
 
   constructor(public server: Server) {}
 
   // userId는 중복 가능
   async add(userId: string, socket: Socket): Promise<boolean> {
-    const info = await this.getSerializableUserInfoFromStringId(userId);
+    const info = await this.getSerializableUserInfoFromStringIdAsync(userId);
     if (!info) return false;
 
     const entry = this.users.get(userId);
@@ -61,7 +61,7 @@ export default class UserManager {
     const entry = this.users.get(userId);
     if (!entry) return false;
 
-    const info = await this.getSerializableUserInfoFromStringId(userId);
+    const info = await this.getSerializableUserInfoFromStringIdAsync(userId);
     if (!info) return false;
 
     entry.info = info;
@@ -115,9 +115,29 @@ export default class UserManager {
     };
   }
 
-  async getSerializableUserInfoFromStringId(userId: string): Promise<SerializableUserInfo | null> {
+  async getSerializableUserInfoFromStringIdAsync(
+    userId: string,
+  ): Promise<SerializableUserInfo | null> {
     const userEntity = await this.getEntity(userId);
 
     return userEntity ? this.getSerializableUserInfoFromEntity(userEntity) : null;
+  }
+
+  getSerializableUserInfoFromStringId(userId: string): SerializableUserInfo | null {
+    return this.users.get(userId)?.info ?? null;
+  }
+
+  makeSocketMain(userId: string, socketId: string) {
+    const userEntry = this.users.get(userId);
+    if (!userEntry) return;
+
+    const socketIndex = userEntry.sockets.findIndex((socket) => socket.id === socketId);
+    if (socketIndex < 0) return;
+
+    userEntry.sockets = [
+      userEntry.sockets[0],
+      ...userEntry.sockets.slice(0, socketIndex),
+      ...userEntry.sockets.slice(socketIndex + 1),
+    ];
   }
 }

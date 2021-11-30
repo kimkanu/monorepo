@@ -1,10 +1,12 @@
 /* istanbul ignore file */
 
 import React from 'react';
-import { useRecoilSnapshot } from 'recoil';
+import { Link } from 'react-router-dom';
+import { useRecoilSnapshot, useSetRecoilState } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
+import loadingState from '../../recoil/loading';
 import ScreenType from '../../types/screen';
 import { conditionalClassName } from '../../utils/style';
 
@@ -25,6 +27,7 @@ const DebugObserver: React.FC = () => {
 
 const Debug: React.FC = () => {
   const screenType = useScreenType();
+  const setLoading = useSetRecoilState(loadingState.atom);
 
   const { connected } = useSocket('/');
 
@@ -47,6 +50,12 @@ const Debug: React.FC = () => {
         {' '}
         {ScreenType[screenType]}
       </span>
+      <br />
+      <Link to="/">to main</Link>
+      <br />
+      <Link to="/welcome/done">to welcome done</Link>
+      <br />
+      <button type="button" onClick={() => setLoading((l) => !l)}>toggle loading</button>
     </DebugWrapper>
   );
 };

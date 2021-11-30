@@ -39,8 +39,11 @@ services:
       AUTH_NAVER_CALLBACK_URL: "${AUTH_NAVER_CALLBACK_HOST}:${FRONTEND_PORT}/api/auth/naver/callback"
       AUTH_NAVER_CLIENT_ID: ${AUTH_NAVER_CLIENT_ID}
       AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
+      AUTH_GITHUB_CALLBACK_URL: "${AUTH_GITHUB_CALLBACK_HOST}:${FRONTEND_PORT}/api/auth/github/callback"
+      AUTH_GITHUB_CLIENT_ID: ${AUTH_GITHUB_CLIENT_ID}
+      AUTH_GITHUB_CLIENT_SECRET: ${AUTH_GITHUB_CLIENT_SECRET}
       IMGUR_CLIENT_ID: ${IMGUR_CLIENT_ID}
-    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
+    command: bash -c 'yarn set version 3.1.0 && yarn install && yarn plugin import workspace-tools && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
     volumes:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/
@@ -68,8 +71,11 @@ services:
       AUTH_NAVER_CALLBACK_URL: "${AUTH_NAVER_CALLBACK_HOST}:${FRONTEND_PORT}/api/auth/naver/callback"
       AUTH_NAVER_CLIENT_ID: ${AUTH_NAVER_CLIENT_ID}
       AUTH_NAVER_CLIENT_SECRET: ${AUTH_NAVER_CLIENT_SECRET}
+      AUTH_GITHUB_CALLBACK_URL: "${AUTH_GITHUB_CALLBACK_HOST}:${FRONTEND_PORT}/api/auth/github/callback"
+      AUTH_GITHUB_CLIENT_ID: ${AUTH_GITHUB_CLIENT_ID}
+      AUTH_GITHUB_CLIENT_SECRET: ${AUTH_GITHUB_CLIENT_SECRET}
       IMGUR_CLIENT_ID: ${IMGUR_CLIENT_ID}
-    command: bash -c 'yarn set version berry && yarn install && yarn plugin import workspace-tools && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
+    command: bash -c 'yarn set version ./.yarn/releases/yarn-3.1.0.cjs && yarn install && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
     volumes:
       - ./packages/lib/:/app/packages/lib/
       - ./packages/frontend/:/app/packages/frontend/

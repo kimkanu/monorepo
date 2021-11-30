@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import { ClassroomHash, ClassroomJSON } from '@team-10/lib';
 import { getConnection } from 'typeorm';
-import { v4 as generateUUID } from 'uuid';
 
 import ClassroomEntity from '../entity/classroom';
+import { VoiceHistoryEntity } from '../entity/history';
 import UserEntity from '../entity/user';
 
 import Server from '../server';
@@ -15,20 +15,20 @@ export default class ClassroomManager {
 
   constructor(public server: Server) {}
 
-  getRaw(classroomHash: ClassroomHash): Classroom | null {
-    return this.classrooms.get(classroomHash) ?? null;
+  getRaw(hash: ClassroomHash): Classroom | null {
+    return this.classrooms.get(hash) ?? null;
   }
 
-  async isPresent(classroomHash: ClassroomHash): Promise<boolean> {
-    if (this.classrooms.has(classroomHash)) return true;
-    return this.load(classroomHash);
+  async isPresent(hash: ClassroomHash): Promise<boolean> {
+    if (this.classrooms.has(hash)) return true;
+    return this.load(hash);
   }
 
-  async load(classroomHash: ClassroomHash): Promise<boolean> {
+  async load(hash: ClassroomHash): Promise<boolean> {
     const connection = getConnection();
     const classroomRepository = connection.getRepository(ClassroomEntity);
     const classroomEntity = await classroomRepository.findOne({
-      where: { hash: classroomHash },
+      where: { hash },
       join: {
         alias: 'classroom',
         leftJoinAndSelect: {
@@ -39,25 +39,28 @@ export default class ClassroomManager {
     });
     if (!classroomEntity) return false;
 
-    console.log(classroomEntity);
-
     const classroomInfo: ClassroomInfo = {
-      hash: classroomHash,
+      hash,
       name: classroomEntity.name,
       instructorId: classroomEntity.instructor.stringId,
       memberIds: new Set(classroomEntity.members.map((member) => member.stringId)),
       passcode: classroomEntity.passcode,
       updatedAt: classroomEntity.updatedAt,
     };
-    const roomId = generateUUID();
-    const classroom = new Classroom(classroomInfo, roomId);
-    this.classrooms.set(classroomHash, classroom);
+
+    // pass the internal states
+    const classroom = new Classroom(this.server, classroomEntity, classroomInfo);
+    const prevClassroom = this.classrooms.get(hash);
+    if (prevClassroom) {
+      classroom.state = prevClassroom.state;
+    }
+
+    this.classrooms.set(hash, classroom);
 
     return true;
   }
 
   async create(userId: string, name: string): Promise<Classroom> {
-    console.log('create with userid', userId);
     const instructor = await this.server.managers.user.getEntity(userId);
     if (!instructor) {
       throw new Error();
@@ -70,7 +73,7 @@ export default class ClassroomManager {
     entity.updatedAt = new Date();
     entity.passcode = '000000'; // Will be updated later
 
-    while (true) {
+    for (;;) {
       try {
         entity.hash = generateClassroomHash();
         // eslint-disable-next-line no-await-in-loop
@@ -81,146 +84,157 @@ export default class ClassroomManager {
       }
     }
 
-    const roomId = generateUUID();
-    const classroom = new Classroom({
-      hash: entity.hash,
-      name: entity.name,
-      instructorId: userId,
-      memberIds: new Set([userId]),
-      passcode: entity.passcode,
-      updatedAt: entity.updatedAt,
-    }, roomId);
+    const classroom = new Classroom(
+      this.server,
+      entity,
+      {
+        hash: entity.hash,
+        name: entity.name,
+        instructorId: userId,
+        memberIds: new Set([userId]),
+        passcode: entity.passcode,
+        updatedAt: entity.updatedAt,
+      },
+    );
 
-    console.log('entity before', entity);
-
-    entity.passcode = classroom.regeneratePasscode();
-    await entity.save();
-
-    console.log('entity after', entity);
-    console.log('instructor', entity.instructor);
+    await classroom.regeneratePasscode();
 
     return classroom;
   }
 
-  // remove
+  async remove(hash: ClassroomHash) {
+    const classroom = this.getRaw(hash);
+    if (!classroom) return;
 
-  async join(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      await this.load(classroomHash);
+    await classroom.entity.remove();
+    this.classrooms.delete(hash);
+  }
+
+  async join(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      await this.load(hash);
     }
-    const classroom = this.classrooms.get(classroomHash);
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
     if (classroom.memberIds.has(userId)) return true;
 
     const userEntity = await this.server.managers.user.getEntity(userId);
     if (!userEntity) return false;
 
-    const classroomRepository = getConnection().getRepository(ClassroomEntity);
-    const classroomEntity = await classroomRepository.findOneOrFail(
-      { where: { hash: classroomHash } },
-    );
-
     await getConnection()
       .createQueryBuilder()
       .relation(UserEntity, 'classrooms')
       .of(userEntity)
-      .add(classroomEntity.id);
+      .add(classroom.entity.id);
+
+    await this.load(hash);
 
     return true;
   }
 
   // leave
+  async leave(userId: string, hash: ClassroomHash): Promise<boolean> {
+    const classroom = this.classrooms.get(hash);
+    if (!classroom) return false;
 
-  async isUserMember(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
+    const userEntity = await this.server.managers.user.getEntity(userId);
+    if (!userEntity) return false;
+
+    await getConnection()
+      .createQueryBuilder()
+      .relation(UserEntity, 'classrooms')
+      .of(userEntity)
+      .remove(classroom.entity.id);
+
+    await this.load(hash);
+
+    return true;
+  }
+
+  async isUserMember(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      if (await this.load(hash)) return false;
     }
-    const classroom = this.classrooms.get(classroomHash);
+    const classroom = this.classrooms.get(hash);
     return classroom?.memberIds.has(userId) ?? false;
   }
 
-  async isUserInstructor(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
+  async isUserInstructor(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      if (await this.load(hash)) return false;
     }
-    const classroom = this.classrooms.get(classroomHash);
+    const classroom = this.classrooms.get(hash);
     return classroom?.instructorId === userId;
   }
 
-  async connectMember(userId: string, classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
+  async connectMember(userId: string, hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      if (await this.load(hash)) return false;
     }
-    const classroom = this.classrooms.get(classroomHash);
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    classroom.connectedMemberIds.add(userId);
+    classroom.connectMember(userId);
     return true;
   }
 
-  disconnectMember(userId: string, classroomHash: ClassroomHash): boolean {
-    const classroom = this.classrooms.get(classroomHash);
+  async connectMemberToAll(userId: string): Promise<void> {
+    const user = await this.server.managers.user.getSerializableUserInfoFromStringIdAsync(userId);
+    if (!user) return;
+
+    user.classroomHashes.forEach((hash) => {
+      const classroom = this.classrooms.get(hash);
+      if (!classroom) return false;
+      console.log(`connecting ${userId} to ${hash}`);
+      classroom.connectMember(userId);
+    });
+  }
+
+  disconnectMember(userId: string, hash: ClassroomHash): boolean {
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    classroom.connectedMemberIds.delete(userId);
+    classroom.disconnectMember(userId);
     return true;
   }
 
-  async startClassroom(classroomHash: ClassroomHash): Promise<boolean> {
-    if (!this.classrooms.has(classroomHash)) {
-      if (await this.load(classroomHash)) return false;
+  async disconnectMemberFromAll(userId: string): Promise<void> {
+    const user = await this.server.managers.user.getSerializableUserInfoFromStringIdAsync(userId);
+    if (!user) return;
+
+    user.classroomHashes.forEach((hash) => {
+      const classroom = this.classrooms.get(hash);
+      if (!classroom) return false;
+      classroom.disconnectMember(userId);
+    });
+  }
+
+  async startClassroom(hash: ClassroomHash): Promise<boolean> {
+    if (!this.classrooms.has(hash)) {
+      if (await this.load(hash)) return false;
     }
-    const classroom = this.classrooms.get(classroomHash);
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    classroom.start();
+    await classroom.start();
     return true;
   }
 
-  endClassroom(classroomHash: ClassroomHash): boolean {
-    const classroom = this.classrooms.get(classroomHash);
+  async endClassroom(hash: ClassroomHash): Promise<boolean> {
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
-    classroom.end();
+    await classroom.end();
     return true;
-  }
-
-  /**
-   * 수업 중인 classroom에 들어온 socket에게 보내는 메시지의 집합
-   * @param userId
-   */
-  emitWelcome(userId: string) {
-    // TODO
-  }
-
-  /**
-   * 접속한 유저의 모든 소켓에 broadcast하는 method
-   * @param eventName
-   * @param message
-   */
-  broadcast<T>(eventName: string, message: T) {
-    // TODO
-  }
-
-  /**
-   * 접속한 유저의 소켓 중 main 소켓에만 broadcast하는 method
-   * @param eventName
-   * @param message
-   */
-  broadcastMain<T>(eventName: string, message: T) {
-    // TODO
   }
 
   async getClassroomJSON(
-    userId: string, classroomHash: ClassroomHash,
+    hash: ClassroomHash,
   ): Promise<ClassroomJSON | null> {
-    console.log('getting classroom json');
-    if (!this.classrooms.has(classroomHash)) {
-      await this.load(classroomHash);
+    if (!this.classrooms.has(hash)) {
+      await this.load(hash);
     }
-    const classroom = this.classrooms.get(classroomHash);
-    console.log('classroom', classroom);
+    const classroom = this.classrooms.get(hash);
     if (!classroom) return null;
-    if (!classroom.hasMember(userId)) return null;
 
     return {
-      hash: classroomHash,
+      hash,
       name: classroom.name,
       instructorId: classroom.instructorId,
       memberIds: Array.from(classroom.memberIds),
@@ -229,5 +243,31 @@ export default class ClassroomManager {
       passcode: classroom.passcode,
       updatedAt: classroom.updatedAt.getTime(),
     };
+  }
+
+  async recordVoiceHistory(
+    hash: ClassroomHash,
+    speakerId: string,
+    startedAt: Date,
+    endedAt: Date,
+  ): Promise<boolean> {
+    const userEntity = await this.server.managers.user.getEntity(speakerId);
+    if (!userEntity) return false;
+
+    const voiceHistoryEntity = new VoiceHistoryEntity();
+    let classroomEntity = this.classrooms.get(hash)?.entity;
+    if (!classroomEntity) {
+      await this.load(hash);
+      classroomEntity = this.classrooms.get(hash)?.entity;
+    }
+    if (!classroomEntity) return false;
+
+    voiceHistoryEntity.classroom = classroomEntity;
+    voiceHistoryEntity.speaker = userEntity;
+    voiceHistoryEntity.startedAt = startedAt;
+    voiceHistoryEntity.endedAt = endedAt;
+    await voiceHistoryEntity.save();
+
+    return true;
   }
 }

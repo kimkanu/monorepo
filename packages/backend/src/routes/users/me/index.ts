@@ -30,7 +30,7 @@ export default function generateRoute(server: Server): Route {
           initialized: userEntity.initialized,
           classrooms: (await Promise.all(
             userEntity.classrooms.map(
-              (classroom) => managers.classroom.getClassroomJSON(user.stringId, classroom.hash),
+              (classroom) => managers.classroom.getClassroomJSON(classroom.hash),
             ),
           )).filter((x) => !!x) as ClassroomJSON[],
         },

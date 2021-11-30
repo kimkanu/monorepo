@@ -1,38 +1,29 @@
 /* istanbul ignore file */
 import { ClassroomJSON } from '@team-10/lib';
 import React from 'react';
-import {
-  useLocation,
-  useHistory,
-} from 'react-router-dom';
-import ScrollRestoration from 'react-scroll-restoration';
-import YouTube from 'react-youtube';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { YouTubePlayer } from 'youtube-player/dist/types';
+import { useLocation, useHistory } from 'react-router-dom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import useRedirect from '../../hooks/useRedirect';
 import useSocket from '../../hooks/useSocket';
 
 import classroomsState from '../../recoil/classrooms';
-import dialogState from '../../recoil/dialog';
-import dropdownState from '../../recoil/dropdown';
 import loadingState from '../../recoil/loading';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
 import { Theme } from '../../types/theme';
 
 import fetchAPI from '../../utils/fetch';
+import appHistory, { classroomPrefixRegex } from '../../utils/history';
 import { Styled } from '../../utils/style';
-import { getYouTubePlayerStateName } from '../../utils/youtube';
 
-import Dialog from '../alert/Dialog';
-import Dropdown from '../alert/Dropdown';
 import ToastDisplay from '../alert/ToastDisplay';
 import YTPlayer from '../youtube/YTPlayer';
+import YTSynchronizer from '../youtube/YTSynchronizer';
 import YTWrapper from '../youtube/YTWrapper';
 
 import Debug from './Debug';
 import DynamicManifest from './DynamicManifest';
+import HistoryListener from './HistoryListener';
 import Loading from './Loading';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
 
@@ -57,14 +48,13 @@ function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJ
 const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style }) => {
   const history = useHistory();
   const location = useLocation();
-  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
+  const inClassroom = classroomPrefixRegex.test(location.pathname);
 
   const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
-  const dropdown = useRecoilValue(dropdownState.atom);
-  const dialog = useRecoilValue(dialogState.atom);
   const toasts = useRecoilValue(toastState.atom);
+  const addToast = useSetRecoilState(toastState.new);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
-  const [me, setMe] = useRecoilState(meState.atom);
+  const setMe = useSetRecoilState(meState.atom);
 
   const { connected } = useSocket('/');
 
@@ -74,18 +64,20 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
     }
   }, [connected]);
 
-  const onYouTubeReady = (player: YouTubePlayer) => {
-    console.log('Player ready', player);
-    player.playVideo();
-  };
-  const onYouTubeStateChange = (state: number, player: YouTubePlayer) => {
-    console.log('State changed', getYouTubePlayerStateName(state));
-    if ([YouTube.PlayerState.UNSTARTED].includes(state)) {
-      player.playVideo();
-    }
-  };
-
-  useRedirect(me.loaded && !!me.info && !me.info.initialized, [me], '/welcome');
+  React.useEffect(() => {
+    fetchAPI('GET /toasts')
+      .then((response) => {
+        if (response.success) {
+          response.payload.forEach((toast, i) => {
+            addToast({
+              ...toast,
+              // `+ i * 1000` to ensure the key is unique & give user more time to read toasts
+              sentAt: new Date(Date.now() + i * 1000),
+            });
+          });
+        }
+      });
+  }, []);
 
   React.useEffect(() => {
     setLoading(true);
@@ -101,8 +93,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
           setMe({ loaded: true, info: null });
         }
       })
-      .catch((e) => {
-        console.log(e);
+      .catch(() => {
         setMe({ loaded: true, info: null });
       })
       .finally(() => {
@@ -112,11 +103,11 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
 
   return (
     <div className={className} style={style}>
+      {/* History Listener */}
+      <HistoryListener />
+
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
-
-      {/* TODO: 스크롤 위치 복구가 잘 안 되네요 */}
-      <ScrollRestoration />
 
       {/* 디버그용 컴포넌트 */}
       <Debug />
@@ -124,31 +115,27 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       {/* manifest.json */}
       <DynamicManifest theme={theme} />
 
-      <Dropdown visible={dropdown.visible} onClose={dropdown.onClose ?? (() => {})}>
-        {dropdown.element}
-      </Dropdown>
-
-      <Dialog visible={dialog.visible} onClose={dialog.onClose ?? (() => {})}>
-        {dialog.element}
-      </Dialog>
-
       <Loading loading={loading} />
 
-      <YTWrapper
-        isPresent={!!classrooms[0]?.video}
-        inClassroom={inClassroom}
-        onClick={() => {
-          if (classrooms[0]?.hash) {
-            history.push(`/classrooms/${classrooms[0]?.hash}`);
-          }
-        }}
-      >
-        <YTPlayer
-          videoId={classrooms[0]?.video?.videoId}
-          onReady={onYouTubeReady}
-          onStateChange={onYouTubeStateChange}
-        />
-      </YTWrapper>
+      <YTSynchronizer>
+        {(onReady, onStateChange) => (
+          <YTWrapper
+            isPresent={!!classrooms[0]?.video}
+            inClassroom={inClassroom}
+            onClick={() => {
+              if (classrooms[0]?.hash) {
+                appHistory.push(`/classrooms/${classrooms[0]?.hash}`, history);
+              }
+            }}
+          >
+            <YTPlayer
+              videoId={classrooms[0]?.video?.videoId}
+              onReady={onReady}
+              onStateChange={onStateChange}
+            />
+          </YTWrapper>
+        )}
+      </YTSynchronizer>
 
       <ToastDisplay toasts={toasts} />
     </div>

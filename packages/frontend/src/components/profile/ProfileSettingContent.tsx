@@ -2,8 +2,12 @@ import {
   PersonAccounts24Regular,
 } from '@fluentui/react-icons';
 import { SSOAccountJSON } from '@team-10/lib';
+import CancelablePromise from 'cancelable-promise';
 import React from 'react';
+import { useRecoilState } from 'recoil';
 
+import meState from '../../recoil/me';
+import fetchAPI from '../../utils/fetch';
 import NarrowPageWrapper from '../elements/NarrowPageWrapper';
 import Title from '../elements/Title';
 import TextInput from '../input/TextInput';
@@ -12,30 +16,37 @@ import ProfileImageEditor from './ProfileImageEditor';
 import SSOAccountList from './SSOAccountList';
 
 interface Props {
-  ref_: React.RefObject<HTMLDivElement>;
   initialDisplayName: string;
-  onDisplayNameChange: (displayName: string) => void;
   profileImage: string;
   isProfileImageChanging: boolean;
   onProfileImageEdit: (file: Blob) => void;
   ssoAccounts: SSOAccountJSON[];
   onSSOAccountsRemove: (ssoAccount: SSOAccountJSON) => void;
+  onSSOAccountsAdd: () => void;
 }
 
 const ProfileSettingContent: React.FC<Props> = ({
-  ref_,
   initialDisplayName,
   onProfileImageEdit,
   profileImage,
   isProfileImageChanging,
-  onDisplayNameChange,
   ssoAccounts,
   onSSOAccountsRemove,
+  onSSOAccountsAdd,
 }) => {
+  const [meInfo, setMeInfo] = useRecoilState(meState.info);
   const [displayName, setDisplayName] = React.useState(initialDisplayName);
+  const [isInitial, setInitial] = React.useState(true);
+
+  React.useEffect(() => {
+    if (!isInitial) return;
+    if (!initialDisplayName) return;
+    setInitial(false);
+    setDisplayName(initialDisplayName);
+  }, [initialDisplayName]);
 
   return (
-    <NarrowPageWrapper ref_={ref_}>
+    <NarrowPageWrapper>
       <section className="mb-16">
         <Title size="title">내 프로필</Title>
         <ProfileImageEditor
@@ -45,10 +56,9 @@ const ProfileSettingContent: React.FC<Props> = ({
         />
         <TextInput
           containerClassName="my-16"
-          value={displayName}
+          value={displayName ?? ''}
           onInput={(newDisplayName) => {
             setDisplayName(newDisplayName);
-            onDisplayNameChange(newDisplayName);
           }}
           icon={(
             <PersonAccounts24Regular
@@ -58,10 +68,54 @@ const ProfileSettingContent: React.FC<Props> = ({
           )}
           placeholderText="이름"
           align="center"
-          validator={(v) => !!v}
+          validator={(newDisplayName) => new CancelablePromise<boolean>((
+            resolve, reject, onCancel,
+          ) => {
+            if (!initialDisplayName) {
+              const timeout = setTimeout(() => {
+                resolve(true);
+              }, 1e+9);
+              onCancel(() => {
+                clearTimeout(timeout);
+              });
+              return;
+            }
+
+            if (!newDisplayName || !meInfo) {
+              resolve(false);
+              return;
+            }
+            if (newDisplayName === initialDisplayName) {
+              resolve(true);
+              return;
+            }
+
+            const timeout = setTimeout(() => {
+              fetchAPI('PATCH /users/me', {}, {
+                displayName: newDisplayName,
+              })
+                .then((response) => {
+                  if (response.success) {
+                    setMeInfo(response.payload);
+                    resolve(response.success);
+                  }
+                })
+                .catch(() => {
+                  resolve(false);
+                });
+            }, 1000);
+
+            onCancel(() => {
+              clearTimeout(timeout);
+            });
+          })}
         />
         <Title size="sect" className="mb-12 mt-4">연결된 소셜 계정</Title>
-        <SSOAccountList ssoAccounts={ssoAccounts} onRemove={onSSOAccountsRemove} />
+        <SSOAccountList
+          onAdd={onSSOAccountsAdd}
+          ssoAccounts={ssoAccounts}
+          onRemove={onSSOAccountsRemove}
+        />
       </section>
     </NarrowPageWrapper>
   );

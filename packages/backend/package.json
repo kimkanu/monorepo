@@ -6,7 +6,7 @@
   "author": "Team 10",
   "license": "MIT",
   "scripts": {
-    "development": "yarn install && nodemon",
+    "development": "nodemon",
     "production": "ts-node --files src/index.ts",
     "dev": "yarn development",
     "prod": "yarn production",
@@ -42,6 +42,7 @@
     "multer": "^1.4.3",
     "nodemon": "^2.0.14",
     "passport": "^0.5.0",
+    "passport-github": "^1.1.0",
     "passport-naver-v2": "^2.0.8",
     "passport-oauth2": "^1.6.1",
     "pg": "^8.7.1",
@@ -61,5 +62,8 @@
     "moduleNameMapper": {
       "@team-10/lib(.*)$": "<rootDir>/../lib/src/$1"
     }
+  },
+  "devDependencies": {
+    "@types/passport-github": "^1.1.6"
   }
 }

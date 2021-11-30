@@ -74,13 +74,8 @@ class AppHistory {
       '/login',
       '/welcome',
       '/welcome/done',
-      '/tests',
     ].includes(pathname) || classroomRegex.test(pathname)) {
       return ['/', pathname];
-    }
-
-    if (pathname.startsWith('/tests')) {
-      return ['/', '/tests', pathname];
     }
 
     return ['/', '/404'];
