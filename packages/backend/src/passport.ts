@@ -47,8 +47,6 @@ export default (connection: Connection) => {
     profile: NaverProfile,
     done: PassportOauth2.VerifyCallback,
   ) => {
-    console.log('req.user', req.user);
-
     const providerId = profile.email?.replace(/@.*$/, '') ?? profile.id;
 
     try {
