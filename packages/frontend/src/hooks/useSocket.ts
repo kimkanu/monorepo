@@ -16,6 +16,7 @@ const useSocket = <L, E>(namespace: string) => useSocketIO(
     ? undefined
     : {
       host: process.env.REACT_APP_PROXY_URL.replace(/https?:\/\//g, ''),
+      ...(window.location.protocol === 'https' ? {} : { transports: ['websocket'] }),
     },
 ) as UseSocketReturnType<L, E>;
 

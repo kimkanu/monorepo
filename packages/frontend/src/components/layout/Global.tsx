@@ -18,6 +18,7 @@ import { Styled } from '../../utils/style';
 
 import ToastDisplay from '../alert/ToastDisplay';
 import YTPlayer from '../youtube/YTPlayer';
+import YTSynchronizer from '../youtube/YTSynchronizer';
 import YTWrapper from '../youtube/YTWrapper';
 
 import Debug from './Debug';
@@ -116,17 +117,25 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
 
       <Loading loading={loading} />
 
-      <YTWrapper
-        isPresent={!!classrooms[0]?.video}
-        inClassroom={inClassroom}
-        onClick={() => {
-          if (classrooms[0]?.hash) {
-            appHistory.push(`/classrooms/${classrooms[0]?.hash}`, history);
-          }
-        }}
-      >
-        <YTPlayer videoId={classrooms[0]?.video?.videoId} />
-      </YTWrapper>
+      <YTSynchronizer>
+        {(onReady, onStateChange) => (
+          <YTWrapper
+            isPresent={!!classrooms[0]?.video}
+            inClassroom={inClassroom}
+            onClick={() => {
+              if (classrooms[0]?.hash) {
+                appHistory.push(`/classrooms/${classrooms[0]?.hash}`, history);
+              }
+            }}
+          >
+            <YTPlayer
+              videoId={classrooms[0]?.video?.videoId}
+              onReady={onReady}
+              onStateChange={onStateChange}
+            />
+          </YTWrapper>
+        )}
+      </YTSynchronizer>
 
       <ToastDisplay toasts={toasts} />
     </div>

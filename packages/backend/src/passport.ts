@@ -52,7 +52,7 @@ export default (connection: Connection) => {
 
     try {
       const ssoAccount = await ssoAccountRepository.findOne({
-        where: { provider: profile.provider },
+        where: { provider: profile.provider, providerId },
         join: {
           alias: 'ssoAccount',
           leftJoinAndSelect: {
@@ -63,17 +63,7 @@ export default (connection: Connection) => {
 
       let user: UserEntity;
       if (ssoAccount) {
-        if (ssoAccount.providerId !== providerId) {
-          const toast = {
-            type: 'error',
-            message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
-          };
-          req.session.toast = JSON.stringify([
-            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
-            toast,
-          ]);
-          user = req.user as UserEntity;
-        } else if (!req.user || req.user.id === ssoAccount.user.id) {
+        if (!req.user || req.user.id === ssoAccount.user.id) {
           user = ssoAccount.user;
         } else {
           // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
@@ -102,6 +92,25 @@ export default (connection: Connection) => {
           }
           await server.managers.user.refreshUserInfo(user.stringId);
         } else {
+          // check for other sso account with same provider
+          const otherSSOAccountCount = await ssoAccountRepository
+            .createQueryBuilder('ssoAccount')
+            .innerJoinAndSelect('ssoAccount.user', 'user')
+            .where('user.id = :me', { me: req.user.id })
+            .getCount();
+
+          if (otherSSOAccountCount > 0) {
+            const toast = {
+              type: 'error',
+              message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
+            };
+            req.session.toast = JSON.stringify([
+              ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+              toast,
+            ]);
+            return done(null, req.user);
+          }
+
           user = req.user as UserEntity;
         }
 
@@ -131,7 +140,7 @@ export default (connection: Connection) => {
 
     try {
       const ssoAccount = await ssoAccountRepository.findOne({
-        where: { provider: profile.provider },
+        where: { provider: profile.provider, providerId },
         join: {
           alias: 'ssoAccount',
           leftJoinAndSelect: {
@@ -143,17 +152,7 @@ export default (connection: Connection) => {
       let user: UserEntity;
       const placeholderProfileImage = 'https://ssl.pstatic.net/static/pwe/address/img_profile.png';
       if (ssoAccount) {
-        if (ssoAccount.providerId !== providerId) {
-          const toast = {
-            type: 'error',
-            message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
-          };
-          req.session.toast = JSON.stringify([
-            ...(req.session.toast ? JSON.parse(req.session.toast) : []),
-            toast,
-          ]);
-          user = req.user as UserEntity;
-        } else if (!req.user || req.user.id === ssoAccount.user.id) {
+        if (!req.user || req.user.id === ssoAccount.user.id) {
           user = ssoAccount.user;
         } else {
           // 다른 user와 연결되어 있는 SSO Account로 로그인 했을 때
@@ -177,6 +176,25 @@ export default (connection: Connection) => {
           await user.save();
           await server.managers.user.refreshUserInfo(user.stringId);
         } else {
+          // check for other sso account with same provider
+          const otherSSOAccountCount = await ssoAccountRepository
+            .createQueryBuilder('ssoAccount')
+            .innerJoinAndSelect('ssoAccount.user', 'user')
+            .where('user.id = :me', { me: req.user.id })
+            .getCount();
+
+          if (otherSSOAccountCount > 0) {
+            const toast = {
+              type: 'error',
+              message: '같은 제공자가 제공하는 소셜 계정은 한 개만 추가할 수 있습니다.',
+            };
+            req.session.toast = JSON.stringify([
+              ...(req.session.toast ? JSON.parse(req.session.toast) : []),
+              toast,
+            ]);
+            return done(null, req.user);
+          }
+
           user = req.user as UserEntity;
         }
 
