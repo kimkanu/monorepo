@@ -35,7 +35,7 @@ const NewClassroom: React.FC = () => {
             .then((response_) => {
               const response = response_ as ClassroomsHashPatchResponse<'join'>;
               if (response.success) {
-                addClassroom(response.payload);
+                addClassroom({ ...response.payload, speakerId: null });
                 setMainClassroomHash(response.payload.hash);
                 appHistory.replace(`/classrooms/${response.payload.hash}`, history);
               } else {
@@ -56,7 +56,7 @@ const NewClassroom: React.FC = () => {
             .then((response) => {
               if (response.success) {
                 console.log('POST /classrooms', response.payload);
-                addClassroom(response.payload);
+                addClassroom({ ...response.payload, speakerId: null });
                 setMainClassroomHash(response.payload.hash);
                 appHistory.replace(`/classrooms/${response.payload.hash}`, history);
               } else {

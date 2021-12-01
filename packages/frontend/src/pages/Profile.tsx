@@ -25,7 +25,7 @@ const Profile: React.FC = () => {
   }, [meInfo]);
 
   return (
-    <ContentPadding isFooterPresent>
+    <ContentPadding>
       <ProfileSettingContent
         initialDisplayName={meInfo?.displayName ?? ''}
         profileImage={profileImage}

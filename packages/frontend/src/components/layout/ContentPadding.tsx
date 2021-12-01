@@ -1,18 +1,22 @@
 import { useWindowSize } from '@react-hook/window-size';
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
+import classroomsState from '../../recoil/classrooms';
 import ScreenType from '../../types/screen';
 
-interface Props {
-  isFooterPresent: boolean;
-}
-
-const ContentPadding = React.forwardRef<HTMLDivElement, React.PropsWithChildren<Props>>(
-  ({ isFooterPresent, children }, ref) => {
+const ContentPadding = React.forwardRef<HTMLDivElement, React.PropsWithChildren<{}>>(
+  ({ children }, ref) => {
     const [width] = useWindowSize();
     const screenType = useScreenType();
     const isMobileLandscape = screenType === ScreenType.MobileLandscape;
+  
+    const location = useLocation();
+    const classrooms = useRecoilValue(classroomsState.atom);
+    const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
+    const isFooterPresent = classrooms.some(({ isLive }) => isLive) || inClassroom;
 
     return (
       <div

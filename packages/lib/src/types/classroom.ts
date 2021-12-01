@@ -1,3 +1,5 @@
+import { UserInfoJSON } from '.';
+
 export type YouTubeVideo = YouTubeVideoSingle | YouTubeVideoPlaylist;
 
 export interface YouTubeVideoSingle {
@@ -15,18 +17,18 @@ export interface YouTubeVideoPlaylist {
 export interface ClassroomJSON {
   hash: string;
   name: string;
-  instructorId: string;
-  memberIds: string[];
+  instructor: UserInfoJSON;
+  members: ClassroomMemberJSON[];
   video: YouTubeVideo | null;
   isLive: boolean;
-  passcode: string;
+  passcode?: string;
   updatedAt: number;
 }
 
-export interface MemberJSON {
-  id: string;
-  img: string;
-  isHost: boolean;
-  isMe: boolean;
-  isSpeaking: boolean; 
+export interface ClassroomMemberJSON extends UserInfoJSON {
+  isConnected: boolean;
+}
+
+export interface ClassroomJSONWithSpeaker extends ClassroomJSON {
+  speakerId: string | null;
 }

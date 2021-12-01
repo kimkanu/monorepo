@@ -1,137 +1,172 @@
 /* eslint-disable max-len */
-import { Speaker224Filled, EyeShow24Filled } from '@fluentui/react-icons';
-import { MemberJSON } from '@team-10/lib';
-import React, { CSSProperties } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { EyeShow24Regular, EyeHide24Regular } from '@fluentui/react-icons';
+import React from 'react';
+import { spring, Motion } from 'react-motion';
+import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 import useMainClassroom from '../../hooks/useMainClassroom';
 import useScreenType from '../../hooks/useScreenType';
+import classroomsState from '../../recoil/classrooms';
 import meState from '../../recoil/me';
 import ScreenType from '../../types/screen';
+import { conditionalStyle, mergeClassNames } from '../../utils/style';
 import AmbientButton from '../buttons/AmbientButton';
-
-import FooterMember from './FooterMember';
+import ChatInput from '../chat/ChatInput';
+import ClassroomChat from '../classroom/ClassroomChat';
+import MemberList from '../classroom/MemberList';
+import VoiceWrapper from '../voice/VoiceWrapper';
 
 interface Props {
-  members: MemberJSON[];
+  isUIHidden: boolean;
+  setUIHidden: (updater: (value: boolean) => boolean) => void;
 }
 
-const Footer: React.FC<Props> = ({ members }) => {
+const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
   const screenType = useScreenType();
   const location = useLocation();
-  const history = useHistory();
-  const me = useRecoilValue(meState.atom);
+  const meInfo = useRecoilValue(meState.info);
+  const classrooms = useRecoilValue(classroomsState.atom);
   const mainClassroom = useMainClassroom();
-  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}$/.test(location.pathname);
+  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
 
-  let displayCount = 6;
+  // const isVisible = classrooms.some(({ isLive }) => isLive) || inClassroom;
+  const isVisible = true;
+
+  const [text, setText] = React.useState('');
 
   return (
-    <div
-      className="flex fixed border-t-4 border-primary-500 bg-white z-layout bottom-0 w-100vw items-center content-center justify-between"
-      style={{ height: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
+    <Motion style={{
+      percentage: spring(isVisible ? 0 : 100),
+      height: spring(
+        screenType === ScreenType.MobilePortrait && inClassroom ? 136 : 76,
+      ),
+    }}
     >
-      <div className="flex items-center content-center justify-center">
-        {/* Members in the current class */}
-        {members.map((member) => {
-          displayCount -= 1;
-          return (
-            (member.isHost || member.isSpeaking || member.isMe || screenType === ScreenType.Desktop) ? (
-              <FooterMember
-                name={member.id}
-                img={member.img}
-                isHost={member.isHost}
-                isMe={member.isMe}
-                isSpeaking={member.isSpeaking}
-              />
-            ) : (screenType === ScreenType.MobileLandscape) && displayCount >= 0 ? (
-              <FooterMember
-                name={member.id}
-                img={member.img}
-                isHost={member.isHost}
-                isMe={member.isMe}
-                isSpeaking={member.isSpeaking}
-              />
-            ) : screenType === ScreenType.MobilePortrait && displayCount >= 2 ? (
-              <FooterMember
-                name={member.id}
-                img={member.img}
-                isHost={member.isHost}
-                isMe={member.isMe}
-                isSpeaking={member.isSpeaking}
-              />
-            ) : (
-              ''
-            ));
-        })}
-        {/* Number of users in the current class */}
-        {screenType === ScreenType.MobileLandscape && members.length > 6 && (
-          <div className="font-bold order-last">
-            +
-            {members.length - 6}
-          </div>
-        )}
-        {screenType === ScreenType.MobilePortrait && members.length > 4 && (
-          <div className="font-bold order-last">
-            +
-            {members.length - 4}
-          </div>
-        )}
-      </div>
-      {/* Speaking button when in class */}
-      <div className="justify-end order-last">
-        {screenType === ScreenType.Desktop && inClassroom ? (
-          <div className="w-10">
-            <AmbientButton
-              alt="Speak"
-              className="font-bold bg-pink-500"
-              icon={<Speaker224Filled />}
-              onClick={() => {
-              }} // TODO
+      {({ percentage, height }) => (
+        <div
+          className={mergeClassNames(
+            'flex fixed z-layout bottom-0 w-full',
+            screenType === ScreenType.MobileLandscape && inClassroom ? 'flex-row bg-transparent border-none' : 'flex-col border-t-4 border-primary-500 bg-white',
+          )}
+          style={{
+            height: `calc(env(safe-area-inset-bottom, 0px) + ${height}px)`,
+            transform: `translateY(${percentage}%)`,
+          }}
+        >
+          {/* !inClassroom */}
+          {isVisible && !inClassroom && (
+            <div
+              className="flex items-center content-center justify-between px-4"
+              style={{
+                height: 72,
+                ...conditionalStyle({
+                  mobilePortrait: {
+                    width: '100vw',
+                  },
+                  mobileLandscape: {
+                    width: 'calc(100vw - 18rem)',
+                  },
+                  desktop: {
+                    width: 'calc(100vw - 27rem)',
+                  },
+                })(screenType),
+              }}
             >
-              Speak
-            </AmbientButton>
-          </div>
-        ) : screenType === ScreenType.MobilePortrait && inClassroom ? (
-          <div className="w-10">
-            <AmbientButton
-              alt="Speak"
-              className="font-bold bg-pink-500"
-              icon={<Speaker224Filled />}
-              onClick={() => {
-              }} // TODO
-            >
-            </AmbientButton>
-          </div>
-        ) : screenType === ScreenType.MobileLandscape && inClassroom ? (
-          <div
-          className="flex fixed z-layout bottom-0 w-100vw items-center content-center justify-end"
-          style={{ height: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
-          >
-            <AmbientButton
-              alt="Chat Visibility"
-              className="bg-gray-500 mx-2"
-              icon={<EyeShow24Filled />}
-              onClick={() => {
-              }} // TODO
-            />
-            <AmbientButton
-              alt="Speak"
-              className="bg-gray-500 ml-2 mr-4"
-              icon={<Speaker224Filled />}
-              onClick={() => {
-              }} // TODO
-            />
-          </div>
-        ) : (
-          <div className="flex px-7 font-bold">
-            {/* mainClassroom?.name */}
-            전산학특강: 프런트엔드 개발
-          </div>
-        )}
-      </div>
-    </div>
+              <MemberList />
+              <div
+                style={{
+                  maxWidth: 'calc(100% - 54px)',
+                  lineClamp: 2,
+                  WebkitLineClamp: 2,
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                }}
+                className="flex items-center overflow-hidden max-h-full"
+              >
+                <span className="font-semibold text-base" style={{ lineHeight: '19px' }}>
+                  {mainClassroom?.name}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* MobilePortrait, inClassroom */}
+          {isVisible && screenType === ScreenType.MobilePortrait && inClassroom && (
+            <>
+              <div className="flex items-center content-center justify-between px-4" style={{ height: 72 }}>
+                <MemberList />
+                {/* Speaking button when in class */}
+                {inClassroom && <VoiceWrapper />}
+                {!!mainClassroom && !inClassroom && (
+                  <span className="text-bold">{mainClassroom.name}</span>
+                )}
+              </div>
+              <div className="flex items-center content-center justify-between px-4">
+                <ChatInput dark={false} text={text} onInput={setText} />
+              </div>
+            </>
+          )}
+
+          {/* MobileLandscape, inClassroom */}
+          {isVisible && screenType === ScreenType.MobileLandscape && inClassroom && (
+            <>
+              {!isUIHidden && (
+              <div className="pl-1 py-2">
+                <ChatInput dark text={text} onInput={setText} />
+              </div>
+              )}
+              {inClassroom && (
+                <div className="flex absolute bottom-0 w-full h-18 items-start justify-end right-0" style={{ height: 60, width: 320 }}>
+                  <AmbientButton
+                    size={48}
+                    icon={!isUIHidden ? <EyeShow24Regular className="stroke-current" /> : <EyeHide24Regular className="stroke-current" />}
+                    dark
+                    className="mr-20"
+                    onClick={() => setUIHidden((h) => !h)}
+                  />
+                  <VoiceWrapper />
+                  {!isUIHidden && (
+                  <div className="fixed overflow-y-auto overflow-x-hidden left-0" style={{ width: 416, bottom: 72 }}>
+                    <ClassroomChat
+                      isInstructor={mainClassroom?.instructor.stringId === meInfo?.stringId}
+                      dark
+                    />
+                  </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Desktop, inClassroom */}
+          {isVisible && screenType === ScreenType.Desktop && inClassroom && (
+            <>
+              <div
+                className="w-full flex items-center content-center justify-between px-4 relative"
+                style={{ height: 72 }}
+              >
+                <MemberList />
+                {/* Speaking button when in class */}
+                {inClassroom && <VoiceWrapper />}
+                {!!mainClassroom && !inClassroom && (
+                  <span className="text-bold">{mainClassroom.name}</span>
+                )}
+              </div>
+              <div
+                className="flex items-center content-center justify-between absolute bottom-0 right-0 z-layout-3 bg-white rounded-t-8"
+                style={{
+                  width: 'clamp(352px, 30vw, 416px)',
+                  bottom: 76,
+                }}
+              >
+                <ChatInput dark={false} text={text} onInput={setText} extended />
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </Motion>
   );
 };
 
