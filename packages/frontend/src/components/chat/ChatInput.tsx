@@ -29,7 +29,7 @@ const ChatInput: React.FC<Props> = ({
     className={mergeClassNames(
       'w-full flex justify-center gap-2',
       dark ? 'bg-gray-900 bg-opacity-50 max-w-sm rounded-full' : null,
-      extended ? 'pt-4 rounded-t-8' : 'pb-3',
+      extended ? 'pt-4 rounded-t-8' : dark ? 'py-1.5' : 'pb-3',
     )}
     style={{ height: extended ? 128 : 60, boxShadow: extended ? '0 0 16px var(--shadow-color)' : 'none' }}
   >
@@ -69,7 +69,7 @@ const ChatInput: React.FC<Props> = ({
           value={text}
           onInput={onInput}
           onSubmit={onSend}
-          className={mergeClassNames(dark ? 'bg-gray-600 bg-opacity-50' : null)}
+          className={mergeClassNames(dark ? 'bg-gray-600 bg-opacity-70' : null)}
           containerStyle={extended ? {} : { width: 'calc(100% - 8rem)' }}
           style={dark ? { color: 'white' } : {}}
         />

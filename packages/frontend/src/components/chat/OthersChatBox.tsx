@@ -4,6 +4,7 @@ import {
   ChatType, ChatContent, TextChatContent, PhotoChatContent,
 } from '../../types/chat';
 import { stringifyDateTime } from '../../utils/date';
+import { mergeClassNames } from '../../utils/style';
 
 import OthersPhotoChat from './OthersPhotoChat';
 import OthersTextChat from './OthersTextChat';
@@ -42,7 +43,12 @@ const OthersChatBox: React.FC<Props> = ({
       {chats.map((chat) => (
         <OthersChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
       ))}
-      <div className="text-tiny text-gray-500" style={{ padding: '3px 4px' }}>
+      <div
+        className={mergeClassNames(
+          'text-tiny', dark ? 'bg-gray-600 bg-opacity-70 text-white rounded-lg' : 'text-gray-500',
+        )}
+        style={{ padding: '3px 4px' }}
+      >
         {sender.displayName}
         {' ㆍ '}
         {stringifyDateTime(chats.slice(-1)[0].sentAt)}

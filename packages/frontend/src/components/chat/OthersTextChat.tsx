@@ -14,7 +14,7 @@ const OthersTextChat: React.FC<Props> = ({ dark, content }) => (
     style={{ padding: '5px 12px' }}
     className={mergeClassNames(
       'text-base rounded-tl rounded-tr-2xl rounded-b-2xl',
-      dark ? 'bg-gray-600 bg-opacity-50 text-white' : 'bg-gray-200',
+      dark ? 'bg-gray-600 bg-opacity-70 text-white' : 'bg-gray-200',
       styles.maxWidth,
     )}
   >

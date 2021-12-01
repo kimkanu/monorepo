@@ -112,7 +112,7 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
           {isVisible && screenType === ScreenType.MobileLandscape && inClassroom && (
             <>
               {!isUIHidden && (
-              <div className="pl-1 pt-4">
+              <div className="pl-1 py-2">
                 <ChatInput dark text={text} onInput={setText} />
               </div>
               )}
