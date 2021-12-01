@@ -1,3 +1,4 @@
+import { WeatherPartlyCloudyDay16Regular } from '@fluentui/react-icons';
 import { SocketYouTube } from '@team-10/lib';
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -9,14 +10,16 @@ import useSocket from '../../hooks/useSocket';
 import classroomsState from '../../recoil/classrooms';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
-import videoState from '../../recoil/video';
 import { classroomPrefixRegex } from '../../utils/history';
 
 interface Props {
   children: (
     onReady: (player: YouTubePlayer) => void,
     onStateChange: (state: number, player: YouTubePlayer) => void,
-    isStudent: boolean,
+    isInstructor: boolean,
+    duration: number,
+    volume: number | null,
+    setVolume: React.Dispatch<React.SetStateAction<number | null>>,
   ) => React.ReactElement;
 }
 
@@ -28,11 +31,9 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
   const SYNC_PERIOD = 20 * SECONDS;
 
   // TODO: 유튜브 custom controls에 유용하게 쓰일 것 같습니다.
-  // const [playerState, setPlayerState] = React.useState<PlayerState>('paused');
-  // const [volume, setVolume] = React.useState<number>();
-  const [playerState, setPlayerState] = useRecoilState(videoState.statusSelector);
-  const [volume, setVolume] = useRecoilState(videoState.volumeSelector);
-  const [duration, setDuration] = useRecoilState(videoState.durationSelector);
+  const [playerState, setPlayerState] = React.useState<PlayerState>('paused');
+  const [volume, setVolume] = React.useState<number | null>(null);
+  const [duration, setDuration] = React.useState<number>(0);
   const [player, setPlayer] = React.useState<YouTubePlayer | null>(null);
   const [lastBroadcast, setlastBroadcast] = React.useState<boolean | null>(null);
 
@@ -78,7 +79,6 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
           time: newPlayer.getCurrentTime(),
         });
         setPlayerState(newPlayerState === YouTube.PlayerState.PLAYING ? 'playing' : 'paused');
-
         // 요청이 유실됐을 때 한번 더 보내기
         timeout = window.setTimeout(() => {
           socket.emit('youtube/ChangePlayStatus', {
@@ -101,12 +101,14 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
         socket.once('youtube/ChangePlayStatus', listener);
       }
     } else if (newPlayerState === YouTube.PlayerState.PLAYING) {
+      console.log('broadcast:', lastBroadcast);
       if (!lastBroadcast) {
-        player?.pauseVideo();
+        newPlayer.pauseVideo();
       }
     } else if (newPlayerState === YouTube.PlayerState.PAUSED) {
+      console.log('broadcast:', lastBroadcast);
       if (lastBroadcast) {
-        player?.playVideo();
+        newPlayer.playVideo();
       }
     }
 
@@ -116,7 +118,7 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
         socket.off('youtube/ChangePlayStatus', listener);
       }
     };
-  }, [connected, videoId, isInstructor, hash]);
+  }, [connected, videoId, isInstructor, hash, lastBroadcast]);
 
   const synchronize = React.useCallback(
     <R extends SocketYouTube.Broadcast.ChangePlayStatus>({
@@ -132,9 +134,12 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
         player.pauseVideo();
         setPlayerState('paused');
       }
-
-      if (time !== null) {
-        player.seekTo(time, true);
+      // broadcast 주가적으로 불려올 때 마다 실행되어
+      // 영상이 끊기는 문제가 있어서 지금 상태와 같으면 실행 안함
+      if ((player.getPlayerState() === YouTube.PlayerState.PLAYING) !== play) {
+        if (time !== null) {
+          player.seekTo(time, true);
+        }
       }
 
       // handle videoId changes
@@ -187,8 +192,8 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
 
     const listener = (response: SocketYouTube.Broadcast.ChangePlayStatus) => {
       console.log('ChangePlayStatusBroadcast', response);
+      setlastBroadcast(response.play);
       if (isStudent) {
-        setlastBroadcast(response.play);
         setClassroom((c) => ({
           ...c,
           video: response.videoId ? {
@@ -205,7 +210,7 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
     return () => {
       socket.off('youtube/ChangePlayStatusBroadcast', listener);
     };
-  }, [connected, player, isStudent, hash]);
+  }, [connected, player, isStudent, hash, lastBroadcast]);
 
   useEffect(() => {
     console.log('ChangePlayStatus', isInstructor, playerState, videoId, hash);
@@ -247,7 +252,7 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
     player?.setVolume(volume || 0);
   }, [volume]);
 
-  return <>{children(onReady, onStateChange, isStudent)}</>;
+  return <>{children(onReady, onStateChange, isInstructor, duration, volume, setVolume)}</>;
 };
 
 export default YTSynchronizer;

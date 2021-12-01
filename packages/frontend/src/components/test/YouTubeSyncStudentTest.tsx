@@ -22,9 +22,7 @@ const YouTubeSyncStudentTest: React.FC = () => {
           console.log('youtube click');
         }
       }}
-    >
-      <YTPlayer videoId="lIKmm-G7YVQ" />
-    </YTWrapper>
+    />
   );
 };
 

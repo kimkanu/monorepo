@@ -119,7 +119,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       <Loading loading={loading} />
 
       <YTSynchronizer>
-        {(onReady, onStateChange, isStudent) => (
+        {(onReady, onStateChange, isInstructor, duration, volume, setVolume) => (
           <YTWrapper
             isPresent={!!classrooms[0]?.video}
             inClassroom={inClassroom}
@@ -129,29 +129,15 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
               }
             }}
           >
-            {isStudent
-              ? (
-                <YTPlayerControl>
-                  <YTPlayer
-                    videoId={classrooms[0]?.video?.videoId}
-                    onReady={onReady}
-                    onStateChange={onStateChange}
-                    options={{
-                      playerVars: {
-                        controls: 0,
-                        disablekb: 1,
-                      },
-                    }}
-                  />
-                </YTPlayerControl>
-              )
-              : (
-                <YTPlayer
-                  videoId={classrooms[0]?.video?.videoId}
-                  onReady={onReady}
-                  onStateChange={onStateChange}
-                />
-              )}
+            <YTPlayerControl
+              isInstructor={isInstructor}
+              videoId={classrooms[0]?.video?.videoId}
+              duration={duration}
+              volume={volume}
+              setVolume={setVolume}
+              onReady={onReady}
+              onStateChange={onStateChange}
+            />
           </YTWrapper>
         )}
       </YTSynchronizer>

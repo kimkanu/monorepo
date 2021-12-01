@@ -4,9 +4,9 @@ import {
 } from '@fluentui/react-icons';
 
 import React from 'react';
-import { useRecoilState } from 'recoil';
+import { YouTubePlayer } from 'youtube-player/dist/types';
 
-import videoState from '../../recoil/video';
+import YTPlayer from './YTPlayer';
 
 const timeToHMS = (time:number) => {
   const h = Math.floor(time / 3600);
@@ -18,17 +18,48 @@ const timeToHMS = (time:number) => {
   return `${hour}${minute}${second}`;
 };
 
-const YTPlayerControl: React.FC = ({ children }) => {
+interface Props {
+  isInstructor: boolean;
+  videoId?: string | null;
+  duration: number;
+  volume: number | null;
+  setVolume: React.Dispatch<React.SetStateAction<number | null>>;
+  onReady?: (player: YouTubePlayer) => void;
+  onStateChange?: (state: number, player: YouTubePlayer) => void;
+}
+
+const YTPlayerControl: React.FC<Props> = ({
+  isInstructor, videoId, duration, volume, setVolume, onReady, onStateChange,
+}) => {
   const ref = React.useRef<HTMLDivElement>(null);
-  const [currentTime, setCurrentTime] = useRecoilState(videoState.timeSelector);
-  const [volume, setVolume] = useRecoilState(videoState.volumeSelector);
-  const [duration, setDuration] = useRecoilState(videoState.durationSelector);
+  const [currentTime, setCurrentTime] = React.useState(0);
   const progress = duration
     ? (currentTime / duration) * (ref.current ? ref.current?.offsetWidth : 0) : 0;
 
+  if (isInstructor) {
+    return (
+      <YTPlayer
+        videoId={videoId}
+        onReady={onReady}
+        onStateChange={onStateChange}
+        setCurrentTime={setCurrentTime}
+      />
+    );
+  }
   return (
     <div className="w-full h-full absolute">
-      {children}
+      <YTPlayer
+        videoId={videoId}
+        onReady={onReady}
+        onStateChange={onStateChange}
+        setCurrentTime={setCurrentTime}
+        options={{
+          playerVars: {
+            controls: 0,
+            disablekb: 1,
+          },
+        }}
+      />
       <div className="w-full absolute bottom-2 z-100">
         <div className="w-full mx-auto opacity-0 hover:opacity-100 transition-all duration-300">
           <div className="bg-gray-500 bg-opacity-50 z-50 w-11/12 h-1 mb-4 mx-auto" ref={ref}>

@@ -1,10 +1,8 @@
 import React from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
-import { useRecoilState } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
 
 import useSize from '../../hooks/useSize';
-import videoState from '../../recoil/video';
 import { mergeClassNames, mergeStyles, Styled } from '../../utils/style';
 
 import styles from './YTPlayer.module.css';
@@ -14,16 +12,16 @@ interface Props {
   options?: YouTubeProps['opts'];
   onReady?: (player: YouTubePlayer) => void;
   onStateChange?: (state: number, player: YouTubePlayer) => void;
+  setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const YTPlayer: React.FC<Styled<Props>> = ({
-  style, className, videoId, options = {}, onReady, onStateChange,
+  style, className, videoId, options = {}, onReady, onStateChange, setCurrentTime,
 }) => {
   const aspectRatio = 16 / 9;
 
   const ref = React.useRef<HTMLDivElement>(null);
   const size = useSize(ref);
-  const [currentTime, setCurrentTime] = useRecoilState(videoState.timeSelector);
   let interval: NodeJS.Timeout | null = null;
 
   return (

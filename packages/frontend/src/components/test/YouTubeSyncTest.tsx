@@ -16,23 +16,25 @@ const YouTubeSyncTest: React.FC = () => {
 
   return (
     <YTSynchronizer>
-      {(onReady, onStateChange, isStudent) => (
+      {(onReady, onStateChange, isInstructor, duration, volume, setVolume) => (
         <YTWrapper
           isPresent={!!classrooms[0]?.video}
           inClassroom
           onClick={() => {
             if (classrooms[0]?.hash) {
-              console.log('click');
+              console.log('sync test');
             }
           }}
         >
-          <YTPlayerControl>
-            <YTPlayer
-              videoId={classrooms[0]?.video?.videoId}
-              onReady={onReady}
-              onStateChange={onStateChange}
-            />
-          </YTPlayerControl>
+          <YTPlayerControl
+            isInstructor={isInstructor}
+            videoId={classrooms[0]?.video?.videoId}
+            duration={duration}
+            volume={volume}
+            setVolume={setVolume}
+            onReady={onReady}
+            onStateChange={onStateChange}
+          />
         </YTWrapper>
       )}
     </YTSynchronizer>
