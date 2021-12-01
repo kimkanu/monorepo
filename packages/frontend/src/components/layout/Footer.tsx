@@ -37,7 +37,7 @@ const Footer: React.FC<Props> = ({ members }) => {
         {members.map((member) => {
           displayCount -= 1;
           return (
-            (member.isHost || member.isSpeaking || member.isMe) ? (
+            (member.isHost || member.isSpeaking || member.isMe || screenType === ScreenType.Desktop) ? (
               <FooterMember
                 name={member.id}
                 img={member.img}
@@ -45,7 +45,7 @@ const Footer: React.FC<Props> = ({ members }) => {
                 isMe={member.isMe}
                 isSpeaking={member.isSpeaking}
               />
-            ) : (screenType !== ScreenType.MobilePortrait) && displayCount >= 0 ? (
+            ) : (screenType === ScreenType.MobileLandscape) && displayCount >= 0 ? (
               <FooterMember
                 name={member.id}
                 img={member.img}
@@ -66,7 +66,7 @@ const Footer: React.FC<Props> = ({ members }) => {
             ));
         })}
         {/* Number of users in the current class */}
-        {screenType !== ScreenType.MobilePortrait && members.length > 6 && (
+        {screenType === ScreenType.MobileLandscape && members.length > 6 && (
           <div className="font-bold order-last">
             +
             {members.length - 6}

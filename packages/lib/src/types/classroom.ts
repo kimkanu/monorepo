@@ -22,3 +22,11 @@ export interface ClassroomJSON {
   passcode: string;
   updatedAt: number;
 }
+
+export interface MemberJSON {
+  id: string;
+  img: string;
+  isHost: boolean;
+  isMe: boolean;
+  isSpeaking: boolean; 
+}
