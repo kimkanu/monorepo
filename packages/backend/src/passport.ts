@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import GitHubStrategy from 'passport-github';
+import { Strategy as NaverStrategy, Profile as NaverProfile } from 'passport-naver-v2';
 import PassportOauth2 from 'passport-oauth2';
 import { Connection } from 'typeorm';
 import uuid from 'uuid';
@@ -9,8 +10,6 @@ import SSOAccountEntity from './entity/sso-account';
 import UserEntity from './entity/user';
 
 import server from '.';
-
-import { Strategy as NaverStrategy, Profile as NaverProfile } from 'passport-naver-v2';
 
 export default (connection: Connection) => {
   const userRepository = connection.getRepository(UserEntity);
