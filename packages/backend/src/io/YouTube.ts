@@ -22,7 +22,8 @@ const ioYouTubeHandler = (
       }
 
       // 없는 수업일 때
-      if (!await server.managers.classroom.isPresent(hash)) {
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
         socket.emit('youtube/JoinClassroom', {
           success: false,
           reason: SocketYouTube.JoinClassroomFailReason.NOT_MEMBER,
@@ -32,8 +33,6 @@ const ioYouTubeHandler = (
 
       // 유저가 교실에 들어있지 않을 때
       const userId: string = socket.request.user.stringId;
-      const classroom = server.managers.classroom.getRaw(hash)!;
-
       if (!classroom.hasMember(userId)) {
         socket.emit('youtube/JoinClassroom', {
           success: false,
@@ -42,7 +41,7 @@ const ioYouTubeHandler = (
         return;
       }
 
-      const { youtube } = classroom.state;
+      const { youtube } = classroom;
       socket.emit('youtube/JoinClassroom', {
         success: true,
         hash,
@@ -71,7 +70,8 @@ const ioYouTubeHandler = (
       }
 
       // 없는 수업일 때
-      if (!await server.managers.classroom.isPresent(hash)) {
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
         socket.emit('youtube/ChangePlayStatus', {
           success: false,
           reason: SocketYouTube.ChangePlayStatusFailReason.NOT_MEMBER,
@@ -81,8 +81,6 @@ const ioYouTubeHandler = (
 
       // 유저가 교실에 들어있지 않을 때
       const userId: string = socket.request.user.stringId;
-      const classroom = server.managers.classroom.getRaw(hash)!;
-
       if (!classroom.hasMember(userId)) {
         socket.emit('youtube/ChangePlayStatus', {
           success: false,
@@ -100,18 +98,19 @@ const ioYouTubeHandler = (
         return;
       }
 
-      classroom.state.youtube = {
+      classroom.youtube = {
         responseTime: new Date(),
         play,
         currentTime: time,
         videoId,
       };
-      classroom.broadcastExcept('youtube/ChangePlayStatusBroadcast', [classroom.instructorId], {
-        hash,
-        play,
-        videoId,
-        time,
-      });
+      classroom.broadcastExcept(
+        'youtube/ChangePlayStatusBroadcast',
+        [classroom.instructor.stringId],
+        {
+          hash, play, videoId, time,
+        },
+      );
     });
   });
 };

@@ -4,7 +4,6 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToMany,
   TableInheritance,
   OneToOne,
   ManyToOne,

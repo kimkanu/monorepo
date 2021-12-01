@@ -44,8 +44,8 @@ export default function generateRoute(server: Server): Route {
       const userId = user.stringId;
       const { hash } = params;
 
-      const isPresent = await managers.classroom.isPresent(hash);
-      if (!isPresent) {
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
         return {
           success: false,
           error: {
@@ -56,8 +56,7 @@ export default function generateRoute(server: Server): Route {
         };
       }
 
-      const classroom = managers.classroom.getRaw(hash)!;
-      if (classroom.instructorId !== userId) {
+      if (classroom.instructor.stringId !== userId) {
         return {
           success: false,
           error: {
@@ -103,8 +102,8 @@ export default function generateRoute(server: Server): Route {
       const { managers } = server;
       const userId = user.stringId;
 
-      const isPresent = await managers.classroom.isPresent(hash);
-      if (!isPresent) {
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
         return {
           success: false,
           error: {
@@ -114,8 +113,6 @@ export default function generateRoute(server: Server): Route {
           },
         };
       }
-
-      const classroom = managers.classroom.getRaw(hash)!;
 
       if (operation === 'join') {
         const { passcode } = body;
@@ -170,7 +167,7 @@ export default function generateRoute(server: Server): Route {
       }
 
       if (operation === 'reset_passcode') {
-        if (classroom.instructorId !== userId) {
+        if (classroom.instructor.stringId !== userId) {
           return {
             success: false,
             error: {
@@ -190,7 +187,7 @@ export default function generateRoute(server: Server): Route {
       }
 
       if (operation === 'rename') {
-        if (classroom.instructorId !== userId) {
+        if (classroom.instructor.stringId !== userId) {
           return {
             success: false,
             error: {

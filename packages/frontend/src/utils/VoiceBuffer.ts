@@ -97,6 +97,7 @@ export default class VoiceBuffer {
   public async appendVoices(
     voices: SocketVoice.Voice[],
   ): Promise<AudioBufferSourceNode[]> {
+    console.log('appendVoices', voices);
     const typedVoices: { type: 'opus' | 'mpeg', buffers: ArrayBuffer[] }[] = [];
     for (let i = 0; i < voices.length; i += 1) {
       const voice = voices[i];
@@ -118,6 +119,7 @@ export default class VoiceBuffer {
   }
 
   private async decodeVoiceData(type: 'opus' | 'mpeg', buffers: ArrayBuffer[]): Promise<AudioBuffer[]> {
+    console.log('decodeVoiceData');
     try {
       if (type === 'opus') {
         const buffer = this.attachHeader(
@@ -139,6 +141,7 @@ export default class VoiceBuffer {
   }
 
   private appendVoiceBuffer(buffer: AudioBuffer): AudioBufferSourceNode {
+    console.log('appendVoiceBuffer');
     const sourceNode = new AudioBufferSourceNode(this.audioContext, { buffer });
     sourceNode.connect(this.audioContext.destination);
     if (this.initial) {
