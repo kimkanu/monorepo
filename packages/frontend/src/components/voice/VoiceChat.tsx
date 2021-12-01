@@ -153,8 +153,13 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     if (!type) return; // Not supported
 
     data.arrayBuffer().then((buffer) => {
-      if (isSpeaking.current === 'speaking' && onVoice) onVoice(100, 300);
-
+      if (onVoice) {
+        if (isSpeaking.current === 'speaking') {
+          onVoice(100, 300);
+        } else {
+          onVoice(0, 100);
+        }
+      }
       if (isSpeaking.current !== 'requesting') {
         socket.emit('voice/StreamSend', {
           hash: classroom.hash, // TODO
