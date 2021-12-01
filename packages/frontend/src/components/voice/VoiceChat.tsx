@@ -46,13 +46,13 @@ const VoiceChat: React.FC<Styled<Props>> = ({
    * ********* */
 
   // MediaRecorder의 onDataAvailable에 들어갈 audio segment의 대략적 길이 (ms)
-  const TIME_SLICE = 1000;
+  const TIME_SLICE = 600;
 
   // Permission grant request를 얼마 주기로 날릴 건지 (한 번만 날리면 무시될 수도 있기 때문)
   const REQUESTING_PERMISSION_INTERVAL = 500;
 
   // WRONG_SEQUENCE_TIMEOUT
-  const WRONG_SEQUENCE_TIMEOUT = 10 * TIME_SLICE;
+  const WRONG_SEQUENCE_TIMEOUT = 2 * TIME_SLICE;
 
   /* ****** *
    * Socket *
@@ -84,31 +84,27 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   // Speaker인지 아닌지, 또는 요청 중인지
   type Speaking = 'speaking' | 'requesting' | 'none';
-  const [isSpeaking, setSpeaking] = React.useState<Speaking>('none');
+  const isSpeaking = React.useRef<Speaking>('none');
 
   // 현재 speaker의 stringId
   const [speakerId, setSpeakerId] = React.useState<string | null>(null);
 
   // 말하고 있을 때 StreamSend로 보낼 sequence index
-  const [sequenceIndex] = React.useState<number>(0);
+  const sequenceIndex = React.useRef<number>(0);
 
   // 기다리는 response의 sequence index
-  const [nextSequenceIndex, setNextSequenceIndex] = React.useState<number>(0);
+  const nextSequenceIndex = React.useRef<number>(0);
 
   // 잘못된 sequence index를 바로잡기 위해 임시 저장되는 audio data
-  const [voicesRequestingPermission] = React.useState<SocketVoice.Voice[]>([]);
+  const voicesRequestingPermission = React.useRef<SocketVoice.Voice[]>([]);
 
   // 잘못된 sequence index를 바로잡기 위해 임시 저장되는 audio data
-  const [
-    voicesWrongSequenceIndex,
-    setAudioChunksWrongSequenceIndex,
-  ] = React.useState<Map<number, SocketVoice.Voice[]>>(new Map());
+  const voicesWrongSequenceIndex = React.useRef<Map<number, SocketVoice.Voice[]>>(new Map());
 
   // 잘못된 sequence index를 바로잡기 위해 사용되는 timeout
-  const [
-    timeoutsWrongSequenceIndex,
-    setTimeoutsWrongSequenceIndex,
-  ] = React.useState<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+  const timeoutsWrongSequenceIndex = React.useRef(
+    new Map<number, ReturnType<typeof setTimeout>>(),
+  );
 
   // Permission request가 무시됐을 때를 대비해 여러 번 보내는 interval
   const [
@@ -132,6 +128,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     if (onVoice && array.length > 0) {
       // Heuristically chosen amplitude & frequency maps
       onVoice(sum(array) / 25, argMax(array) * 10 + 100);
+      console.log('onVoice', Date.now());
     }
     setTimeout(() => {
       requestRef.current = requestAnimationFrame(animate);
@@ -150,39 +147,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     };
   }, [!!analyser]);
 
-  // onDataAvailable나 socket.io listener에서 internal state를 사용하기 위해
-  // object로 감싸고 변할 때마다 업데이트 (필요하면)
-  // setState는 쓸 수 있지만 state는 쓸 수 없고, 대신 stateWrapper.state를 사용해야 함
-  // FIXME?: useRef 이용해서 고치기
-  type WrappedState = {
-    isSpeaking: typeof isSpeaking;
-    sequenceIndex: typeof sequenceIndex;
-    voicesRequestingPermission: typeof voicesRequestingPermission;
-    voicesWrongSequenceIndex: typeof voicesWrongSequenceIndex;
-    nextSequenceIndex: typeof nextSequenceIndex;
-    timeoutsWrongSequenceIndex: typeof timeoutsWrongSequenceIndex;
-  };
-  const [stateWrapper] = React.useState<WrappedState>({
-    isSpeaking,
-    sequenceIndex,
-    voicesRequestingPermission,
-    voicesWrongSequenceIndex,
-    nextSequenceIndex,
-    timeoutsWrongSequenceIndex,
-  });
-  // stateWrapper를 업데이트하는 side effect
-  React.useEffect(() => {
-    stateWrapper.isSpeaking = isSpeaking;
-    stateWrapper.voicesWrongSequenceIndex = voicesWrongSequenceIndex;
-    stateWrapper.nextSequenceIndex = nextSequenceIndex;
-    stateWrapper.timeoutsWrongSequenceIndex = timeoutsWrongSequenceIndex;
-  }, [
-    isSpeaking,
-    voicesWrongSequenceIndex,
-    nextSequenceIndex,
-    timeoutsWrongSequenceIndex,
-  ]);
-
   /* ****************** *
    * Media Recorder API *
    * ****************** */
@@ -200,7 +164,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     if (!type) return; // Not supported
 
     data.arrayBuffer().then((buffer) => {
-      if (stateWrapper.isSpeaking !== 'requesting') {
+      if (isSpeaking.current !== 'requesting') {
         socket.emit('voice/StreamSend', {
           hash: classroom.hash, // TODO
           voices: type === 'opus'
@@ -208,19 +172,19 @@ const VoiceChat: React.FC<Styled<Props>> = ({
               {
                 type,
                 buffer: concatArrayBuffer([
-                  ...stateWrapper.voicesRequestingPermission.map(({ buffer: b }) => b),
+                  ...voicesRequestingPermission.current.map(({ buffer: b }) => b),
                   buffer,
                 ]),
               },
             ]
             : [
-              ...stateWrapper.voicesRequestingPermission,
+              ...voicesRequestingPermission.current,
               { type, buffer },
             ],
-          sequenceIndex: stateWrapper.sequenceIndex,
+          sequenceIndex: sequenceIndex.current,
         });
-        stateWrapper.voicesRequestingPermission = [];
-        stateWrapper.sequenceIndex += 1;
+        voicesRequestingPermission.current = [];
+        sequenceIndex.current += 1;
 
         socket.once('voice/StreamSend', (response) => {
           if (response.success) return;
@@ -245,11 +209,11 @@ const VoiceChat: React.FC<Styled<Props>> = ({
               sentAt: new Date(),
               message: '현재 누군가 말하고 있습니다.',
             });
-            setSpeaking('none');
+            isSpeaking.current = 'none';
           }
         });
       } else {
-        stateWrapper.voicesRequestingPermission.push({ type, buffer });
+        voicesRequestingPermission.current.push({ type, buffer });
       }
     });
   };
@@ -284,16 +248,16 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       getMediaStream();
     }
 
-    if (isSpeaking !== 'none') {
+    if (isSpeaking.current !== 'none') {
       socket.emit('voice/StateChange', {
         hash: classroom.hash,
         speaking: false,
       });
       setTimeout(() => {
-        setSpeaking('none');
+        isSpeaking.current = 'none';
       }, 2000);
     }
-  }, [classroom, socket, isSpeaking, recorderStatus]);
+  }, [classroom, socket, recorderStatus]);
 
   const pressButton = React.useCallback(() => {
     if (!classroom) return;
@@ -302,7 +266,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
     console.log('pressed!');
 
-    if (isSpeaking !== 'none') return;
+    if (isSpeaking.current !== 'none') return;
 
     socket.emit('voice/StateChange', {
       hash: classroom.hash,
@@ -316,8 +280,8 @@ const VoiceChat: React.FC<Styled<Props>> = ({
         });
       }, REQUESTING_PERMISSION_INTERVAL),
     );
-    setSpeaking('requesting');
-  }, [classroom, socket, isSpeaking]);
+    isSpeaking.current = 'requesting';
+  }, [classroom, socket]);
 
   /* ******* *
    * Effects *
@@ -370,14 +334,14 @@ const VoiceChat: React.FC<Styled<Props>> = ({
   // socket이 보낸 StateChange 요청에 대한 응답 listen하기
   React.useEffect(() => {
     const listener: SocketVoice.Events.Response['voice/StateChange'] = (response) => {
-      if (isSpeaking === 'requesting') {
+      if (isSpeaking.current === 'requesting') {
         if (response.success) {
-          setSpeaking('speaking');
+          isSpeaking.current = 'speaking';
           setSpeakerId(userId);
         } else {
           setTimeout(() => {
-            setSpeaking('none');
-          }, 300);
+            isSpeaking.current = 'none';
+          }, 700);
           setSpeakerId(null);
           setButtonPressed(false);
           addToast({
@@ -396,18 +360,18 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     return () => {
       socket.off('voice/StateChange', listener);
     };
-  }, [socket, isSpeaking]);
+  }, [socket]);
 
   // isSpeaking이 speaking이 아니면 sequence index를 0으로 설정하기
   React.useEffect(() => {
-    if (isSpeaking !== 'speaking') {
-      stateWrapper.sequenceIndex = 0;
+    if (isSpeaking.current !== 'speaking') {
+      sequenceIndex.current = 0;
     }
-  }, [isSpeaking]);
+  }, [isSpeaking.current]);
 
   // StateChange 요청 성공이나 실패 시 `requestingPermissionInterval` 비우기
   React.useEffect(() => {
-    if (isSpeaking !== 'requesting' && requestingPermissionInterval) {
+    if (isSpeaking.current !== 'requesting' && requestingPermissionInterval) {
       clearInterval(requestingPermissionInterval);
       setRequestingPermissionInterval(null);
     }
@@ -416,7 +380,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
         clearInterval(requestingPermissionInterval);
       }
     };
-  }, [isSpeaking]);
+  }, [isSpeaking.current]);
 
   // StateChangeBroadcast listener
   React.useEffect(() => {
@@ -425,8 +389,10 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     socket.on('voice/StateChangeBroadcast', ({
       speaking, userId: id,
     }: SocketVoice.Broadcast.StateChange) => {
-      setSpeakerId(speaking ? id : null);
-      setNextSequenceIndex(0);
+      if (speakerId !== (speaking ? id : null)) {
+        setSpeakerId(speaking ? id : null);
+        nextSequenceIndex.current = 0;
+      }
 
       voiceBuffer.reset();
     });
@@ -440,11 +406,12 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       if (!classroom) return;
 
       // 정상적인 상황
-      if (stateWrapper.nextSequenceIndex === response.sequenceIndex) {
+      if (nextSequenceIndex.current === response.sequenceIndex) {
+        console.log('correct; response.voices', response.voices);
         // eslint-disable-next-line no-restricted-syntax
         const indexedVoices: [number, SocketVoice.Voice[]][] = [
           [response.sequenceIndex, response.voices],
-          ...stateWrapper.voicesWrongSequenceIndex.entries(),
+          ...voicesWrongSequenceIndex.current.entries(),
         ];
         indexedVoices.sort(([a], [b]) => a - b);
 
@@ -454,25 +421,31 @@ const VoiceChat: React.FC<Styled<Props>> = ({
             voiceNodes.forEach((source) => source.connect(analyser));
           });
 
-        setNextSequenceIndex(indexedVoices.slice(-1)[0][0] + 1);
-        stateWrapper.timeoutsWrongSequenceIndex.forEach(clearTimeout);
-        setTimeoutsWrongSequenceIndex(new Map());
-        setAudioChunksWrongSequenceIndex(new Map());
+        nextSequenceIndex.current = Math.max(
+          nextSequenceIndex.current,
+          indexedVoices.slice(-1)[0][0],
+        ) + 1;
+        console.log('nextSequenceIndex.current changed to', nextSequenceIndex.current);
+        timeoutsWrongSequenceIndex.current.forEach(clearTimeout);
+        timeoutsWrongSequenceIndex.current = new Map();
+        voicesWrongSequenceIndex.current = new Map();
 
         return;
       }
 
       // 나중에 보낸 요청이 시간 안에 먼저 도착한 상황
-      if (stateWrapper.nextSequenceIndex < response.sequenceIndex) {
-        stateWrapper.voicesWrongSequenceIndex.set(
+      if (nextSequenceIndex.current < response.sequenceIndex) {
+        voicesWrongSequenceIndex.current.set(
           response.sequenceIndex,
           response.voices,
         );
-        stateWrapper.timeoutsWrongSequenceIndex.set(
+        console.log('wrong', nextSequenceIndex.current, response.sequenceIndex);
+        console.log('wrong; response.voices', response.voices);
+        timeoutsWrongSequenceIndex.current.set(
           response.sequenceIndex,
           setTimeout(() => {
             const indexedVoices: [number, SocketVoice.Voice[]][] = Array.from(
-              stateWrapper.voicesWrongSequenceIndex.entries(),
+              voicesWrongSequenceIndex.current.entries(),
             );
             indexedVoices.sort(([a], [b]) => a - b);
 
@@ -482,10 +455,14 @@ const VoiceChat: React.FC<Styled<Props>> = ({
                 voiceNodes.forEach((source) => source.connect(analyser));
               });
 
-            setNextSequenceIndex(indexedVoices.slice(-1)[0][0] + 1);
-            stateWrapper.timeoutsWrongSequenceIndex.forEach(clearTimeout);
-            setTimeoutsWrongSequenceIndex(new Map());
-            setAudioChunksWrongSequenceIndex(new Map());
+            nextSequenceIndex.current = Math.max(
+              nextSequenceIndex.current,
+              indexedVoices.slice(-1)[0][0],
+            ) + 1;
+            console.log('nextSequenceIndex.current changed to', nextSequenceIndex.current);
+            timeoutsWrongSequenceIndex.current.forEach(clearTimeout);
+            timeoutsWrongSequenceIndex.current = new Map();
+            voicesWrongSequenceIndex.current = new Map();
           }, WRONG_SEQUENCE_TIMEOUT),
         );
       }
