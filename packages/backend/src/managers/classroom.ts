@@ -202,8 +202,6 @@ export default class ClassroomManager {
     const classroom = this.classrooms.get(hash);
     if (!classroom) return null;
 
-    console.log(classroom);
-
     return {
       hash,
       name: classroom.name,
