@@ -55,6 +55,9 @@ const ioYouTubeHandler = (
             : youtube.currentTime,
         videoId: youtube.videoId,
       });
+
+      await server.managers.classroom.disconnectMemberFromAll(userId);
+      await server.managers.classroom.connectMember(userId, hash);
     });
 
     socket.on('youtube/ChangePlayStatus', async ({

@@ -69,9 +69,6 @@ const VoiceWrapper: React.FC = () => {
         voiceBuffer={voiceBuffer}
         analyser={analyser}
         className="absolute z-layout-3 right-4"
-        style={{
-          bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
-        }}
         onVoice={(amp, freq) => {
           setAmplitude(clamp(0, amp, 200));
           setFrequency(clamp(100, freq, 500));

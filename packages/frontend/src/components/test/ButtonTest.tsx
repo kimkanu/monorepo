@@ -46,7 +46,7 @@ const ButtonTest: React.FC = () => {
         <CheckboxInput inputClassName="text-gray-700" labelClassName="hover:bg-gray-200" checked={text} text={text ? 'With Text' : 'W/O Text'} onChange={() => setText((t) => !t)} />
         <CheckboxInput inputClassName="text-gray-700" labelClassName="hover:bg-gray-200" checked={full} text={full ? 'Full' : 'Fit'} onChange={() => setFull((t) => !t)} />
       </div>
-      <div className="px-12 w-full max-w-sm h-14 flex justify-center items-center">
+      <div className="px-12 w-full max-w-md h-14 flex justify-center items-center">
         <Button
           type={color}
           disabled={disabled}

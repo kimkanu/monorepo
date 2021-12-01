@@ -1,3 +1,4 @@
+import { providers } from '@team-10/lib';
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -24,24 +25,20 @@ const Login: React.FC = () => {
   }, [me]);
 
   return (
-    <ContentPadding isFooterPresent>
+    <ContentPadding>
       <div className="mx-auto mb-16" style={{ maxWidth: 360 }}>
         <Title size="title">로그인</Title>
         <div className="flex flex-col gap-6">
-          <LoginButton
-            provider="naver"
-            onClick={() => {
-              setLoading(true);
-              window.location.pathname = '/api/auth/naver';
-            }}
-          />
-          <LoginButton
-            provider="github"
-            onClick={() => {
-              setLoading(true);
-              window.location.pathname = '/api/auth/github';
-            }}
-          />
+          {providers.map((provider) => (
+            <LoginButton
+              key={provider}
+              provider={provider}
+              onClick={() => {
+                setLoading(true);
+                window.location.pathname = `/api/auth/${provider}`;
+              }}
+            />
+          ))}
         </div>
       </div>
     </ContentPadding>

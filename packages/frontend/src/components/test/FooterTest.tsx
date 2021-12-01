@@ -1,3 +1,4 @@
+import ZoomIn16Filled from '@fluentui/react-icons/lib/esm/components/ZoomIn16Filled';
 import React from 'react';
 
 import Footer from '../layout/Footer';
@@ -59,6 +60,6 @@ const members = [{
   isSpeaking: false,
 }];
 
-const FooterTest: React.FC = () => (<Footer members={members} />);
+const FooterTest: React.FC = () => <Footer isUIHidden setUIHidden={() => {}} />;
 
 export default FooterTest;
