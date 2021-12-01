@@ -65,6 +65,7 @@ const VoiceWrapper: React.FC = () => {
   return (
     <>
       <VoiceChat
+        audioContext={audioContext}
         voiceBuffer={voiceBuffer}
         analyser={analyser}
         className="absolute z-layout-3 right-4"

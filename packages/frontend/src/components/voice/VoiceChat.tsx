@@ -29,13 +29,14 @@ if (!isOpusSupported) {
 }
 
 interface Props {
+  audioContext: AudioContext | null;
   voiceBuffer: VoiceBuffer | null;
   analyser: AnalyserNode | null;
   onVoice?: (amplitude: number, frequency: number) => void;
 }
 
 const VoiceChat: React.FC<Styled<Props>> = ({
-  voiceBuffer, analyser, onVoice, style, className,
+  audioContext, voiceBuffer, analyser, onVoice, style, className,
 }) => {
   const classroom = useMainClassroom();
   const meInfo = useRecoilValue(meState.info);
@@ -46,7 +47,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
    * ********* */
 
   // MediaRecorder의 onDataAvailable에 들어갈 audio segment의 대략적 길이 (ms)
-  const TIME_SLICE = 600;
+  const TIME_SLICE = 400;
 
   // Permission grant request를 얼마 주기로 날릴 건지 (한 번만 날리면 무시될 수도 있기 때문)
   const REQUESTING_PERMISSION_INTERVAL = 500;
@@ -92,9 +93,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
   // 말하고 있을 때 StreamSend로 보낼 sequence index
   const sequenceIndex = React.useRef<number>(0);
 
-  // 기다리는 response의 sequence index
-  const nextSequenceIndex = React.useRef<number>(0);
-
   // 잘못된 sequence index를 바로잡기 위해 임시 저장되는 audio data
   const voicesRequestingPermission = React.useRef<SocketVoice.Voice[]>([]);
 
@@ -121,31 +119,22 @@ const VoiceChat: React.FC<Styled<Props>> = ({
   }
 
   const animate = () => {
-    if (!analyser) return;
-
-    analyser.getByteFrequencyData(dataArray.current);
-    const array = Array.from(dataArray.current);
-    if (onVoice && array.length > 0) {
-      // Heuristically chosen amplitude & frequency maps
-      onVoice(sum(array) / 25, argMax(array) * 10 + 100);
-      console.log('onVoice', Date.now());
+    if (isSpeaking) {
+      if (analyser) {
+        analyser.getByteFrequencyData(dataArray.current);
+        const array = Array.from(dataArray.current);
+        if (onVoice && array.length > 0) {
+        // Heuristically chosen amplitude & frequency maps
+          const amp = sum(array) / 25;
+          onVoice(amp, argMax(array) * 10 + 100);
+        }
+      }
     }
+
     setTimeout(() => {
       requestRef.current = requestAnimationFrame(animate);
     }, TIME_SLICE);
   };
-
-  React.useEffect(() => {
-    if (analyser) {
-      requestRef.current = requestAnimationFrame(animate);
-      dataArray.current = new Uint8Array(analyser.frequencyBinCount);
-    }
-    return () => {
-      if (typeof requestRef.current !== 'undefined') {
-        cancelAnimationFrame(requestRef.current);
-      }
-    };
-  }, [!!analyser]);
 
   /* ****************** *
    * Media Recorder API *
@@ -164,6 +153,8 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     if (!type) return; // Not supported
 
     data.arrayBuffer().then((buffer) => {
+      if (isSpeaking.current === 'speaking' && onVoice) onVoice(100, 300);
+
       if (isSpeaking.current !== 'requesting') {
         socket.emit('voice/StreamSend', {
           hash: classroom.hash, // TODO
@@ -331,6 +322,19 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     Object.values(timeoutsWrongSequenceIndex).forEach(clearTimeout);
   }, []);
 
+  // Analyser가 생기면 animation 시작
+  React.useEffect(() => {
+    if (audioContext && analyser) {
+      requestRef.current = requestAnimationFrame(animate);
+      dataArray.current = new Uint8Array(analyser.frequencyBinCount);
+    }
+    return () => {
+      if (typeof requestRef.current !== 'undefined') {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [!!audioContext]);
+
   // socket이 보낸 StateChange 요청에 대한 응답 listen하기
   React.useEffect(() => {
     const listener: SocketVoice.Events.Response['voice/StateChange'] = (response) => {
@@ -341,7 +345,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
         } else {
           setTimeout(() => {
             isSpeaking.current = 'none';
-          }, 700);
+          }, TIME_SLICE);
           setSpeakerId(null);
           setButtonPressed(false);
           addToast({
@@ -384,29 +388,42 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   // StateChangeBroadcast listener
   React.useEffect(() => {
-    if (!voiceBuffer) return;
+    if (!voiceBuffer) return () => {};
 
-    socket.on('voice/StateChangeBroadcast', ({
+    const listener = ({
       speaking, userId: id,
     }: SocketVoice.Broadcast.StateChange) => {
-      if (speakerId !== (speaking ? id : null)) {
-        setSpeakerId(speaking ? id : null);
-        nextSequenceIndex.current = 0;
-      }
-
+      setSpeakerId(speaking ? id : null);
       voiceBuffer.reset();
-    });
+    };
+    socket.on('voice/StateChangeBroadcast', listener);
+
+    return () => {
+      socket.off('voice/StateChangeBroadcast', listener);
+    };
   }, [voiceBuffer, socket]);
 
   // StreamReceiveBroadcast listener
   React.useEffect(() => {
-    if (!voiceBuffer || !analyser) return () => {};
+    if (!voiceBuffer || !analyser || !classroom) return () => {};
+
+    let nextSequenceIndex = 0;
+    let mutableSpeakerId: string | null = null;
+
+    const broadcastListener = ({
+      speaking, userId: id,
+    }: SocketVoice.Broadcast.StateChange) => {
+      console.log('statechange', speaking ? id : null, mutableSpeakerId);
+      if (mutableSpeakerId !== (speaking ? id : null)) {
+        nextSequenceIndex = 0;
+        mutableSpeakerId = speaking ? id : null;
+      }
+    };
+    socket.on('voice/StateChangeBroadcast', broadcastListener);
 
     const listener: SocketVoice.Events.Response['voice/StreamReceiveBroadcast'] = async (response) => {
-      if (!classroom) return;
-
       // 정상적인 상황
-      if (nextSequenceIndex.current === response.sequenceIndex) {
+      if (nextSequenceIndex === response.sequenceIndex) {
         console.log('correct; response.voices', response.voices);
         // eslint-disable-next-line no-restricted-syntax
         const indexedVoices: [number, SocketVoice.Voice[]][] = [
@@ -421,11 +438,11 @@ const VoiceChat: React.FC<Styled<Props>> = ({
             voiceNodes.forEach((source) => source.connect(analyser));
           });
 
-        nextSequenceIndex.current = Math.max(
-          nextSequenceIndex.current,
+        nextSequenceIndex = Math.max(
+          nextSequenceIndex,
           indexedVoices.slice(-1)[0][0],
         ) + 1;
-        console.log('nextSequenceIndex.current changed to', nextSequenceIndex.current);
+        console.log('nextSequenceIndex.current changed to', nextSequenceIndex);
         timeoutsWrongSequenceIndex.current.forEach(clearTimeout);
         timeoutsWrongSequenceIndex.current = new Map();
         voicesWrongSequenceIndex.current = new Map();
@@ -434,12 +451,12 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       }
 
       // 나중에 보낸 요청이 시간 안에 먼저 도착한 상황
-      if (nextSequenceIndex.current < response.sequenceIndex) {
+      if (nextSequenceIndex < response.sequenceIndex) {
         voicesWrongSequenceIndex.current.set(
           response.sequenceIndex,
           response.voices,
         );
-        console.log('wrong', nextSequenceIndex.current, response.sequenceIndex);
+        console.log('wrong', nextSequenceIndex, response.sequenceIndex);
         console.log('wrong; response.voices', response.voices);
         timeoutsWrongSequenceIndex.current.set(
           response.sequenceIndex,
@@ -455,11 +472,11 @@ const VoiceChat: React.FC<Styled<Props>> = ({
                 voiceNodes.forEach((source) => source.connect(analyser));
               });
 
-            nextSequenceIndex.current = Math.max(
-              nextSequenceIndex.current,
+            nextSequenceIndex = Math.max(
+              nextSequenceIndex,
               indexedVoices.slice(-1)[0][0],
             ) + 1;
-            console.log('nextSequenceIndex.current changed to', nextSequenceIndex.current);
+            console.log('nextSequenceIndex.current changed to', nextSequenceIndex);
             timeoutsWrongSequenceIndex.current.forEach(clearTimeout);
             timeoutsWrongSequenceIndex.current = new Map();
             voicesWrongSequenceIndex.current = new Map();
@@ -471,6 +488,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     socket.on('voice/StreamReceiveBroadcast', listener);
 
     return () => {
+      socket.off('voice/StateChangeBroadcast', broadcastListener);
       socket.off('voice/StreamReceiveBroadcast', listener);
     };
   }, [voiceBuffer, analyser, socket, classroom]);
@@ -494,9 +512,9 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       onMouseDown={pressButton}
       onTouchStart={pressButton}
       onMouseUp={releaseButton}
+      onMouseLeave={releaseButton}
       onTouchEnd={releaseButton}
       onTouchCancel={releaseButton}
-      onMouseLeave={releaseButton}
     />
   );
 };
