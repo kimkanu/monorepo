@@ -32,6 +32,9 @@ module.exports = {
   },
   darkMode: false,
   theme: {
+    animation: {
+      'ping-small': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite',
+    },
     boxShadow: {
       button: '0 3px 8px var(--shadow-color)',
       'button-hover': '0 6px 16px var(--shadow-color)',
