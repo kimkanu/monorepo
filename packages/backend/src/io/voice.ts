@@ -1,48 +1,40 @@
-import { SocketVoice, ClassroomHash } from '@team-10/lib';
-import { Namespace } from 'socket.io';
+import { SocketVoice } from '@team-10/lib';
+import { Server as IOServer } from 'socket.io';
 
 import Server from '../server';
 import { UserSocket } from '../types/socket';
 
 const ioVoiceHandler = (
-  io: Namespace<SocketVoice.Events.Request, SocketVoice.Events.Response>,
+  io: IOServer<SocketVoice.Events.Request, SocketVoice.Events.Response>,
   server: Server,
 ) => {
   type Socket = UserSocket<SocketVoice.Events.Request, SocketVoice.Events.Response>;
-  type ClassroomVoiceState = {
-    speaker: string | null; // speaker's `stringId`
-    startedAt: Date | null;
-  };
-
-  const state: Record<ClassroomHash, ClassroomVoiceState> = {};
-  const initializeClass = (classroomHash: ClassroomHash) => {
-    if (!state[classroomHash]) {
-      state[classroomHash] = {
-        speaker: null,
-        startedAt: null,
-      };
-    }
-  };
-
-  const isMember = server.managers.classroom.isUserMember.bind(server.managers.classroom);
 
   io.on('connection', (socket: Socket) => {
-    socket.on('StateChange', async ({ classroomHash, speaking }) => {
-      initializeClass(classroomHash);
-
+    socket.on('voice/StateChange', async ({ hash, speaking }) => {
       // 로그인 상태가 아닐 시
       if (!socket.request.user) {
-        socket.emit('StateChange', {
+        socket.emit('voice/StateChange', {
           success: false,
           reason: SocketVoice.PermissionDeniedReason.UNAUTHORIZED,
         });
         return;
       }
 
+      // 없는 수업일 때
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
+        socket.emit('voice/StateChange', {
+          success: false,
+          reason: SocketVoice.PermissionDeniedReason.NOT_MEMBER,
+        });
+        return;
+      }
+
       // 유저가 교실에 들어있지 않을 때
       const userId: string = socket.request.user.stringId;
-      if (!await isMember(userId, classroomHash)) {
-        socket.emit('StateChange', {
+      if (!classroom.hasMember(userId)) {
+        socket.emit('voice/StateChange', {
           success: false,
           reason: SocketVoice.PermissionDeniedReason.NOT_MEMBER,
         });
@@ -50,8 +42,8 @@ const ioVoiceHandler = (
       }
 
       // 이미 유저가 말하고 있으면 말하기 요청 무시
-      if (speaking && state[classroomHash].speaker === userId) {
-        socket.emit('StateChange', {
+      if (speaking && classroom.voice.speaker === userId) {
+        socket.emit('voice/StateChange', {
           success: true,
           speaking,
         });
@@ -59,8 +51,9 @@ const ioVoiceHandler = (
       }
 
       // 자신이 아닌 누군가 말하고 있으면 요청 거절
-      if (!!state[classroomHash].speaker && state[classroomHash].speaker !== userId) {
-        socket.emit('StateChange', {
+      if (!!classroom.voice.speaker && classroom.voice.speaker !== userId) {
+        console.log(classroom.voice.speaker, userId);
+        socket.emit('voice/StateChange', {
           success: false,
           reason: SocketVoice.PermissionDeniedReason.SOMEONE_IS_SPEAKING,
         });
@@ -68,16 +61,16 @@ const ioVoiceHandler = (
       }
 
       // 아무도 말하고 있지 않으면 말하기 요청 수락
-      if ((state[classroomHash].speaker === null) && speaking) {
-        state[classroomHash].speaker = userId;
-        state[classroomHash].startedAt = new Date();
-        socket.emit('StateChange', {
+      if ((classroom.voice.speaker === null) && speaking) {
+        classroom.voice.speaker = userId;
+        classroom.voice.startedAt = new Date();
+        socket.emit('voice/StateChange', {
           success: true,
           speaking: true,
         });
-        io.emit('StateChangeBroadcast', {
+        classroom.broadcast('voice/StateChangeBroadcast', {
           speaking: true,
-          classroomHash,
+          hash,
           userId,
           sentAt: Date.now(),
         });
@@ -87,26 +80,26 @@ const ioVoiceHandler = (
       }
 
       // 자신이 말하고 있을 때 말하기 중단 요청
-      if (!speaking && state[classroomHash].speaker === userId) {
-        socket.emit('StateChange', {
+      if (!speaking && classroom.voice.speaker === userId) {
+        socket.emit('voice/StateChange', {
           success: true,
           speaking: false,
         });
 
-        if (state[classroomHash].startedAt) {
+        if (classroom.voice.startedAt) {
           server.managers.classroom.recordVoiceHistory(
-            classroomHash,
+            hash,
             userId,
-            state[classroomHash].startedAt!,
+            classroom.voice.startedAt!,
             new Date(),
           );
-          state[classroomHash].startedAt = null;
+          classroom.voice.startedAt = null;
         }
-        await new Promise((r) => setTimeout(r, 1000));
-        state[classroomHash].speaker = null;
-        io.emit('StateChangeBroadcast', {
+        await new Promise((r) => setTimeout(r, 300));
+        classroom.voice.speaker = null;
+        classroom.broadcast('voice/StateChangeBroadcast', {
           speaking: false,
-          classroomHash,
+          hash,
           userId,
           reason: SocketVoice.StateChangeEndReason.NORMAL,
           sentAt: Date.now(),
@@ -114,34 +107,52 @@ const ioVoiceHandler = (
       }
     });
 
-    socket.on('StreamSend', async ({ voices, classroomHash, sequenceIndex }) => {
-      initializeClass(classroomHash);
-
+    socket.on('voice/StreamSend', async ({ voices, hash, sequenceIndex }) => {
       // 로그인 상태가 아닐 시
       if (!socket.request.user) {
-        socket.emit('StreamSend', {
+        socket.emit('voice/StreamSend', {
           success: false,
-          reason: SocketVoice.StreamSendDeniedReason.UNAUTHORIZED,
+          reason: SocketVoice.PermissionDeniedReason.UNAUTHORIZED,
         });
         return;
       }
 
+      // 없는 수업일 때
+      const classroom = await server.managers.classroom.get(hash);
       const userId: string = socket.request.user.stringId;
+      if (!classroom || !classroom.hasMember(userId)) {
+        socket.emit('voice/StreamSend', {
+          success: false,
+          reason: SocketVoice.PermissionDeniedReason.NOT_MEMBER,
+        });
+        return;
+      }
+
       // 유저가 speaker가 아닐 때
-      if (state[classroomHash].speaker !== userId) {
-        socket.emit('StreamSend', {
+      // 만약 아무도 안 말하고 있을 때 speaker가 아닌 사람에게서 speak 요청이 오면
+      // speaker로 승격
+      if (classroom.voice.speaker !== userId && classroom.voice.speaker !== null) {
+        socket.emit('voice/StreamSend', {
           success: false,
           reason: SocketVoice.StreamSendDeniedReason.NOT_SPEAKER,
         });
         return;
       }
 
-      socket.emit('StreamSend', {
+      classroom.voice.speaker = userId;
+      classroom.broadcast('voice/StateChangeBroadcast', {
+        speaking: true,
+        hash,
+        userId,
+        sentAt: Date.now(),
+      });
+
+      socket.emit('voice/StreamSend', {
         success: true,
         sequenceIndex,
       });
 
-      io.emit('StreamReceiveBroadcast', {
+      classroom.broadcastMainExcept('voice/StreamReceiveBroadcast', [userId], {
         voices,
         speakerId: userId,
         sequenceIndex,

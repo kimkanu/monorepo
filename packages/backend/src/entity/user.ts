@@ -20,7 +20,9 @@ export default class UserEntity extends BaseEntity {
   @Column({ unique: true })
   stringId: string;
 
-  @OneToMany(() => SSOAccountEntity, (ssoAccount) => ssoAccount.user)
+  @OneToMany(() => SSOAccountEntity, (ssoAccount) => ssoAccount.user, {
+    cascade: true,
+  })
   ssoAccounts: SSOAccountEntity[];
 
   @Column({ nullable: false })

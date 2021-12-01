@@ -3,15 +3,15 @@ import { ClassroomHash, DateNumber } from './common';
 export namespace SocketVoice {
   export namespace Events {
     export interface Request {
-      StateChange: (params: SocketVoice.Request.StateChange) => void;
-      StreamSend: (params: SocketVoice.Request.StreamSend) => void;
+      'voice/StateChange': (params: SocketVoice.Request.StateChange) => void;
+      'voice/StreamSend': (params: SocketVoice.Request.StreamSend) => void;
     }
 
     export interface Response {
-      StateChange: (params: SocketVoice.Response.StateChange) => void;
-      StreamSend: (params: SocketVoice.Response.StreamSend) => void;
-      StateChangeBroadcast: (params: SocketVoice.Broadcast.StateChange) => void;
-      StreamReceiveBroadcast: (params: SocketVoice.Broadcast.StreamReceive) => void;
+      'voice/StateChange': (params: SocketVoice.Response.StateChange) => void;
+      'voice/StreamSend': (params: SocketVoice.Response.StreamSend) => void;
+      'voice/StateChangeBroadcast': (params: SocketVoice.Broadcast.StateChange) => void;
+      'voice/StreamReceiveBroadcast': (params: SocketVoice.Broadcast.StreamReceive) => void;
     }
   }
 
@@ -32,7 +32,7 @@ export namespace SocketVoice {
 
   /* Request to use or stop using voice chat */
   export interface StateChangeRequest {
-    classroomHash: ClassroomHash;
+    hash: ClassroomHash;
     speaking: boolean;
   }
   export type StateChangeResponse =
@@ -66,13 +66,13 @@ export namespace SocketVoice {
     | StateChangeStartBroadcast
     | StateChangeEndBroadcast;
   export interface StateChangeStartBroadcast {
-    classroomHash: ClassroomHash;
+    hash: ClassroomHash;
     userId: string;
     speaking: true;
     sentAt: DateNumber;
   }
   export interface StateChangeEndBroadcast {
-    classroomHash: ClassroomHash;
+    hash: ClassroomHash;
     userId: string;
     speaking: false;
     reason: typeof StateChangeEndReason[keyof typeof StateChangeEndReason];
@@ -97,7 +97,7 @@ export namespace SocketVoice {
 
   /* Send voices while talking */
   export interface StreamSendRequest {
-    classroomHash: ClassroomHash;
+    hash: ClassroomHash;
     voices: Voice[];
     sequenceIndex: number;
   }

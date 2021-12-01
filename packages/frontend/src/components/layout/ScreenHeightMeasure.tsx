@@ -60,7 +60,6 @@ const ScreenHeightMeasure: React.FC = () => {
       shouldUpdateVh = false;
       setKeyboardVisible(true);
     }
-    console.log(difference, shouldUpdateVh);
 
     if (shouldUpdateVh && document.documentElement.style) {
       document.documentElement.style.setProperty('--vh', `${height / 100}px`);

@@ -11,15 +11,18 @@ import {
   SignOut24Filled,
 } from '@fluentui/react-icons';
 import React from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 
-import useMainClassroom from '../../hooks/useMainClassroom';
 import useScreenType from '../../hooks/useScreenType';
+import classroomsState from '../../recoil/classrooms';
+import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
 import themeState from '../../recoil/theme';
+import toastState from '../../recoil/toast';
 import ScreenType from '../../types/screen';
 import { Theme } from '../../types/theme';
+import appHistory from '../../utils/history';
 import { mergeClassNames } from '../../utils/style';
 import Dropdown from '../alert/Dropdown';
 import AmbientButton from '../buttons/AmbientButton';
@@ -33,6 +36,9 @@ interface ProfileDropdownContentProps {
 
 const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, displayName, hideDropdowns }) => {
   const [theme, setTheme] = useRecoilState(themeState.atom);
+  const meInfo = useRecoilValue(meState.info);
+  const history = useHistory();
+  const addToast = useSetRecoilState(toastState.new);
 
   return (
     <div className="flex flex-col items-center">
@@ -60,21 +66,28 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
       <div className="w-full flex flex-col justify-start mt-8">
         <span className="text-gray-800 font-bold">계정 관리</span>
         <div className="flex flex-col gap-1 mt-3">
-          <Link to="/profile">
-            <button
-              type="button"
-              className="flex w-full items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-6 py-3"
-              style={{
-                transitionProperty: 'background-color, border-color, color, fill, stroke',
-              }}
-              onClick={() => {
+          <button
+            type="button"
+            className="flex w-full items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-6 py-3"
+            style={{
+              transitionProperty: 'background-color, border-color, color, fill, stroke',
+            }}
+            onClick={() => {
+              if (meInfo?.initialized) {
                 hideDropdowns();
-              }}
-            >
-              <Person24Filled className="mr-6 text-gray-700" />
-              <span className="text-emph">내 프로필 보기</span>
-            </button>
-          </Link>
+                appHistory.push('/profile', history);
+              } else {
+                addToast({
+                  type: 'error',
+                  sentAt: new Date(),
+                  message: '서비스 이용에 필요한 정보를 먼저 입력해 주세요!',
+                });
+              }
+            }}
+          >
+            <Person24Filled className="mr-6 text-gray-700" />
+            <span className="text-emph">내 프로필 보기</span>
+          </button>
           <button
             type="button"
             className="flex w-full items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-6 py-3"
@@ -133,7 +146,8 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
   const location = useLocation();
   const history = useHistory();
   const me = useRecoilValue(meState.atom);
-  const mainClassroom = useMainClassroom();
+  const mainClassroomHash = useRecoilValue(mainClassroomHashState.atom);
+  const mainClassroom = useRecoilValue(classroomsState.byHash(mainClassroomHash));
 
   const classroomHash = location.pathname.match(/^\/classrooms\/(\w{3}-\w{3}-\w{3})/)?.[1];
   const inClassroom = !!classroomHash;
@@ -218,21 +232,14 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
               )}
                 onClick={() => {
                   hideDropdowns();
-                  if (history.length > 0) {
-                    history.goBack();
-                  } else {
-                    history.push('/');
-                  }
+                  appHistory.goBack(history);
                 }}
               />
             ) : (
               <LogoButton
                 onClick={() => {
                   hideDropdowns();
-                  console.log(me.loaded && (!me.info || me.info.initialized), location.pathname !== '/');
-                  if (me.loaded && (!me.info || me.info.initialized) && location.pathname !== '/') {
-                    history.push('/');
-                  }
+                  appHistory.goMain(history);
                 }}
               />
             )}
@@ -265,95 +272,95 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
         <div className="flex gap-5">
           {/* Classroom Buttons */}
           {isClassroomButtonsVisible && (
-          <>
-            <AmbientButton
-              dark={isMobileLandscapeClassroomUI}
-              alt="Members"
-              icon={<People24Filled />}
-              filled
-              onClick={() => {
-                history.push(`/classrooms/${classroomHash!}/members`);
-              }}
-            />
-            <AmbientButton
-              dark={isMobileLandscapeClassroomUI}
-              alt="Settings"
-              icon={<Settings24Filled />}
-              filled
-              onClick={() => {
-                history.push(`/classrooms/${classroomHash!}/settings`);
-              }}
-            />
-          </>
+            <>
+              <AmbientButton
+                dark={isMobileLandscapeClassroomUI}
+                alt="Members"
+                icon={<People24Filled />}
+                filled
+                onClick={() => {
+                  appHistory.push(`/classrooms/${classroomHash!}/members`, history);
+                }}
+              />
+              <AmbientButton
+                dark={isMobileLandscapeClassroomUI}
+                alt="Settings"
+                icon={<Settings24Filled />}
+                filled
+                onClick={() => {
+                  appHistory.push(`/classrooms/${classroomHash!}/settings`, history);
+                }}
+              />
+            </>
           )}
           {isMainButtonsVisible && (
-          <>
-            <AmbientButton
-              alt="Langauge Selection"
-              className="mr-2.5"
-              icon={(
-                <span className="w-6 h-6">
-                  <span className="inline-flex items-center w-10">
-                    <Globe24Regular />
-                    {/* Downward Arrow */}
-                    <svg className="ml-1" width="12.5" height="7.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L4.29289 4.29289C4.68342 4.68342 5.31658 4.68342 5.70711 4.29289L9 1" stroke="#46444A" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                </span>
-                )}
-              onClick={() => {
-                hideDropdowns();
-                setLanguageDropdownVisible(() => !isLanguageDropdownVisible);
-              }}
-            />
-            <AmbientButton
-              alt="Notifications"
-              icon={<Alert24Filled />}
-              filled
-              onClick={() => {
-                hideDropdowns();
-                setNotificationDropdownVisible(() => !isNotificationDropdownVisible);
-              }}
-            />
-            {!me.loaded ? (
+            <>
               <AmbientButton
-                alt="Account Settings (Logging in)"
-                icon={<SpinnerIos20Regular className="animate-spin block" style={{ height: 20 }} />}
-                onClick={() => {
-                  hideDropdowns();
-                }}
-              />
-            ) : me.info ? (
-              <AmbientButton
-                alt="Account Settings"
+                alt="Langauge Selection"
+                className="mr-2.5"
                 icon={(
-                  <img
-                    src={me.info.profileImage}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full overflow-hidden object-cover object-center shadow-button"
-                    style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
-                  />
+                  <span className="w-6 h-6">
+                    <span className="inline-flex items-center w-10">
+                      <Globe24Regular />
+                      {/* Downward Arrow */}
+                      <svg className="ml-1" width="12.5" height="7.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1L4.29289 4.29289C4.68342 4.68342 5.31658 4.68342 5.70711 4.29289L9 1" stroke="#46444A" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                  </span>
                   )}
-                isImageIcon
                 onClick={() => {
                   hideDropdowns();
-                  setProfileDropdownVisible(() => !isProfileDropdownVisible);
+                  setLanguageDropdownVisible(() => !isLanguageDropdownVisible);
                 }}
               />
-            ) : (
               <AmbientButton
-                alt="Account Settings"
-                icon={<DoorArrowLeft24Regular />}
+                alt="Notifications"
+                icon={<Alert24Filled />}
+                filled
                 onClick={() => {
                   hideDropdowns();
-                  if (location.pathname !== '/login') {
-                    history.push(`/login?redirect_uri=${location.pathname}`);
-                  }
+                  setNotificationDropdownVisible(() => !isNotificationDropdownVisible);
                 }}
               />
-            )}
-          </>
+              {!me.loaded ? (
+                <AmbientButton
+                  alt="Account Settings (Logging in)"
+                  icon={<SpinnerIos20Regular className="animate-spin block" style={{ height: 20 }} />}
+                  onClick={() => {
+                    hideDropdowns();
+                  }}
+                />
+              ) : me.info ? (
+                <AmbientButton
+                  alt="Account Settings"
+                  icon={(
+                    <img
+                      src={me.info.profileImage}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full overflow-hidden object-cover object-center shadow-button"
+                      style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
+                    />
+                    )}
+                  isImageIcon
+                  onClick={() => {
+                    hideDropdowns();
+                    setProfileDropdownVisible(() => !isProfileDropdownVisible);
+                  }}
+                />
+              ) : (
+                <AmbientButton
+                  alt="Account Settings"
+                  icon={<DoorArrowLeft24Regular />}
+                  onClick={() => {
+                    hideDropdowns();
+                    if (appHistory.pathname !== '/login') {
+                      appHistory.push(`/login?redirect_uri=${appHistory.pathname}`, history);
+                    }
+                  }}
+                />
+              )}
+            </>
           )}
         </div>
       </div>
@@ -362,45 +369,3 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
 };
 
 export default Header;
-
-/*
-
-      {isMobileLandscapeUI && (
-        <div
-          className="w-100vw h-16 px-4 py-3 fixed top-0 items-center content-center flex justify-between z-layout-3"
-          style={{
-            height: 'calc(env(safe-area-inset-top, 0px) + 64px)',
-            backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0))',
-          }}
-        >
-          <div className="flex items-center">
-            <div className="w-10 h-10 mr-4">
-              {isMobileLandscapeUIVisible && (
-                <AmbientButton
-                  alt="Back"
-                  icon={(
-                    <IosArrowLtr24Regular
-                      className="inline-block"
-                      style={{ transform: 'translateX(3px)' }}
-                    />
-                  )}
-                  onClick={() => {
-                    history.push('/');
-                  }}
-                  dark
-                />
-              )}
-            </div>
-          </div>
-          <div className="flex gap-4">
-            {isClassroomButtonsVisible && (
-              <>
-                <AmbientButton alt="Members" icon={<People24Filled />} filled onClick={() => onMenu('members')} dark />
-                <AmbientButton alt="Settings" icon={<Settings24Filled />} filled onClick={() => onMenu('settings')} dark />
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      */

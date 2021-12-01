@@ -61,7 +61,7 @@
     "youtube-player": "^5.5.2"
   },
   "scripts": {
-    "development": "yarn install && craco start",
+    "development": "craco start",
     "production": "craco build",
     "dev": "yarn development",
     "prod": "yarn production",

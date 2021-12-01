@@ -9,15 +9,15 @@ import styles from './TextInput.module.css';
 
 type ValidationError = string | null;
 type Validator =
-  | ((value: string) => boolean)
-  | ((value: string) => ValidationError)
-  | ((value: string) => Promise<boolean>)
-  | ((value: string) => CancelablePromise<boolean>)
-  | ((value: string) => Promise<ValidationError>)
-  | ((value: string) => CancelablePromise<ValidationError>);
+  | ((value: string | null) => boolean)
+  | ((value: string | null) => ValidationError)
+  | ((value: string | null) => Promise<boolean>)
+  | ((value: string | null) => CancelablePromise<boolean>)
+  | ((value: string | null) => Promise<ValidationError>)
+  | ((value: string | null) => CancelablePromise<ValidationError>);
 
 interface Props {
-  value: string;
+  value: string | null;
   onInput?: (newText: string, event: React.FormEvent<HTMLInputElement>) => void;
   icon?: React.ReactElement | null; // `20Regular`
   filled?: boolean;
@@ -147,7 +147,7 @@ const TextInput: React.FC<Styled<Props>> = ({
           icon ? 'pl-14' : 'pl-5',
         )}
         placeholder={placeholderText}
-        value={value}
+        value={value ?? ''}
         onInput={(e) => {
           if (onInput) {
             onInput(e.currentTarget.value, e);
@@ -156,7 +156,7 @@ const TextInput: React.FC<Styled<Props>> = ({
         onKeyPress={(e) => {
           if (e.key === 'Enter' && (validator ? validator(value) : !!value)) {
             if (onSubmit) {
-              onSubmit(value);
+              onSubmit(value ?? '');
             }
             if (nextRef?.current) {
               nextRef.current.focus();
