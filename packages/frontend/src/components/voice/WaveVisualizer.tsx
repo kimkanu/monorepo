@@ -62,10 +62,18 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
 
   return (
     <div
-      className="absolute w-full left-0 flex justify-center items-center opacity-50 z-layout-3"
+      className="absolute w-full left-0 flex justify-center items-center opacity-50 z-layout-3 pointer-events-none"
       style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
     >
-      <svg className="w-full max-w-5xl" viewBox="-400 -100 800 100" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="w-full max-w-5xl"
+        viewBox="-400 -100 800 100"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{
+          minWidth: '50rem',
+          transform: 'translateX(calc(50vw - 50%))',
+        }}
+      >
         {paths}
       </svg>
     </div>

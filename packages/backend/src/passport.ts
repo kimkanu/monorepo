@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import GitHubStrategy from 'passport-github';
+
 import PassportOauth2 from 'passport-oauth2';
 import { Connection } from 'typeorm';
 import uuid from 'uuid';
