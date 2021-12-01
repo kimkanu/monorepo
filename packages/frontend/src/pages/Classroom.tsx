@@ -7,7 +7,6 @@ import Button from '../components/buttons/Button';
 import FeedChatBox from '../components/chat/FeedChatBox';
 import MyChatBox from '../components/chat/MyChatBox';
 import OthersChatBox from '../components/chat/OthersChatBox';
-import TextInput from '../components/input/TextInput';
 import VoiceChat from '../components/voice/VoiceChat';
 import WaveVisualizer from '../components/voice/WaveVisualizer';
 import useMainClassroom from '../hooks/useMainClassroom';
