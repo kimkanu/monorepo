@@ -47,7 +47,7 @@ export type UsersMePatchError = {
 // DELETE /users/me
 type UsersMeDeleteResponse = Response<Empty, never>;
 
-interface UserInfoMeJSON extends UserInfoJSON {
+export interface UserInfoMeJSON extends UserInfoJSON {
   initialized: boolean;
   ssoAccounts: SSOAccountJSON[];
   classrooms: ClassroomJSON[];

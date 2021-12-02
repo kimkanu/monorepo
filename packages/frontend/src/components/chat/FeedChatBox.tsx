@@ -1,8 +1,8 @@
-import React from 'react';
-
 import {
   ChatContent, ChatType, FeedChatContent, FeedType,
-} from '../../types/chat';
+} from '@team-10/lib';
+import React from 'react';
+
 import { stringifyDateConsistent } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -19,7 +19,7 @@ const FeedChat: React.FC<FeedChatProps> = ({
       dark ? 'bg-gray-600 bg-opacity-70 py-1 px-2 w-fit rounded-lg mx-auto text-white' : 'text-gray-500',
     )}
   >
-    {content.type === FeedType.DATE ? (
+    {content.type === 'date' ? (
       stringifyDateConsistent(content.date)
     ) : (
       content.isStart ? '수업이 시작되었습니다.' : '수업이 끝났습니다.'
@@ -29,7 +29,7 @@ const FeedChat: React.FC<FeedChatProps> = ({
 
 interface Props {
   dark: boolean;
-  chats: ChatContent<ChatType.FEED>[];
+  chats: ChatContent<'feed'>[];
 }
 
 const FeedChatBox: React.FC<Props> = ({

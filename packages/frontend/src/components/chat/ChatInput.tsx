@@ -4,13 +4,9 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
-import {
-  TypedChatContent, ChatType, ChatContent, TextChatContent, PhotoChatContent,
-} from '../../types/chat';
 import { mergeClassNames } from '../../utils/style';
 
 import AmbientButton from '../buttons/AmbientButton';
-import Button from '../buttons/Button';
 import TextInput from '../input/TextInput';
 
 interface Props {

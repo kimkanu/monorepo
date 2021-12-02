@@ -1,8 +1,8 @@
+import { ChatType } from '@team-10/lib';
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import toastState from '../../recoil/toast';
-import { ChatType } from '../../types/chat';
 import ChatInput from '../chat/ChatInput';
 import MyChatBox from '../chat/MyChatBox';
 import OthersChatBox from '../chat/OthersChatBox';
@@ -24,19 +24,19 @@ const ChatBoxTest: React.FC = () => {
             {
               content: { text: '상대 메세지' },
               id: '1',
-              type: ChatType.TEXT,
+              type: 'text',
               sentAt: new Date(),
             },
             {
               content: { text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
               id: '1',
-              type: ChatType.TEXT,
+              type: 'text',
               sentAt: new Date(),
             },
             {
               content: { photo: 'https://picsum.photos/640/480', alt: '채팅 사진' },
               id: '2',
-              type: ChatType.PHOTO,
+              type: 'photo',
               sentAt: new Date(),
             },
           ]}
@@ -47,13 +47,13 @@ const ChatBoxTest: React.FC = () => {
             {
               content: { text: '내 메세지' },
               id: '1',
-              type: ChatType.TEXT,
+              type: 'text',
               sentAt: new Date(),
             },
             {
               content: { text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
               id: '1',
-              type: ChatType.TEXT,
+              type: 'text',
               sentAt: new Date(),
             },
           ]}
