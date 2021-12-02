@@ -1,4 +1,4 @@
-import { SocketClassroom } from '@team-10/lib';
+import { ClassroomsHashPatchResponse, SocketClassroom } from '@team-10/lib';
 import React from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -10,6 +10,7 @@ import classroomsState from '../recoil/classrooms';
 import mainClassroomHashState from '../recoil/mainClassroomHash';
 import meState from '../recoil/me';
 import ScreenType from '../types/screen';
+import fetchAPI from '../utils/fetch';
 
 interface Props {
   hash: string;
@@ -67,6 +68,21 @@ const Classroom: React.FC<Props> = ({ hash }) => {
               type="primary"
               width="fit-content"
               height={36}
+              text={classroom?.isLive ? 'End' : 'Start'}
+              onClick={async () => {
+                if (!classroom) return;
+                const response = await fetchAPI(
+                  'PATCH /classrooms/:hash',
+                  { hash: classroom.hash! },
+                  { operation: 'toggle', start: !classroom.isLive },
+                ) as ClassroomsHashPatchResponse<'toggle'>;
+                // TODO
+              }}
+            />
+            <Button
+              type="primary"
+              width="fit-content"
+              height={36}
               text="Set Video"
               onClick={() => {
                 if (!classroom) return;
@@ -74,7 +90,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
                   ...c,
                   video: {
                     type: 'single',
-                    videoId: 'lIKmm-G7YVQ',
+                    videoId: 'BcbmFxbdsJ0',
                   },
                 }));
               }}

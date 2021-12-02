@@ -207,6 +207,29 @@ export default function generateRoute(server: Server): Route {
         };
       }
 
+      if (operation === 'toggle') {
+        if (classroom.instructor.stringId !== userId) {
+          return {
+            success: false,
+            error: {
+              code: 'FORBIDDEN',
+              statusCode: 403,
+              extra: {},
+            },
+          };
+        }
+
+        if (body.start) {
+          await classroom.start();
+        } else {
+          await classroom.end();
+        }
+        return {
+          success: true,
+          payload: {} as Empty,
+        };
+      }
+
       return {
         success: false,
         error: {
