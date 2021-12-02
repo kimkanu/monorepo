@@ -90,7 +90,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
                   ...c,
                   video: {
                     type: 'single',
-                    videoId: 'lIKmm-G7YVQ',
+                    videoId: 'BcbmFxbdsJ0',
                   },
                 }));
               }}

@@ -95,7 +95,7 @@ export default class Classroom {
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
       patch: {
-        members: members.map((m) => ({ ...m, isConnected: true })),
+        members: members.map((m) => (m.stringId === userId ? { ...m, isConnected: true } : m)),
       },
     });
   }
@@ -118,7 +118,7 @@ export default class Classroom {
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
       patch: {
-        members: members.map((m) => ({ ...m, isConnected: false })),
+        members: members.map((m) => (m.stringId === userId ? { ...m, isConnected: false } : m)),
       },
     });
   }
