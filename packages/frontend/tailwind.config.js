@@ -28,6 +28,10 @@ module.exports = {
       '.shadow-color-primary',
       '.shadow-color-destructive',
       '.shadow-color-neutral',
+      '.bg-violet-500',
+      '.bg-pink-500',
+      '.bg-green-500',
+      '.bg-blue-500',
     ],
   },
   darkMode: false,
@@ -121,6 +125,11 @@ module.exports = {
       }],
     },
     extend: {
+      animation: {
+        'ping-small-0': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'ping-small-1': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) 0.5s infinite',
+        'ping-small-2': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) 1s infinite',
+      },
       borderRadius: {
         8: '32px',
         10: '40px',

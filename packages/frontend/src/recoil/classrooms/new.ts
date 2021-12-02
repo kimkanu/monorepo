@@ -1,12 +1,12 @@
 /* istanbul ignore file */
-import { ClassroomJSON } from '@team-10/lib';
+import { ClassroomJSONWithSpeaker } from '@team-10/lib';
 import { selector } from 'recoil';
 
 import { guardRecoilDefaultValue } from '..';
 
 import classroomsAtom from './atom';
 
-const classroomsNewSelector = selector<ClassroomJSON | null>({
+const classroomsNewSelector = selector<ClassroomJSONWithSpeaker | null>({
   key: 'classroomsNewSelector',
   // get the most recently added classroom
   get: ({ get }) => {

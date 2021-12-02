@@ -15,7 +15,7 @@ const Main = React.forwardRef<HTMLDivElement>((props, ref) => {
   const history = useHistory();
 
   return (
-    <ContentPadding ref={ref} isFooterPresent>
+    <ContentPadding ref={ref}>
       {!me.loaded ? null : me.info ? (
         <>
           <Title size="title">내 수업</Title>

@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { mergeClassNames, Styled } from '../../utils/style';
+import VoiceWrapper from '../voice/VoiceWrapper';
 
+import Footer from './Footer';
 import Header from './Header';
-import VoiceWrapper from './VoiceWrapper';
 
 const Layout: React.FC<Styled<{}>> = ({ className, style, children }) => {
   const [isUIHidden, setUIHidden] = React.useState(false);
@@ -11,13 +12,13 @@ const Layout: React.FC<Styled<{}>> = ({ className, style, children }) => {
   return (
     <div style={style} className={mergeClassNames('w-full h-full bg-white absolute top-0 overflow-hidden', className)}>
       <Header isUIHidden={isUIHidden} />
+      <Footer isUIHidden={isUIHidden} setUIHidden={setUIHidden} />
       {/* Dummy Footer */}
-      <div
+      {/* <div
         className="fixed border-t-4 border-primary-500 bg-white z-layout bottom-0 w-100vw"
         style={{ height: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
       >
-        <VoiceWrapper />
-      </div>
+      </div> */}
 
       {/* Contents */}
       <div

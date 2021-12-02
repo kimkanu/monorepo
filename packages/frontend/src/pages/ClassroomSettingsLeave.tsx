@@ -26,8 +26,8 @@ const ClassroomSettingsLeave: React.FC = () => {
   const [classroomName, setClassroomName] = React.useState<string | null>(classroom?.name ?? null);
   const [isLoading, setLoading] = React.useState(false);
 
-  const isInstructor = !!classroom && classroom.instructorId === myId;
-  const isStudent = !!classroom && classroom.instructorId !== myId;
+  const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
+  const isStudent = !!classroom && classroom.instructor!.stringId !== myId;
 
   React.useEffect(() => {
     if (classroomName === null) {

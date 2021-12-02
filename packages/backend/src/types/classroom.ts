@@ -59,11 +59,10 @@ export default class Classroom {
   constructor(
     public server: Server,
     public entity: ClassroomEntity,
-  ) {}
-
-  async initialize() {
+  ) {
     this.hash = this.entity.hash;
     this.name = this.entity.name;
+    this.passcode = this.entity.passcode;
     this.instructor = this.entity.instructor;
     this.members = this.entity.members;
     this.updatedAt = this.entity.updatedAt;
@@ -78,7 +77,6 @@ export default class Classroom {
       currentTime: null,
       play: false,
     };
-    await this.regeneratePasscode();
   }
 
   async connectMember(userId: string) {

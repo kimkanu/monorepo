@@ -60,7 +60,7 @@ const ClassButton: React.FC<Styled<Props>> = ({
             <div className="text-emph">LIVE</div>
           </div>
           )}
-          {classroom.instructorId === userId && (
+          {classroom.instructor.stringId === userId && (
           <div className="flex gap-3 items-center">
             <div className="w-5 h-5 inline-flex justify-center items-center"><Star20Filled /></div>
             <div className="text-emph">MY</div>

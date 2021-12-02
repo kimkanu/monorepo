@@ -140,11 +140,11 @@ const TextInput: React.FC<Styled<Props>> = ({
           style,
         )}
         className={mergeClassNames(
-          className,
           'text-gray-900 text-emph w-full h-full rounded-full placeholder-sans outline-none border-none focus:ring-2',
           isValid !== false ? 'bg-gray-200' : 'bg-red-100 bg-opacity-50',
           font === 'sans' ? 'font-sans' : 'font-mono',
           icon ? 'pl-14' : 'pl-5',
+          className,
         )}
         placeholder={placeholderText}
         value={value ?? ''}

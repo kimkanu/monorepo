@@ -16,7 +16,7 @@ const FeedChat: React.FC<FeedChatProps> = ({
   <div
     className={mergeClassNames(
       'text-tiny text-center',
-      dark ? 'bg-gray-900 bg-opacity-50' : 'text-gray-500',
+      dark ? 'bg-gray-600 bg-opacity-70 py-1 px-2 w-fit rounded-lg mx-auto text-white' : 'text-gray-500',
     )}
   >
     {content.type === FeedType.DATE ? (

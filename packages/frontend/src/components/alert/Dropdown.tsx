@@ -93,7 +93,7 @@ const Dropdown: React.FC<Styled<Props>> = ({
             conditionalClassName({
               desktop: 'w-96 z-dropdown-desktop-1 shadow-dropdown-desktop rounded-b-8 absolute',
               mobile: 'w-full z-dropdown-mobile-1 shadow-dropdown-mobile rounded-t-12',
-              mobileLandscape: 'max-w-sm',
+              mobileLandscape: 'max-w-md',
               mobilePortrait: 'max-w-md',
             })(screenType),
             className,

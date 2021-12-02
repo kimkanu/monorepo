@@ -34,8 +34,8 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
   const myId = useRecoilValue(meState.id);
   const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
   const [classroom, setClassroom] = useRecoilState(classroomsState.byHash(hash));
-  const isInstructor = !!classroom && classroom.instructorId === myId;
-  const isStudent = !!classroom && classroom.instructorId !== myId;
+  const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
+  const isStudent = !!classroom && classroom.instructor!.stringId !== myId;
   const addToast = useSetRecoilState(toastState.new);
   const videoId = classroom?.video?.videoId ?? null;
   const [

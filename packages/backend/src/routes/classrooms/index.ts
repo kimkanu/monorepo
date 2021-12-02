@@ -31,7 +31,7 @@ export default function generateRoute(server: Server): Route {
       const classroom = await managers.classroom.create(user.stringId, name);
       return {
         success: true,
-        payload: (await managers.classroom.getClassroomJSON(classroom.hash))!,
+        payload: (await managers.classroom.getMyClassroomJSON(classroom.hash))!,
       };
     },
   );
