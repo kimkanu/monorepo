@@ -60,7 +60,7 @@ const ChatBoxTest: React.FC = () => {
         />
       </div>
       <ChatInput
-        dark={false}
+        dark
         text={text}
         onInput={setText}
         onPhotoButtonClick={() => console.log('사진 버튼이 눌렸습니다.')}
