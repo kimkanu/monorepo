@@ -1,8 +1,8 @@
-import React from 'react';
-
 import {
   ChatType, ChatContent, TextChatContent, PhotoChatContent,
-} from '../../types/chat';
+} from '@team-10/lib';
+import React from 'react';
+
 import { stringifyDateTime } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -17,7 +17,7 @@ interface MyChatProps {
 const MyChat: React.FC<MyChatProps> = ({
   type, dark, content,
 }) => (
-  type === ChatType.TEXT
+  type === 'text'
     ? <MyTextChat dark={dark} content={content as TextChatContent} />
     : <MyPhotoChat dark={dark} content={content as PhotoChatContent} />
 );

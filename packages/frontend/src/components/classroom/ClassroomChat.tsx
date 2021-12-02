@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
 import meState from '../../recoil/me';
-import { ChatContent, ChatType, FeedType } from '../../types/chat';
+import { ChatContent, ChatType, FeedType } from '@team-10/lib';
 import { conditionalStyle } from '../../utils/style';
 import FeedChatBox from '../chat/FeedChatBox';
 import MyChatBox from '../chat/MyChatBox';
@@ -15,8 +15,8 @@ import OthersChatBox from '../chat/OthersChatBox';
 function chunkChats(chats: ChatContent[]): ChatContent[][] {
   return chats.reduce((collection, item) => {
     if (collection.length > 0 && (
-      (collection[collection.length - 1][0].type === ChatType.FEED && item.type === ChatType.FEED)
-        || collection[collection.length - 1][0].sender?.userId === item.sender?.userId
+      (collection[collection.length - 1][0].type === 'feed' && item.type === 'feed')
+        || collection[collection.length - 1][0].sender?.stringId === item.sender?.stringId
     )) {
       collection[collection.length - 1].push(item);
       return collection;
@@ -44,7 +44,7 @@ const ClassroomChat: React.FC<Props> = ({
   };
   const chats: ChatContent[] = [
     {
-      type: ChatType.TEXT,
+      type: 'text',
       id: 'sjdkslakcnkajsdksjdh',
       sender: user1,
       sentAt: new Date(Date.now() - 86400000),
@@ -53,7 +53,7 @@ const ClassroomChat: React.FC<Props> = ({
       },
     },
     {
-      type: ChatType.TEXT,
+      type: 'text',
       id: 'aosdjakscnkajsdnksajdn',
       sender: user1,
       sentAt: new Date(Date.now() - 86400000),
@@ -62,7 +62,7 @@ const ClassroomChat: React.FC<Props> = ({
       },
     },
     {
-      type: ChatType.TEXT,
+      type: 'text',
       id: 'qegbowkapsclsokdnijssds',
       sender: user1,
       sentAt: new Date(Date.now() - 86400000),
@@ -71,7 +71,7 @@ const ClassroomChat: React.FC<Props> = ({
       },
     },
     {
-      type: ChatType.FEED,
+      type: 'feed',
       id: ';aklc,qslcaklcs,lsmdklqkwmd',
       sentAt: new Date(),
       content: {
@@ -80,7 +80,7 @@ const ClassroomChat: React.FC<Props> = ({
       },
     },
     {
-      type: ChatType.FEED,
+      type: 'feed',
       id: ';aklc,asklgmkadjcksjascsacjkjsnc',
       sentAt: new Date(),
       content: {
@@ -89,7 +89,7 @@ const ClassroomChat: React.FC<Props> = ({
       },
     },
     {
-      type: ChatType.TEXT,
+      type: 'text',
       id: 'aslpqlkokansclksvnmbslkaslckslkcsj',
       sender: user1,
       sentAt: new Date(),
@@ -98,7 +98,7 @@ const ClassroomChat: React.FC<Props> = ({
       },
     },
     {
-      type: ChatType.PHOTO,
+      type: 'photo',
       id: 'asfagadbavslkcmlk jbacskjlkcm',
       sender: user1,
       sentAt: new Date(),
@@ -140,15 +140,15 @@ const ClassroomChat: React.FC<Props> = ({
     >
       <div className="flex flex-col gap-4 p-8">
         {chunkChats(chats).map((chatChunks) => (
-          chatChunks[0].type === ChatType.FEED
+          chatChunks[0].type === 'feed'
             ? (
               <FeedChatBox
                 key={`__FEED__-${chatChunks[0].sentAt.getTime()}`}
                 dark={dark}
-                chats={chatChunks as ChatContent<ChatType.FEED>[]}
+                chats={chatChunks as ChatContent<'feed'>[]}
               />
             )
-            : chatChunks[0].sender!.userId === myId
+            : chatChunks[0].sender!.stringId === myId
               ? (
                 <MyChatBox
                   key={`${myId}-${chatChunks[0].sentAt.getTime()}`}
@@ -158,7 +158,7 @@ const ClassroomChat: React.FC<Props> = ({
               )
               : (
                 <OthersChatBox
-                  key={`${chatChunks[0].sender!.userId}-${chatChunks[0].sentAt.getTime()}`}
+                  key={`${chatChunks[0].sender!.stringId}-${chatChunks[0].sentAt.getTime()}`}
                   dark={dark}
                   sender={chatChunks[0].sender!}
                   chats={chatChunks}

@@ -1,28 +1,17 @@
-import { ClassroomMember } from './user';
+import { UserInfoJSON } from '.';
 
-/// src/types/chat.ts
-export enum ChatType {
-  TEXT,
-  PHOTO,
-  FEED,
-  // CODE,
-  // ...
-}
-
-export enum FeedType {
-  DATE,
-  CLASS,
-}
+export type ChatType = 'text' | 'photo' | 'feed';
+export type FeedType = 'date' | 'class';
 
 // typescript-eslint의 버그로 인해 아래 룰을 disable 해야 합니다.
 /* eslint-disable @typescript-eslint/indent */
 export type TypedChatContent<
   T extends ChatType,
-> = T extends typeof ChatType.TEXT
+> = T extends 'text'
   ? TextChatContent
-  : T extends typeof ChatType.PHOTO
+  : T extends 'photo'
   ? PhotoChatContent
-  : T extends typeof ChatType.FEED
+  : T extends 'feed'
   ? FeedChatContent<FeedType>
   : never;
 
@@ -31,7 +20,7 @@ export type ChatContent<T extends ChatType = ChatType> = {
   type: T;
   content: TypedChatContent<T>;
   sentAt: Date;
-  sender?: ClassroomMember;
+  sender?: UserInfoJSON;
 };
 
 export interface CommonChatContent {}
@@ -47,9 +36,9 @@ export interface PhotoChatContent extends CommonChatContent {
 
 export type FeedChatContent<
 F extends FeedType = FeedType,
-> = F extends typeof FeedType.DATE
+> = F extends 'date'
   ? DateFeedChatContent
-  : F extends typeof FeedType.CLASS
+  : F extends 'class'
   ? ClassFeedChatContent
   : never;
 
@@ -57,10 +46,10 @@ export interface CommonFeedChatContent<F extends FeedType> {
   type: F;
 }
 
-export interface DateFeedChatContent extends CommonFeedChatContent<FeedType.DATE> {
+export interface DateFeedChatContent extends CommonFeedChatContent<'date'> {
   date: Date;
 }
 
-export interface ClassFeedChatContent extends CommonFeedChatContent<FeedType.CLASS> {
+export interface ClassFeedChatContent extends CommonFeedChatContent<'class'> {
   isStart: boolean;
 }

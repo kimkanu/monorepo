@@ -1,6 +1,6 @@
+import { TextChatContent } from '@team-10/lib';
 import React from 'react';
 
-import { TextChatContent } from '../../types/chat';
 import { mergeClassNames } from '../../utils/style';
 
 import styles from './Chat.module.css';
