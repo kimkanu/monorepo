@@ -101,6 +101,11 @@ const ioYouTubeHandler = (
         return;
       }
 
+      socket.emit('youtube/ChangePlayStatus', {
+        success: true,
+        play,
+      });
+
       classroom.youtube = {
         responseTime: new Date(),
         play,

@@ -18,6 +18,7 @@ import { Styled } from '../../utils/style';
 
 import ToastDisplay from '../alert/ToastDisplay';
 import YTPlayer from '../youtube/YTPlayer';
+import YTPlayerControl from '../youtube/YTPlayerControl';
 import YTSynchronizer from '../youtube/YTSynchronizer';
 import YTWrapper from '../youtube/YTWrapper';
 
@@ -124,7 +125,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       <Loading loading={loading} />
 
       <YTSynchronizer>
-        {(onReady, onStateChange) => (
+        {(onReady, onStateChange, isInstructor, duration, volume, setVolume) => (
           <YTWrapper
             isPresent={!!classrooms[0]?.video}
             inClassroom={inClassroom}
@@ -134,8 +135,12 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
               }
             }}
           >
-            <YTPlayer
+            <YTPlayerControl
+              isInstructor={isInstructor}
               videoId={classrooms[0]?.video?.videoId}
+              duration={duration}
+              volume={volume}
+              setVolume={setVolume}
               onReady={onReady}
               onStateChange={onStateChange}
             />
