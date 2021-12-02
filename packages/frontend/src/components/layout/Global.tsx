@@ -17,7 +17,8 @@ import appHistory, { classroomPrefixRegex } from '../../utils/history';
 import { Styled } from '../../utils/style';
 
 import ToastDisplay from '../alert/ToastDisplay';
-import ClassroomPatcher from '../classroom/ClassroomPatcher';
+import ClassroomPatcher from '../patcher/ClassroomPatcher';
+import MyInfoPatcher from '../patcher/MyInfoPatcher';
 import YTPlayerControl from '../youtube/YTPlayerControl';
 import YTSynchronizer from '../youtube/YTSynchronizer';
 import YTWrapper from '../youtube/YTWrapper';
@@ -113,8 +114,9 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       {/* History Listener */}
       <HistoryListener />
 
-      {/* Classroom Patcher */}
+      {/* Info Patcher */}
       <ClassroomPatcher />
+      <MyInfoPatcher />
 
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />

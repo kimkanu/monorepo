@@ -30,8 +30,7 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
   const mainClassroom = useMainClassroom();
   const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
 
-  // const isVisible = classrooms.some(({ isLive }) => isLive) || inClassroom;
-  const isVisible = true;
+  const isVisible = classrooms.some(({ isLive }) => isLive) || inClassroom;
 
   const [text, setText] = React.useState('');
 
