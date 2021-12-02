@@ -23,7 +23,7 @@ export default class ClassroomEntity extends BaseEntity {
   @Column()
   name: string;
 
-  @ManyToOne(() => User, (user) => user.myClassrooms)
+  @ManyToOne(() => User, (user) => user.myClassrooms, { onDelete: 'CASCADE' })
   @JoinTable()
   instructor: User;
 

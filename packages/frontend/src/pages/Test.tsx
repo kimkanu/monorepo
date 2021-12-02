@@ -7,24 +7,24 @@ import TempButton from '../components/buttons/TempButton';
 import AudioVisualizerTest from '../components/test/AudioVisualizerTest';
 import ButtonTest from '../components/test/ButtonTest';
 import ChatBoxTest from '../components/test/ChatBoxTest';
-import ClassSettingPageTest from '../components/test/ClassSettingPageTest';
-import DropdownTest from '../components/test/DropdownTest';
 import JoinCreatePageTest from '../components/test/JoinCreatePageTest';
 import SocketStreamTest from '../components/test/SocketStreamTest';
 import TextInputTest from '../components/test/TextInputTest';
 import ToastTest from '../components/test/ToastTest';
+import YouTubeSyncStudentTest from '../components/test/YouTubeSyncStudentTest';
+import YouTubeSyncTest from '../components/test/YouTubeSyncTest';
 
 /** 여기에 테스트할 컴포넌트를 넣어주세요! `pathname: ['설명', 컴포넌트]` 형식 */
 const componentsToTest: Record<string, [string, React.ReactElement]> = {
-  dropdown: ['Dropdown and Dialog', <DropdownTest />],
   'audio-visualizer': ['Audio Visualizer', <AudioVisualizerTest />],
   'socket-stream': ['Socket Stream', <SocketStreamTest />],
   toast: ['Toasts', <ToastTest />],
   joincreate: ['Join/Create Class', <JoinCreatePageTest />],
   buttons: ['Buttons', <ButtonTest />],
   chatbox: ['chatbox', <ChatBoxTest />],
-  classsetting: ['class setting', <ClassSettingPageTest />],
   'text-input': ['Text Input', <TextInputTest />],
+  youtubesync: ['YouTube Sync', <YouTubeSyncTest />],
+  youtubestudent: ['YouTube Sync', <YouTubeSyncStudentTest />],
 };
 
 interface Props {
@@ -38,7 +38,7 @@ const Test: React.FC<Props> = ({ name }) => {
 
   if (name === '') {
     return (
-      <div className="w-full h-full max-w-sm flex flex-col justify-center items-center mx-auto gap-4">
+      <div className="w-full h-full max-w-md flex flex-col justify-center items-center mx-auto gap-4">
         {Object.entries(componentsToTest).map(([pathname, [description]]) => (
           <Link key={pathname} className="block relative w-full" to={`/tests/${pathname}`}>
             <TempButton width="full" label={description} />

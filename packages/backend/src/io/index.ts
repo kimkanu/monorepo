@@ -2,24 +2,27 @@ import Server from '../server';
 import { UserSocket } from '../types/socket';
 
 import ioVoiceHandler from './voice';
+import ioYouTubeHandler from './YouTube';
 
 const ioHandler = (server: Server) => {
   const { io, managers } = server;
 
   io.on('connection', async (socket: UserSocket) => {
-    console.log('user', socket.request.user);
     if (socket.request.user) {
-      await managers.user.add(socket.request.user.stringId, socket);
+      const userId = socket.request.user.stringId;
+      await managers.user.add(userId, socket);
     }
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       if (socket.request.user) {
-        managers.user.remove(socket.request.user.stringId, socket);
+        const userId = socket.request.user.stringId;
+        await managers.classroom.disconnectMemberFromAll(userId);
+        managers.user.remove(userId, socket);
       }
     });
   });
-
-  ioVoiceHandler(io.of('/voice'), server);
+  ioVoiceHandler(io, server);
+  ioYouTubeHandler(io, server);
 };
 
 export default ioHandler;

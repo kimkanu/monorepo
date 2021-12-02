@@ -1,50 +1,46 @@
+import { providers } from '@team-10/lib';
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import LoginButton from '../components/buttons/LoginButton';
+import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
-import Fade from '../components/layout/Fade';
 
+import loadingState from '../recoil/loading';
 import meState from '../recoil/me';
+import appHistory from '../utils/history';
 
 const Login: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const me = useRecoilValue(meState.atom);
+  const setLoading = useSetRecoilState(loadingState.atom);
 
   React.useEffect(() => {
     if (me.loaded && me.info) {
       const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
-      history.replace(query);
+      appHistory.replace(query, history);
     }
   }, [me]);
 
   return (
-    <ContentPadding isFooterPresent>
-      <Fade visible={me.loaded && location.pathname === '/login'}>
-        {(ref) => (
-          <div ref={ref} className="mx-auto mb-16" style={{ maxWidth: 360 }}>
-            <h1 className="text-title my-16 font-bold text-center">
-              로그인
-            </h1>
-            <div className="flex flex-col gap-6">
-              <LoginButton
-                provider="naver"
-                onClick={() => {
-                  window.location.pathname = '/api/auth/naver';
-                }}
-              />
-              <LoginButton
-                provider="github"
-                onClick={() => {
-                  window.location.pathname = '/api/auth/github';
-                }}
-              />
-            </div>
-          </div>
-        )}
-      </Fade>
+    <ContentPadding>
+      <div className="mx-auto mb-16" style={{ maxWidth: 360 }}>
+        <Title size="title">로그인</Title>
+        <div className="flex flex-col gap-6">
+          {providers.map((provider) => (
+            <LoginButton
+              key={provider}
+              provider={provider}
+              onClick={() => {
+                setLoading(true);
+                window.location.pathname = `/api/auth/${provider}`;
+              }}
+            />
+          ))}
+        </div>
+      </div>
     </ContentPadding>
   );
 };

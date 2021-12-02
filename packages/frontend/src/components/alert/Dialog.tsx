@@ -59,7 +59,7 @@ const Dialog: React.FC<Styled<Props>> = ({
         role="button"
         tabIndex={0}
         className={mergeClassNames(
-          'absolute overflow-hidden top-0 left-0 w-100vw h-100wh flex flex-col z-dialog cursor-default',
+          'fixed overflow-hidden top-0 left-0 w-100vw h-100wh flex flex-col z-dialog cursor-default',
           conditionalClassName({
             desktop: mergeClassNames('items-center justify-center', styles.desktop),
             mobile: mergeClassNames('items-center justify-end', styles.mobile),
@@ -86,11 +86,11 @@ const Dialog: React.FC<Styled<Props>> = ({
             style,
           )}
           className={mergeClassNames(
-            'h-fit max-h-5/6 px-8 py-8 z-dialog-1 bg-white',
+            'h-fit max-h-5/6 p-8 z-dialog-1 bg-white',
             conditionalClassName({
               desktop: 'w-96 shadow-dropdown-desktop rounded-8',
               mobile: 'w-full shadow-dropdown-mobile rounded-t-12',
-              mobileLandscape: 'max-w-sm',
+              mobileLandscape: 'max-w-md',
               mobilePortrait: 'max-w-md',
             })(screenType),
             className,

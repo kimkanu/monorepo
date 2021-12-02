@@ -6,8 +6,8 @@ import { guardRecoilDefaultValue } from '..';
 
 import meAtom from './atom';
 
-const addSSOAccountSelector = selector<SSOAccountJSON>({
-  key: 'addSSOAccountSelector',
+const meAddSSOAccountSelector = selector<SSOAccountJSON>({
+  key: 'meAddSSOAccountSelector',
   get: () => {
     throw new Error('No getter');
   },
@@ -22,4 +22,4 @@ const addSSOAccountSelector = selector<SSOAccountJSON>({
   },
 });
 
-export default addSSOAccountSelector;
+export default meAddSSOAccountSelector;

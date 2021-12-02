@@ -12,15 +12,17 @@ interface Props {
   options?: YouTubeProps['opts'];
   onReady?: (player: YouTubePlayer) => void;
   onStateChange?: (state: number, player: YouTubePlayer) => void;
+  setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const YTPlayer: React.FC<Styled<Props>> = ({
-  style, className, videoId, options = {}, onReady, onStateChange,
+  style, className, videoId, options = {}, onReady, onStateChange, setCurrentTime,
 }) => {
   const aspectRatio = 16 / 9;
 
   const ref = React.useRef<HTMLDivElement>(null);
   const size = useSize(ref);
+  let interval: NodeJS.Timeout | null = null;
 
   return (
     <div
@@ -54,6 +56,16 @@ const YTPlayer: React.FC<Styled<Props>> = ({
             onStateChange={({ target: player, data: state }) => {
               if (onStateChange) {
                 onStateChange(state, player);
+              }
+            }}
+            onPlay={(e) => {
+              interval = setInterval(() => {
+                setCurrentTime(e.target.getCurrentTime());
+              }, 500);
+            }}
+            onPause={() => {
+              if (interval) {
+                clearInterval(interval);
               }
             }}
           />

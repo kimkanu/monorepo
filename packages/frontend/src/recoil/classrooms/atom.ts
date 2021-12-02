@@ -1,7 +1,7 @@
-import { ClassroomJSON } from '@team-10/lib';
+import { ClassroomJSONWithSpeaker } from '@team-10/lib';
 import { atom } from 'recoil';
 
-const classroomsAtom = atom<ClassroomJSON[]>({
+const classroomsAtom = atom<ClassroomJSONWithSpeaker[]>({
   key: 'classroomsAtom',
   default: [],
 });

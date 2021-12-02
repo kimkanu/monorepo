@@ -2,9 +2,7 @@ import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import toastState from '../../recoil/toast';
-import {
-  TypedChatContent, ChatType, ChatContent, TextChatContent, PhotoChatContent,
-} from '../../types/chat';
+import { ChatType } from '../../types/chat';
 import ChatInput from '../chat/ChatInput';
 import MyChatBox from '../chat/MyChatBox';
 import OthersChatBox from '../chat/OthersChatBox';
@@ -24,19 +22,22 @@ const ChatBoxTest: React.FC = () => {
           }}
           chats={[
             {
-              content: { sentAt: new Date(), text: '상대 메세지' },
+              content: { text: '상대 메세지' },
               id: '1',
               type: ChatType.TEXT,
+              sentAt: new Date(),
             },
             {
-              content: { sentAt: new Date(), text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
+              content: { text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
               id: '1',
               type: ChatType.TEXT,
+              sentAt: new Date(),
             },
             {
-              content: { sentAt: new Date(), url: 'https://picsum.photos/640/480' },
+              content: { photo: 'https://picsum.photos/640/480', alt: '채팅 사진' },
               id: '2',
               type: ChatType.PHOTO,
+              sentAt: new Date(),
             },
           ]}
         />
@@ -44,14 +45,16 @@ const ChatBoxTest: React.FC = () => {
           dark={false}
           chats={[
             {
-              content: { sentAt: new Date(), text: '내 메세지' },
+              content: { text: '내 메세지' },
               id: '1',
               type: ChatType.TEXT,
+              sentAt: new Date(),
             },
             {
-              content: { sentAt: new Date(), text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
+              content: { text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
               id: '1',
               type: ChatType.TEXT,
+              sentAt: new Date(),
             },
           ]}
         />

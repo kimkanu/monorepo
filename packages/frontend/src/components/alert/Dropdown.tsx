@@ -93,13 +93,16 @@ const Dropdown: React.FC<Styled<Props>> = ({
             conditionalClassName({
               desktop: 'w-96 z-dropdown-desktop-1 shadow-dropdown-desktop rounded-b-8 absolute',
               mobile: 'w-full z-dropdown-mobile-1 shadow-dropdown-mobile rounded-t-12',
-              mobileLandscape: 'max-w-sm',
+              mobileLandscape: 'max-w-md',
               mobilePortrait: 'max-w-md',
             })(screenType),
             className,
           )}
         >
-          <div className="px-8 py-8 w-full h-full overflow-auto">
+          <div
+            className="p-8 w-full h-full overflow-auto"
+            style={{ maxHeight: 'calc(90 * var(--wh) - 64px - env(safe-area-inset-top, 0px))' }}
+          >
             {children}
             <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />
           </div>

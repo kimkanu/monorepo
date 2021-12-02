@@ -1,6 +1,9 @@
 import React from 'react';
 
 import { TextChatContent } from '../../types/chat';
+import { mergeClassNames } from '../../utils/style';
+
+import styles from './Chat.module.css';
 
 interface Props {
   dark: boolean;
@@ -8,17 +11,12 @@ interface Props {
 }
 const MyTextChat: React.FC<Props> = ({ dark, content }) => (
   <div
-    style={{ maxWidth: 'calc(100% - 40px)', padding: '5px 12px' }}
-    className="text-base bg-gray-200 rounded-tl-2xl rounded-tr rounded-b-2xl"
-  >
-    {content.text}
-  </div>
-);
-
-const MyTextChat1: React.FC<Props> = ({ dark, content }) => (
-  <div
-    style={{ maxWidth: 'calc(100% - 40px)', padding: '5px 12px' }}
-    className="text-base bg-gray-200 rounded-t-2xl rounded-b-2xl"
+    style={{ padding: '5px 12px' }}
+    className={mergeClassNames(
+      'text-base rounded-tl-2xl rounded-tr rounded-b-2xl',
+      dark ? 'bg-gray-900 bg-opacity-50 text-white' : 'bg-gray-200',
+      styles.maxWidth,
+    )}
   >
     {content.text}
   </div>

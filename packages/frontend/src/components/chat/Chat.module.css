@@ -1,0 +1,9 @@
+.maxWidth {
+  max-width: calc(100% - 40px);
+}
+
+@media only screen and (max-width: 352px) {
+  .maxWidth {
+    max-width: calc(100% - 8px);
+  }
+}

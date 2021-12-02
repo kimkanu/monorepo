@@ -30,7 +30,7 @@ export default class VoiceBuffer {
 
   private bufferAddTime: number;
 
-  static BUFFERING_DELAY = 120; // in millis
+  static BUFFERING_DELAY = 30; // in millis
 
   constructor(public audioContext: AudioContext) {
     this.header = DEFAULT_HEADER;
@@ -81,14 +81,23 @@ export default class VoiceBuffer {
 
     if (
       new Uint8Array(buffer.slice(0, 1))[0] !== 0xa3
-      && new Uint8Array(buffer.slice(-1))[0] === 0xa3
     ) {
-      return concatArrayBuffer([new Uint8Array([0xa3]).buffer, buffer.slice(0, -1)]);
+      if (new Uint8Array(buffer.slice(-1))[0] === 0xa3) {
+        return concatArrayBuffer([new Uint8Array([0xa3]).buffer, buffer.slice(0, -1)]);
+      }
+      return concatArrayBuffer([new Uint8Array([0xa3]).buffer, buffer]);
+    }
+
+    if (new Uint8Array(buffer.slice(-1))[0] === 0xa3) {
+      return buffer.slice(0, -1);
     }
     return buffer;
   }
 
-  public async appendVoices(voices: SocketVoice.Voice[]): Promise<void> {
+  public async appendVoices(
+    voices: SocketVoice.Voice[],
+  ): Promise<AudioBufferSourceNode[]> {
+    console.log('appendVoices', voices);
     const typedVoices: { type: 'opus' | 'mpeg', buffers: ArrayBuffer[] }[] = [];
     for (let i = 0; i < voices.length; i += 1) {
       const voice = voices[i];
@@ -104,12 +113,13 @@ export default class VoiceBuffer {
       ({ type, buffers }) => this.decodeVoiceData(type, buffers),
     ));
 
-    voiceDataArray.forEach(
-      (buffers) => buffers.forEach(this.appendVoiceBuffer.bind(this)),
+    return voiceDataArray.flatMap(
+      (buffers) => buffers.map(this.appendVoiceBuffer.bind(this)),
     );
   }
 
   private async decodeVoiceData(type: 'opus' | 'mpeg', buffers: ArrayBuffer[]): Promise<AudioBuffer[]> {
+    console.log('decodeVoiceData');
     try {
       if (type === 'opus') {
         const buffer = this.attachHeader(
@@ -122,25 +132,31 @@ export default class VoiceBuffer {
         buffers.map((buffer) => this.audioContext.decodeAudioData(buffer)),
       );
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn('Failed to append an audio segment.', e);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to append an audio segment.', e);
+        console.log(arrayBufferToString(buffers[0]));
+      }
       return [];
     }
   }
 
-  private appendVoiceBuffer(buffer: AudioBuffer) {
+  private appendVoiceBuffer(buffer: AudioBuffer): AudioBufferSourceNode {
+    console.log('appendVoiceBuffer');
     const sourceNode = new AudioBufferSourceNode(this.audioContext, { buffer });
     sourceNode.connect(this.audioContext.destination);
     if (this.initial) {
       this.bufferAddTime = this.audioContext.currentTime
-      + VoiceBuffer.BUFFERING_DELAY * SECONDS_IN_MILLIS;
+        + VoiceBuffer.BUFFERING_DELAY * SECONDS_IN_MILLIS;
       this.initial = false;
     }
-    sourceNode.start(this.bufferAddTime);
+    const startTime = this.bufferAddTime;
+    sourceNode.start(startTime);
     this.bufferAddTime = Math.max(
       this.bufferAddTime,
-      this.audioContext.currentTime + VoiceBuffer.BUFFERING_DELAY * SECONDS_IN_MILLIS,
+      this.audioContext.currentTime,
     );
-    this.bufferAddTime += buffer.duration - 0.05;
+    this.bufferAddTime += buffer.duration;
+
+    return sourceNode;
   }
 }

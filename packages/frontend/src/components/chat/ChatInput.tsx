@@ -1,90 +1,88 @@
 import {
-  Send20Filled,
-  Image20Regular,
+  Send24Filled,
+  Image24Regular,
 } from '@fluentui/react-icons';
 import React from 'react';
 
 import {
   TypedChatContent, ChatType, ChatContent, TextChatContent, PhotoChatContent,
 } from '../../types/chat';
+import { mergeClassNames } from '../../utils/style';
 
 import AmbientButton from '../buttons/AmbientButton';
+import Button from '../buttons/Button';
+import TextInput from '../input/TextInput';
 
 interface Props {
   dark: boolean; // 모바일 가로 교실 화면인지
   text: string;
   onInput?: (newText: string) => void;
   onPhotoButtonClick?: React.MouseEventHandler;
-  onSend?: React.MouseEventHandler;
+  onSend?: () => void;
+  extended?: boolean;
 }
 
 const ChatInput: React.FC<Props> = ({
-  dark,
-  text,
-  onInput,
-  onPhotoButtonClick,
-  onSend,
-}) => {
-  const display = dark;
-  let result;
-  if (display === false) {
-    result = (
-      <div className="w-full flex justify-center gap-2">
-        <div className="w-full flex flex-row justify-center">
+  dark, extended = false, text, onInput, onPhotoButtonClick, onSend,
+}) => (
+  <div
+    className={mergeClassNames(
+      'w-full flex justify-center gap-2',
+      dark ? 'bg-gray-900 bg-opacity-50 max-w-sm rounded-full' : null,
+      extended ? 'pt-4 rounded-t-8' : dark ? 'py-1.5' : 'pb-3',
+    )}
+    style={{ height: extended ? 128 : 60, boxShadow: extended ? '0 0 16px var(--shadow-color)' : 'none' }}
+  >
+    {extended ? (
+      <div className="flex flex-col justify-between w-full px-4">
+        <div style={{ height: 60 }}>
+          <TextInput
+            value={text}
+            onInput={onInput}
+            onSubmit={onSend ? () => onSend() : undefined}
+          />
+        </div>
+        <div style={{ height: 60 }} className="w-full flex flex-row justify-between">
           <AmbientButton
-            size={40}
-            icon={<Image20Regular />}
+            size={48}
+            icon={<Image24Regular />}
             onClick={onPhotoButtonClick}
           />
-          <input
-            type="text"
-            style={{ width: 'calc(100% - 80px)' }}
-            value={text}
-            onInput={(e) => {
-              if (onInput) {
-                onInput(e.currentTarget.value);
-              }
-            }}
-            className="text-gray-900 text-emph h-10 rounded-full placeholder-sans outline-none border-none focus:ring-2 bg-gray-200 font-sans px-4 mx-3"
-          />
           <AmbientButton
-            size={40}
-            icon={<Send20Filled className="text-primary-500" />}
+            size={48}
+            icon={<Send24Filled className="text-primary-500" />}
             onClick={onSend}
+            dark={dark}
+            filled
           />
         </div>
       </div>
-    );
-  } else {
-    result = (
-      <div className="w-full flex justify-center gap-2">
-        <div className="w-full flex flex-row rounded-full bg-gray-500 justify-center" style={{ padding: '8px' }}>
-          <AmbientButton
-            size={40}
-            icon={<Image20Regular className="text-primary-300" />}
-            onClick={onPhotoButtonClick}
-          />
-          <input
-            type="text"
-            style={{ width: 'calc(100% - 80px)', padding: '3px 4px' }}
-            value={text}
-            onInput={(e) => {
-              if (onInput) {
-                onInput(e.currentTarget.value);
-              }
-            }}
-            className="text-gray-900 text-emph h-10 rounded-full placeholder-sans outline-none border-none focus:ring-2 bg-gray-300 font-sans px-4 mx-3"
-          />
-          <AmbientButton
-            size={40}
-            icon={<Send20Filled className="text-primary-300" />}
-            onClick={onSend}
-          />
-        </div>
+    ) : (
+      <div className={mergeClassNames('w-full flex flex-row justify-center', dark ? 'gap-2' : 'gap-4')}>
+        <AmbientButton
+          size={48}
+          icon={<Image24Regular />}
+          onClick={onPhotoButtonClick}
+          dark={dark}
+        />
+        <TextInput
+          value={text}
+          onInput={onInput}
+          onSubmit={onSend}
+          className={mergeClassNames(dark ? 'bg-gray-600 bg-opacity-70' : null)}
+          containerStyle={extended ? {} : { width: 'calc(100% - 8rem)' }}
+          style={dark ? { color: 'white' } : {}}
+        />
+        <AmbientButton
+          size={48}
+          icon={<Send24Filled className="text-primary-500" />}
+          onClick={onSend}
+          dark={dark}
+          filled
+        />
       </div>
-    );
-  }
-  return result;
-};
+    )}
+  </div>
+);
 
 export default ChatInput;

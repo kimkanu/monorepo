@@ -28,6 +28,10 @@ module.exports = {
       '.shadow-color-primary',
       '.shadow-color-destructive',
       '.shadow-color-neutral',
+      '.bg-violet-500',
+      '.bg-pink-500',
+      '.bg-green-500',
+      '.bg-blue-500',
     ],
   },
   darkMode: false,
@@ -46,7 +50,10 @@ module.exports = {
       current: 'currentColor',
       black: colors.black,
       white: colors.white,
-      gray: colors.gray,
+      gray: {
+        ...colors.gray,
+        200: '#E6E5EB',
+      },
       blue: {
         100: '#C6D3FE',
         300: '#7C98FC',
@@ -102,7 +109,7 @@ module.exports = {
       }],
       sub: ['1.5rem', {
         letterSpacing: '-0.03em',
-        lineHeight: 'rem',
+        lineHeight: '1.75rem',
       }],
       big: ['1.75rem', {
         letterSpacing: '-0.03em',
@@ -118,6 +125,11 @@ module.exports = {
       }],
     },
     extend: {
+      animation: {
+        'ping-small-0': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'ping-small-1': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) 0.5s infinite',
+        'ping-small-2': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) 1s infinite',
+      },
       borderRadius: {
         8: '32px',
         10: '40px',
@@ -141,13 +153,14 @@ module.exports = {
         button: '130ms',
       },
       zIndex: {
-        'dropdown-desktop': 50,
-        'dropdown-desktop-1': 51,
-        'dropdown-desktop-2': 52,
-        layout: 60,
-        'layout-1': 61,
-        'layout-2': 62,
-        'layout-3': 63,
+        layout: 50,
+        'layout-1': 51,
+        'layout-2': 52,
+        'layout-3': 53,
+        'dropdown-desktop': 60,
+        'dropdown-desktop-1': 61,
+        'dropdown-desktop-2': 62,
+        header: 63,
         'dropdown-mobile': 70,
         'dropdown-mobile-1': 71,
         'dropdown-mobile-2': 72,

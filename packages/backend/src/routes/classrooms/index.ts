@@ -1,4 +1,4 @@
-import { ClassroomsHashPatchResponse, Empty } from '@team-10/lib';
+import { Empty } from '@team-10/lib';
 
 import { isAuthenticatedOrFail } from '../../passport';
 
@@ -12,7 +12,6 @@ export default function generateRoute(server: Server): Route {
     'POST /classrooms',
     isAuthenticatedOrFail,
     async (params, body, user) => {
-      // TODO: validation
       const { name } = body;
       if (!name) {
         return {
@@ -32,7 +31,46 @@ export default function generateRoute(server: Server): Route {
       const classroom = await managers.classroom.create(user.stringId, name);
       return {
         success: true,
-        payload: (await managers.classroom.getClassroomJSON(user.stringId, classroom.hash))!,
+        payload: (await managers.classroom.getMyClassroomJSON(classroom.hash))!,
+      };
+    },
+  );
+
+  route.accept(
+    'DELETE /classrooms/:hash',
+    isAuthenticatedOrFail,
+    async (params, body, user) => {
+      const { managers } = server;
+      const userId = user.stringId;
+      const { hash } = params;
+
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
+        return {
+          success: false,
+          error: {
+            code: 'NONEXISTENT_CLASSROOM',
+            statusCode: 400,
+            extra: {} as Empty,
+          },
+        };
+      }
+
+      if (classroom.instructor.stringId !== userId) {
+        return {
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            statusCode: 403,
+            extra: {},
+          },
+        };
+      }
+
+      await managers.classroom.remove(hash);
+      return {
+        success: true,
+        payload: {},
       };
     },
   );
@@ -41,7 +79,6 @@ export default function generateRoute(server: Server): Route {
     'PATCH /classrooms/:hash',
     isAuthenticatedOrFail,
     async (params, body, user, req, res, next) => {
-      // TODO: validation
       const { hash } = params;
       const { operation } = body;
       if (!hash) {
@@ -63,10 +100,10 @@ export default function generateRoute(server: Server): Route {
       }
 
       const { managers } = server;
-      const userId = req.user!.stringId;
+      const userId = user.stringId;
 
-      const isPresent = await managers.classroom.isPresent(hash);
-      if (!isPresent) {
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
         return {
           success: false,
           error: {
@@ -76,8 +113,6 @@ export default function generateRoute(server: Server): Route {
           },
         };
       }
-
-      const classroom = managers.classroom.getRaw(hash)!;
 
       if (operation === 'join') {
         const { passcode } = body;
@@ -99,7 +134,7 @@ export default function generateRoute(server: Server): Route {
         if (await managers.classroom.join(userId, hash)) {
           return {
             success: true,
-            payload: (await managers.classroom.getClassroomJSON(userId, hash))!,
+            payload: (await managers.classroom.getClassroomJSON(hash))!,
           };
         }
 
@@ -114,14 +149,60 @@ export default function generateRoute(server: Server): Route {
       }
 
       if (operation === 'leave') {
+        if (await managers.classroom.leave(userId, hash)) {
+          return {
+            success: true,
+            payload: (await managers.classroom.getClassroomJSON(hash))!,
+          };
+        }
+
         return {
           success: false,
           error: {
             code: 'INTERNAL_SERVER_ERROR',
             statusCode: 500,
-            extra: {
-              details: 'Not implemented',
+            extra: {},
+          },
+        };
+      }
+
+      if (operation === 'reset_passcode') {
+        if (classroom.instructor.stringId !== userId) {
+          return {
+            success: false,
+            error: {
+              code: 'FORBIDDEN',
+              statusCode: 403,
+              extra: {},
             },
+          };
+        }
+
+        return {
+          success: true,
+          payload: {
+            passcode: await classroom.regeneratePasscode(),
+          },
+        };
+      }
+
+      if (operation === 'rename') {
+        if (classroom.instructor.stringId !== userId) {
+          return {
+            success: false,
+            error: {
+              code: 'FORBIDDEN',
+              statusCode: 403,
+              extra: {},
+            },
+          };
+        }
+
+        await classroom.rename(body.name);
+        return {
+          success: true,
+          payload: {
+            name: body.name,
           },
         };
       }
@@ -133,7 +214,7 @@ export default function generateRoute(server: Server): Route {
           statusCode: 400,
           extra: {
             field: 'operation',
-            details: 'Not a value of string type',
+            details: 'Operation should be one of `join`, `leave`, `reset_passcode`, or `rename`.',
           },
         },
       };
