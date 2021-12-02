@@ -146,7 +146,7 @@ export default class ClassroomManager {
     return true;
   }
 
-  disconnectMember(userId: string, hash: ClassroomHash): boolean {
+  async disconnectMember(userId: string, hash: ClassroomHash): Promise<boolean> {
     const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
     classroom.disconnectMember(userId);
@@ -157,11 +157,12 @@ export default class ClassroomManager {
     const user = await this.server.managers.user.getSerializableUserInfoFromStringIdAsync(userId);
     if (!user) return;
 
-    user.classroomHashes.forEach((hash) => {
+    await Promise.all(user.classroomHashes.map((hash) => {
       const classroom = this.classrooms.get(hash);
       if (!classroom) return false;
       classroom.disconnectMember(userId);
-    });
+      return true;
+    }));
   }
 
   async startClassroom(hash: ClassroomHash): Promise<boolean> {
@@ -206,7 +207,7 @@ export default class ClassroomManager {
           isConnected: classroom.connectedMemberIds.has(stringId),
         }),
       )),
-      video: classroom.video,
+      video: classroom.youtube.video,
       isLive: classroom.isLive,
       updatedAt: classroom.updatedAt.getTime(),
     };
@@ -237,7 +238,7 @@ export default class ClassroomManager {
           isConnected: classroom.connectedMemberIds.has(stringId),
         }),
       )),
-      video: classroom.video,
+      video: classroom.youtube.video,
       isLive: classroom.isLive,
       passcode: classroom.passcode,
       updatedAt: classroom.updatedAt.getTime(),

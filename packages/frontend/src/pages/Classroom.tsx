@@ -1,24 +1,15 @@
+import { SocketClassroom } from '@team-10/lib';
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import Dialog from '../components/alert/Dialog';
 import Button from '../components/buttons/Button';
-import FeedChatBox from '../components/chat/FeedChatBox';
-import MyChatBox from '../components/chat/MyChatBox';
-import OthersChatBox from '../components/chat/OthersChatBox';
 import ClassroomChat from '../components/classroom/ClassroomChat';
-import VoiceChat from '../components/voice/VoiceChat';
-import WaveVisualizer from '../components/voice/WaveVisualizer';
-import useMainClassroom from '../hooks/useMainClassroom';
 import useScreenType from '../hooks/useScreenType';
+import useSocket from '../hooks/useSocket';
 import classroomsState from '../recoil/classrooms';
 import mainClassroomHashState from '../recoil/mainClassroomHash';
 import meState from '../recoil/me';
-import { ChatContent, ChatType, FeedType } from '../types/chat';
 import ScreenType from '../types/screen';
-import { clamp } from '../utils/math';
-import { conditionalClassName, conditionalStyle } from '../utils/style';
 
 interface Props {
   hash: string;
@@ -33,11 +24,34 @@ const Classroom: React.FC<Props> = ({ hash }) => {
 
   const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
 
+  const { socket, connected } = useSocket<
+  SocketClassroom.Events.Response, SocketClassroom.Events.Request
+  >('/');
+
   React.useEffect(() => {
     if (meInfo && classroom) {
       setMainClassroomHash(hash);
     }
   }, [meInfo, classroom, hash]);
+
+  React.useEffect(() => {
+    if (!connected || !hash) return () => {};
+
+    socket.emit('classroom/Join', { hash });
+
+    const listener = (response: SocketClassroom.Response.Join) => {
+      if (!!classroom && !isInstructor) {
+        if (response.success) {
+          setClassroom(response);
+        }
+      }
+    };
+    socket.once('classroom/Join', listener);
+
+    return () => {
+      socket.off('classroom/Join', listener);
+    };
+  }, [connected, hash]);
 
   return (
     meInfo && classroom ? (

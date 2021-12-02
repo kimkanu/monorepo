@@ -1,9 +1,9 @@
+import { ChatContent } from '@team-10/lib';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
 import meState from '../../recoil/me';
-import { ChatContent, ChatType, FeedType } from '@team-10/lib';
 import { conditionalStyle } from '../../utils/style';
 import FeedChatBox from '../chat/FeedChatBox';
 import MyChatBox from '../chat/MyChatBox';
@@ -38,7 +38,7 @@ const ClassroomChat: React.FC<Props> = ({
    * // TODO: TODO: TODO
    */
   const user1 = {
-    userId: 'user1',
+    stringId: 'user1',
     displayName: '닉네임',
     profileImage: 'https://picsum.photos/128',
   };
@@ -75,7 +75,7 @@ const ClassroomChat: React.FC<Props> = ({
       id: ';aklc,qslcaklcs,lsmdklqkwmd',
       sentAt: new Date(),
       content: {
-        type: FeedType.DATE,
+        type: 'date',
         date: new Date(),
       },
     },
@@ -84,7 +84,7 @@ const ClassroomChat: React.FC<Props> = ({
       id: ';aklc,asklgmkadjcksjascsacjkjsnc',
       sentAt: new Date(),
       content: {
-        type: FeedType.CLASS,
+        type: 'class',
         isStart: true,
       },
     },
