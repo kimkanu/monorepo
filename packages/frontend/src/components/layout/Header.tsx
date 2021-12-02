@@ -10,6 +10,7 @@ import {
   Person24Filled,
   SignOut24Filled,
 } from '@fluentui/react-icons';
+import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
@@ -22,6 +23,7 @@ import themeState from '../../recoil/theme';
 import toastState from '../../recoil/toast';
 import ScreenType from '../../types/screen';
 import { Theme } from '../../types/theme';
+import fetchAPI from '../../utils/fetch';
 import appHistory from '../../utils/history';
 import { mergeClassNames } from '../../utils/style';
 import Dropdown from '../alert/Dropdown';
@@ -279,6 +281,21 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
         <div className="flex gap-5 items-center">
           {inClassroom && screenType !== ScreenType.MobilePortrait && (screenType === ScreenType.Desktop || !isUIHidden) && (
             <div className="w-fit px-2 flex">
+              <Button
+                type="primary"
+                width="fit-content"
+                height={36}
+                text={mainClassroom?.isLive ? 'End' : 'Start'}
+                onClick={async () => {
+                  if (!mainClassroom) return;
+                  const response = await fetchAPI(
+                    'PATCH /classrooms/:hash',
+                    { hash: mainClassroom.hash! },
+                    { operation: 'toggle', start: !mainClassroom.isLive },
+                  ) as ClassroomsHashPatchResponse<'toggle'>;
+                  // TODO
+                }}
+              />
               <Button
                 type="primary"
                 width="fit-content"
