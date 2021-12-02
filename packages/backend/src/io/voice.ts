@@ -12,7 +12,7 @@ const ioVoiceHandler = (
 
   io.on('connection', (socket: Socket) => {
     socket.on('voice/StateChange', async ({ hash, speaking }) => {
-      console.log(socket.request.user, hash, speaking);
+      console.log(socket.request.user?.displayName, hash, speaking);
 
       // 로그인 상태가 아닐 시
       if (!socket.request.user) {
@@ -54,7 +54,6 @@ const ioVoiceHandler = (
 
       // 자신이 아닌 누군가 말하고 있으면 요청 거절
       if (!!classroom.voice.speaker && classroom.voice.speaker !== userId) {
-        console.log(classroom.voice.speaker, userId);
         socket.emit('voice/StateChange', {
           success: false,
           reason: SocketVoice.PermissionDeniedReason.SOMEONE_IS_SPEAKING,
@@ -97,7 +96,7 @@ const ioVoiceHandler = (
           );
           classroom.voice.startedAt = null;
         }
-        await new Promise((r) => setTimeout(r, 300));
+        await new Promise((r) => setTimeout(r, 800));
         classroom.voice.speaker = null;
         classroom.broadcast('voice/StateChangeBroadcast', {
           speaking: false,
@@ -131,8 +130,6 @@ const ioVoiceHandler = (
       }
 
       // 유저가 speaker가 아닐 때
-      // 만약 아무도 안 말하고 있을 때 speaker가 아닌 사람에게서 speak 요청이 오면
-      // speaker로 승격
       if (classroom.voice.speaker !== userId) {
         socket.emit('voice/StreamSend', {
           success: false,

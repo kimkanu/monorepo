@@ -159,8 +159,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
         : null;
     if (!type) return; // Not supported
 
-    let timeout: number | undefined;
-
     data.arrayBuffer().then((buffer) => {
       if (isSpeaking.current !== 'requesting') {
         socket.emit('voice/StreamSend', {
@@ -243,6 +241,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     console.log('released!');
     if (onVoice) onVoice(0, 100);
     setClassroom((c) => ({ ...c, speakerId: null }));
+    sequenceIndex.current = 0;
 
     if (recorderStatus !== 'ready') {
       getMediaStream();
@@ -273,14 +272,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       hash,
       speaking: true,
     });
-    setRequestingPermissionInterval(
-      setInterval(() => {
-        socket.emit('voice/StateChange', {
-          hash,
-          speaking: true,
-        });
-      }, REQUESTING_PERMISSION_INTERVAL),
-    );
     isSpeaking.current = 'requesting';
   }, [hash, socket]);
 
@@ -375,26 +366,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       socket.off('voice/StateChange', listener);
     };
   }, [socket]);
-
-  // isSpeaking이 speaking이 아니면 sequence index를 0으로 설정하기
-  React.useEffect(() => {
-    if (isSpeaking.current !== 'speaking') {
-      sequenceIndex.current = 0;
-    }
-  }, [isSpeaking.current]);
-
-  // StateChange 요청 성공이나 실패 시 `requestingPermissionInterval` 비우기
-  React.useEffect(() => {
-    if (isSpeaking.current !== 'requesting' && requestingPermissionInterval) {
-      clearInterval(requestingPermissionInterval);
-      setRequestingPermissionInterval(null);
-    }
-    return () => {
-      if (requestingPermissionInterval) {
-        clearInterval(requestingPermissionInterval);
-      }
-    };
-  }, [isSpeaking.current]);
 
   // StateChangeBroadcast listener
   React.useEffect(() => {
