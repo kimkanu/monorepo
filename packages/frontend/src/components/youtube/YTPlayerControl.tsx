@@ -13,7 +13,7 @@ const timeToHMS = (time:number) => {
   const m = Math.floor((time - (h * 3600)) / 60);
   const s = Math.floor(time - (h * 3600) - (m * 60));
   const hour = h ? `${h}:` : '';
-  const minute = m / 10 >= 1 ? `${m}:` : '0:';
+  const minute = m / 10 >= 1 ? `${m}:` : `0${m}:`;
   const second = s / 10 >= 1 ? `${s}` : `0${s}`;
   return `${hour}${minute}${second}`;
 };
