@@ -3578,6 +3578,7 @@ __metadata:
     eslint-plugin-import: ^2.25.2
     express: ^4.17.1
     express-session: ^1.17.2
+    got: ^11.8.3
     helmet: ^4.6.0
     imgur: next
     jest: 26.6.0
@@ -10866,7 +10867,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got@npm:^11.8.1":
+"got@npm:^11.8.1, got@npm:^11.8.3":
   version: 11.8.3
   resolution: "got@npm:11.8.3"
   dependencies:

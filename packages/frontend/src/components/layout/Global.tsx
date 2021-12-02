@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { ClassroomJSON } from '@team-10/lib';
+import { ClassroomJSONWithSpeaker } from '@team-10/lib';
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -17,7 +17,9 @@ import appHistory, { classroomPrefixRegex } from '../../utils/history';
 import { Styled } from '../../utils/style';
 
 import ToastDisplay from '../alert/ToastDisplay';
-import YTPlayer from '../youtube/YTPlayer';
+import ClassroomPatcher from '../patcher/ClassroomPatcher';
+import MyInfoPatcher from '../patcher/MyInfoPatcher';
+import YTPlayerControl from '../youtube/YTPlayerControl';
 import YTSynchronizer from '../youtube/YTSynchronizer';
 import YTWrapper from '../youtube/YTWrapper';
 
@@ -27,7 +29,10 @@ import HistoryListener from './HistoryListener';
 import Loading from './Loading';
 import ScreenHeightMeasure from './ScreenHeightMeasure';
 
-function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJSON[] {
+function sortClassrooms(
+  classrooms: ClassroomJSONWithSpeaker[],
+  userId: string,
+): ClassroomJSONWithSpeaker[] {
   return classrooms.slice(0)
     .sort((c1, c2) => {
       // Live
@@ -36,8 +41,8 @@ function sortClassrooms(classrooms: ClassroomJSON[], userId: string): ClassroomJ
       if (isLive1 !== isLive2) return isLive2 - isLive1;
 
       // Mine
-      const isInstructor1 = c1.instructorId === userId ? 1 : 0;
-      const isInstructor2 = c2.instructorId === userId ? 1 : 0;
+      const isInstructor1 = c1.instructor.stringId === userId ? 1 : 0;
+      const isInstructor2 = c2.instructor.stringId === userId ? 1 : 0;
       if (isInstructor1 !== isInstructor2) return isInstructor2 - isInstructor1;
 
       // updatedAt
@@ -88,7 +93,10 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
             loaded: true,
             info: response.payload,
           });
-          setClassrooms(sortClassrooms(response.payload.classrooms, response.payload.stringId));
+          setClassrooms(sortClassrooms(
+            response.payload.classrooms.map((c) => ({ ...c, speakerId: null })),
+            response.payload.stringId,
+          ));
         } else {
           setMe({ loaded: true, info: null });
         }
@@ -106,6 +114,10 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       {/* History Listener */}
       <HistoryListener />
 
+      {/* Info Patcher */}
+      <ClassroomPatcher />
+      <MyInfoPatcher />
+
       {/* 화면 vh 조정 */}
       <ScreenHeightMeasure />
 
@@ -118,7 +130,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       <Loading loading={loading} />
 
       <YTSynchronizer>
-        {(onReady, onStateChange) => (
+        {(onReady, onStateChange, isInstructor, duration, volume, setVolume) => (
           <YTWrapper
             isPresent={!!classrooms[0]?.video}
             inClassroom={inClassroom}
@@ -128,8 +140,12 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
               }
             }}
           >
-            <YTPlayer
+            <YTPlayerControl
+              isInstructor={isInstructor}
               videoId={classrooms[0]?.video?.videoId}
+              duration={duration}
+              volume={volume}
+              setVolume={setVolume}
               onReady={onReady}
               onStateChange={onStateChange}
             />

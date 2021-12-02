@@ -1,15 +1,16 @@
 import { Speaker220Filled } from '@fluentui/react-icons';
-import { ClassroomJSON, SocketVoice } from '@team-10/lib';
+import { SocketVoice } from '@team-10/lib';
 import useMediaRecorder from '@wmik/use-media-recorder';
 import AudioRecorder from 'audio-recorder-polyfill';
 import mpegEncoder from 'audio-recorder-polyfill/mpeg-encoder';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import useMainClassroom from '../../hooks/useMainClassroom';
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
+import classroomsState from '../../recoil/classrooms';
+import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
 import ScreenType from '../../types/screen';
@@ -38,9 +39,15 @@ interface Props {
 const VoiceChat: React.FC<Styled<Props>> = ({
   audioContext, voiceBuffer, analyser, onVoice, style, className,
 }) => {
-  const classroom = useMainClassroom();
+  const hash = useRecoilValue(mainClassroomHashState.atom);
+  const [classroom, setClassroom] = useRecoilState(classroomsState.byHash(hash));
   const meInfo = useRecoilValue(meState.info);
   const userId = meInfo?.stringId ?? null;
+  const hashRef = React.useRef<string | null>(hash);
+
+  React.useEffect(() => {
+    hashRef.current = hash;
+  }, [hash]);
 
   /* ********* *
    * Constants *
@@ -142,7 +149,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   const onDataAvailable = (data: Blob) => {
     if (!data.size) return;
-    if (!classroom) return;
+    if (!hashRef.current) return;
 
     // 브라우저의 Media Recorder의 output type은 바뀌지 않음
     const type: SocketVoice.Voice['type'] | null = data.type.includes('opus')
@@ -153,16 +160,9 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     if (!type) return; // Not supported
 
     data.arrayBuffer().then((buffer) => {
-      if (onVoice) {
-        if (isSpeaking.current === 'speaking') {
-          onVoice(100, 300);
-        } else {
-          onVoice(0, 100);
-        }
-      }
       if (isSpeaking.current !== 'requesting') {
         socket.emit('voice/StreamSend', {
-          hash: classroom.hash, // TODO
+          hash: hashRef.current!,
           voices: type === 'opus'
             ? [
               {
@@ -235,10 +235,13 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   // eslint-disable-next-line consistent-return
   const releaseButton = React.useCallback(() => {
-    if (!classroom) return;
+    if (!classroom || !hash) return;
 
     setButtonPressed(false);
     console.log('released!');
+    if (onVoice) onVoice(0, 100);
+    setClassroom((c) => ({ ...c, speakerId: null }));
+    sequenceIndex.current = 0;
 
     if (recorderStatus !== 'ready') {
       getMediaStream();
@@ -246,38 +249,31 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
     if (isSpeaking.current !== 'none') {
       socket.emit('voice/StateChange', {
-        hash: classroom.hash,
+        hash,
         speaking: false,
       });
       setTimeout(() => {
         isSpeaking.current = 'none';
-      }, 2000);
+      }, 300);
     }
-  }, [classroom, socket, recorderStatus]);
+  }, [hash, socket, recorderStatus]);
 
   const pressButton = React.useCallback(() => {
-    if (!classroom) return;
+    if (!classroom || !hash) return;
 
     setButtonPressed(true);
 
     console.log('pressed!');
+    if (onVoice) onVoice(100, 300);
 
     if (isSpeaking.current !== 'none') return;
 
     socket.emit('voice/StateChange', {
-      hash: classroom.hash,
+      hash,
       speaking: true,
     });
-    setRequestingPermissionInterval(
-      setInterval(() => {
-        socket.emit('voice/StateChange', {
-          hash: classroom.hash,
-          speaking: true,
-        });
-      }, REQUESTING_PERMISSION_INTERVAL),
-    );
     isSpeaking.current = 'requesting';
-  }, [classroom, socket]);
+  }, [hash, socket]);
 
   /* ******* *
    * Effects *
@@ -370,26 +366,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       socket.off('voice/StateChange', listener);
     };
   }, [socket]);
-
-  // isSpeaking이 speaking이 아니면 sequence index를 0으로 설정하기
-  React.useEffect(() => {
-    if (isSpeaking.current !== 'speaking') {
-      sequenceIndex.current = 0;
-    }
-  }, [isSpeaking.current]);
-
-  // StateChange 요청 성공이나 실패 시 `requestingPermissionInterval` 비우기
-  React.useEffect(() => {
-    if (isSpeaking.current !== 'requesting' && requestingPermissionInterval) {
-      clearInterval(requestingPermissionInterval);
-      setRequestingPermissionInterval(null);
-    }
-    return () => {
-      if (requestingPermissionInterval) {
-        clearInterval(requestingPermissionInterval);
-      }
-    };
-  }, [isSpeaking.current]);
 
   // StateChangeBroadcast listener
   React.useEffect(() => {
@@ -497,6 +473,10 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       socket.off('voice/StreamReceiveBroadcast', listener);
     };
   }, [voiceBuffer, analyser, socket, classroom]);
+
+  React.useEffect(() => {
+    setClassroom((c) => ({ ...c, speakerId }));
+  }, [speakerId]);
 
   return (
     <Button

@@ -1,3 +1,4 @@
+export * from './chat';
 export * from './classroom';
 export * from './rest';
 export * from './socket';

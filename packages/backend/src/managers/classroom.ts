@@ -48,7 +48,6 @@ export default class ClassroomManager {
     if (!classroomEntity) return false;
 
     const classroom = new Classroom(this.server, classroomEntity);
-    await classroom.initialize();
     this.classrooms.set(hash, classroom);
 
     return true;
@@ -79,7 +78,7 @@ export default class ClassroomManager {
     }
 
     const classroom = new Classroom(this.server, entity);
-    await classroom.initialize();
+    await classroom.regeneratePasscode();
 
     return classroom;
   }
@@ -147,18 +146,7 @@ export default class ClassroomManager {
     return true;
   }
 
-  async connectMemberToAll(userId: string): Promise<void> {
-    const user = await this.server.managers.user.getSerializableUserInfoFromStringIdAsync(userId);
-    if (!user) return;
-
-    user.classroomHashes.forEach((hash) => {
-      const classroom = this.classrooms.get(hash);
-      if (!classroom) return false;
-      classroom.connectMember(userId);
-    });
-  }
-
-  disconnectMember(userId: string, hash: ClassroomHash): boolean {
+  async disconnectMember(userId: string, hash: ClassroomHash): Promise<boolean> {
     const classroom = this.classrooms.get(hash);
     if (!classroom) return false;
     classroom.disconnectMember(userId);
@@ -169,11 +157,12 @@ export default class ClassroomManager {
     const user = await this.server.managers.user.getSerializableUserInfoFromStringIdAsync(userId);
     if (!user) return;
 
-    user.classroomHashes.forEach((hash) => {
+    await Promise.all(user.classroomHashes.map((hash) => {
       const classroom = this.classrooms.get(hash);
       if (!classroom) return false;
       classroom.disconnectMember(userId);
-    });
+      return true;
+    }));
   }
 
   async startClassroom(hash: ClassroomHash): Promise<boolean> {
@@ -205,9 +194,51 @@ export default class ClassroomManager {
     return {
       hash,
       name: classroom.name,
-      instructorId: classroom.instructor.stringId,
-      memberIds: Array.from(classroom.members.map(({ stringId }) => stringId)),
-      video: classroom.video,
+      instructor: {
+        stringId: classroom.instructor.stringId,
+        displayName: classroom.instructor.displayName,
+        profileImage: classroom.instructor.profileImage,
+      },
+      members: Array.from(classroom.members.map(
+        ({ stringId, displayName, profileImage }) => ({
+          stringId,
+          displayName,
+          profileImage,
+          isConnected: classroom.connectedMemberIds.has(stringId),
+        }),
+      )),
+      video: classroom.youtube.video,
+      isLive: classroom.isLive,
+      updatedAt: classroom.updatedAt.getTime(),
+    };
+  }
+
+  async getMyClassroomJSON(
+    hash: ClassroomHash,
+  ): Promise<ClassroomJSON | null> {
+    if (!this.classrooms.has(hash)) {
+      await this.load(hash);
+    }
+    const classroom = this.classrooms.get(hash);
+    if (!classroom) return null;
+
+    return {
+      hash,
+      name: classroom.name,
+      instructor: {
+        stringId: classroom.instructor.stringId,
+        displayName: classroom.instructor.displayName,
+        profileImage: classroom.instructor.profileImage,
+      },
+      members: Array.from(classroom.members.map(
+        ({ stringId, displayName, profileImage }) => ({
+          stringId,
+          displayName,
+          profileImage,
+          isConnected: classroom.connectedMemberIds.has(stringId),
+        }),
+      )),
+      video: classroom.youtube.video,
       isLive: classroom.isLive,
       passcode: classroom.passcode,
       updatedAt: classroom.updatedAt.getTime(),

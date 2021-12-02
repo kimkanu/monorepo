@@ -90,7 +90,7 @@ const Dialog: React.FC<Styled<Props>> = ({
             conditionalClassName({
               desktop: 'w-96 shadow-dropdown-desktop rounded-8',
               mobile: 'w-full shadow-dropdown-mobile rounded-t-12',
-              mobileLandscape: 'max-w-sm',
+              mobileLandscape: 'max-w-md',
               mobilePortrait: 'max-w-md',
             })(screenType),
             className,

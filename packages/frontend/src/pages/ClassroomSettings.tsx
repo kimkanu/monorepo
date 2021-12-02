@@ -43,7 +43,7 @@ const ClassroomSettings: React.FC = () => {
     >
       {!!classroom && (
         <ClassroomSettingsContent
-          isInstructor={classroom.instructorId === myId}
+          isInstructor={classroom.instructor!.stringId === myId}
           classroom={classroom as ClassroomJSON}
           classroomName={classroomName ?? ''}
           onInputClassroomName={setClassroomName}

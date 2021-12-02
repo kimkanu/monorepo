@@ -31,7 +31,7 @@ export default function generateRoute(server: Server): Route {
       const classroom = await managers.classroom.create(user.stringId, name);
       return {
         success: true,
-        payload: (await managers.classroom.getClassroomJSON(classroom.hash))!,
+        payload: (await managers.classroom.getMyClassroomJSON(classroom.hash))!,
       };
     },
   );
@@ -204,6 +204,29 @@ export default function generateRoute(server: Server): Route {
           payload: {
             name: body.name,
           },
+        };
+      }
+
+      if (operation === 'toggle') {
+        if (classroom.instructor.stringId !== userId) {
+          return {
+            success: false,
+            error: {
+              code: 'FORBIDDEN',
+              statusCode: 403,
+              extra: {},
+            },
+          };
+        }
+
+        if (body.start) {
+          await classroom.start();
+        } else {
+          await classroom.end();
+        }
+        return {
+          success: true,
+          payload: {} as Empty,
         };
       }
 
