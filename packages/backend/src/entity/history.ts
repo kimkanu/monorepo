@@ -55,3 +55,24 @@ export class VoiceHistoryEntity extends HistoryEntity {
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   speaker: UserEntity;
 }
+
+@ChildEntity()
+export class ClassHistoryEntity extends HistoryEntity {
+  @Column({ type: 'timestamptz' })
+  date: Date;
+
+  @Column()
+  start: Boolean;
+}
+
+@ChildEntity()
+export class AttendanceHistoryEntity extends HistoryEntity {
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  user: UserEntity;
+
+  @Column({ type: 'timestamptz' })
+  date: Date;
+
+  @Column()
+  connected: Boolean;
+}

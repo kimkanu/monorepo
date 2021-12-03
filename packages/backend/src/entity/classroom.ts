@@ -3,13 +3,14 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  OneToOne,
   ManyToOne,
   ManyToMany,
   OneToMany,
   JoinTable,
 } from 'typeorm';
 
-import History from './history';
+import History, { ClassHistoryEntity } from './history';
 import User from './user';
 
 @Entity()
@@ -39,4 +40,7 @@ export default class ClassroomEntity extends BaseEntity {
 
   @Column({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @OneToOne(() => ClassHistoryEntity, (history) => history.classroom)
+  history: ClassHistoryEntity;
 }
