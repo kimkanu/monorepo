@@ -302,14 +302,8 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
                 height={36}
                 text="Set Video"
                 onClick={() => {
-                  if (!mainClassroom) return;
-                  setMainClassroom((c) => ({
-                    ...c,
-                    video: {
-                      type: 'single',
-                      videoId: 'BcbmFxbdsJ0',
-                    },
-                  }));
+                  if (!classroomHash) return;
+                  appHistory.push(`/classrooms/${classroomHash}/share`, history);
                 }}
               />
             </div>
@@ -323,7 +317,8 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
                 icon={<People24Filled />}
                 filled
                 onClick={() => {
-                  appHistory.push(`/classrooms/${classroomHash!}/members`, history);
+                  if (!classroomHash) return;
+                  appHistory.push(`/classrooms/${classroomHash}/members`, history);
                 }}
               />
               <AmbientButton

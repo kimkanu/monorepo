@@ -3647,6 +3647,7 @@ __metadata:
     react-device-detect: ^2.1.2
     react-dom: ^17.0.2
     react-helmet: ^6.1.0
+    react-infinite-scroll-hook: ^4.0.1
     react-motion: ^0.5.2
     react-router-dom: ^5.3.0
     react-router-transition: ^2.1.0
@@ -17776,6 +17777,26 @@ __metadata:
   peerDependencies:
     react: ">=16.3.0"
   checksum: a4998479dab7fc1c2799eddefb1870a9d881b5f71cfdf97979a9882e42f4bb50402d55335f308f461e735e01a06f46b16cc7b4e6bcb22c7a4a6f85a753c5c106
+  languageName: node
+  linkType: hard
+
+"react-infinite-scroll-hook@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "react-infinite-scroll-hook@npm:4.0.1"
+  dependencies:
+    react-intersection-observer-hook: ^2.0.3
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: c91b1457b3e33068b907758de88eb9b1665ce3976b4a0dcf85eeb07ff0dd9bfd4105a6804c25d98ab21717837d02be8cb9c0981636d1c8892120ae6cfa17e40b
+  languageName: node
+  linkType: hard
+
+"react-intersection-observer-hook@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "react-intersection-observer-hook@npm:2.0.3"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: a2c739a4bb53cd29870101fa2f256adac23617a9df97a142241615ba1b4f3021c3ab0ea0de50f51d170cf39e68c003a8a15e02ea3884ea0fd21721fa5507562a
   languageName: node
   linkType: hard
 

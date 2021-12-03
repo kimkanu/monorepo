@@ -12,11 +12,11 @@ interface Props {
   options?: YouTubeProps['opts'];
   onReady?: (player: YouTubePlayer) => void;
   onStateChange?: (state: number, player: YouTubePlayer) => void;
-  setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentTime?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const YTPlayer: React.FC<Styled<Props>> = ({
-  style, className, videoId, options = {}, onReady, onStateChange, setCurrentTime,
+  style, className, videoId, options = {}, onReady, onStateChange, setCurrentTime, children,
 }) => {
   const aspectRatio = 16 / 9;
 
@@ -60,7 +60,7 @@ const YTPlayer: React.FC<Styled<Props>> = ({
             }}
             onPlay={(e) => {
               interval = setInterval(() => {
-                setCurrentTime(e.target.getCurrentTime());
+                if (setCurrentTime) setCurrentTime(e.target.getCurrentTime());
               }, 500);
             }}
             onPause={() => {
@@ -71,7 +71,7 @@ const YTPlayer: React.FC<Styled<Props>> = ({
           />
         ) : (
           <div className="w-full h-full flex justify-center items-center text-white">
-            No videos are shared.
+            {children}
           </div>
         )}
       </div>

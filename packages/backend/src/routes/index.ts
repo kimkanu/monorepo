@@ -5,6 +5,7 @@ import classrooms from './classrooms';
 import Route from './route';
 import toasts from './toasts';
 import users from './users';
+import youtube from './youtube';
 
 export default function generateRoute(server: Server): Route {
   const route = new Route(server);
@@ -18,6 +19,7 @@ export default function generateRoute(server: Server): Route {
   route.use(classrooms);
   route.use(users);
   route.use(toasts);
+  route.use(youtube);
 
   return route;
 }
