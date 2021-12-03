@@ -1,6 +1,9 @@
 import React from 'react';
 
+import useScreenType from '../../hooks/useScreenType';
+import ScreenType from '../../types/screen';
 import { random, randomInt, range } from '../../utils/math';
+import { conditionalStyle } from '../../utils/style';
 import {
   Curve,
   generateCurve, getBezierCurveSum,
@@ -23,6 +26,7 @@ const MAX_CURVES = 4 * COLORS.length;
 const AMP_THRESHOLD = 10;
 
 const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
+  const screenType = useScreenType();
   const [curves, setCurves] = React.useState<Curve[]>([]);
   const [state] = React.useState({
     amplitude, frequency,
@@ -60,12 +64,36 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
     />
   ));
 
+  const marginBottom = {
+    [ScreenType.MobilePortrait]: 136,
+    [ScreenType.MobileLandscape]: 0,
+    [ScreenType.Desktop]: 76,
+  }[screenType];
+
   return (
     <div
-      className="absolute w-full left-0 flex justify-center items-center opacity-50 z-layout-3"
-      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
+      className="absolute w-full left-0 flex justify-center items-center opacity-50 z-layout-3 pointer-events-none"
+      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${marginBottom}px)` }}
     >
-      <svg className="w-full max-w-5xl" viewBox="-400 -100 800 100" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="w-full max-w-5xl"
+        viewBox="-400 -100 800 100"
+        xmlns="http://www.w3.org/2000/svg"
+        style={conditionalStyle({
+          mobilePortrait: {
+            minWidth: '50rem',
+            transform: 'translateX(calc(50vw - 50%))',
+          },
+          mobileLandscape: {
+            minWidth: '50rem',
+            transform: 'translateX(calc(50vw - 9rem - 50%))',
+          },
+          desktop: {
+            minWidth: '50rem',
+            transform: 'translateX(calc(50vw - 13.5rem - 50%))',
+          },
+        })(screenType)}
+      >
         {paths}
       </svg>
     </div>

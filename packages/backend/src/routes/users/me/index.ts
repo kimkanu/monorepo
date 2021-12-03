@@ -2,6 +2,7 @@ import { ClassroomJSON, Provider, UsersMePatchError } from '@team-10/lib';
 
 import { isAuthenticatedOrFail } from '../../../passport';
 import Server from '../../../server';
+import Classroom from '../../../types/classroom';
 import Route from '../../route';
 
 import ssoAccounts from './ssoAccounts';
@@ -30,7 +31,11 @@ export default function generateRoute(server: Server): Route {
           initialized: userEntity.initialized,
           classrooms: (await Promise.all(
             userEntity.classrooms.map(
-              (classroom) => managers.classroom.getClassroomJSON(classroom.hash),
+              (classroom) => (
+                userEntity.myClassrooms.some(({ id }) => id === classroom.id)
+                  ? managers.classroom.getMyClassroomJSON(classroom.hash)
+                  : managers.classroom.getClassroomJSON(classroom.hash)
+              ),
             ),
           )).filter((x) => !!x) as ClassroomJSON[],
         },
@@ -120,11 +125,44 @@ export default function generateRoute(server: Server): Route {
         userEntity.profileImage = profileImageUploadResponse.link;
         userEntity.profileImageDeleteHash = profileImageUploadResponse.deletehash ?? null!;
       }
-      // TODO: patch user.profileImage
+
       userEntity.initialized = true;
       await userEntity.save();
 
       req.user = userEntity;
+
+      const sockets = server.managers.user.users.get(user.stringId)?.sockets ?? [];
+      sockets.forEach((socket) => socket.emit('user/PatchBroadcast', {
+        patch: {
+          stringId: userEntity.stringId,
+          displayName: userEntity.displayName,
+          profileImage: userEntity.profileImage,
+        },
+      }));
+
+      const myClassrooms = await Promise.all(
+        (await server.managers.user.getEntityOrFail(user.stringId))
+          .classrooms.map(({ hash }) => server.managers.classroom.get(hash)),
+      ).then((classrooms) => classrooms.filter((c) => c !== null)) as Classroom[];
+
+      myClassrooms.forEach((classroom) => {
+        classroom.broadcast('classroom/PatchBroadcast', {
+          hash: classroom.hash,
+          patch: {
+            members: classroom
+              .getClassroomJSON()
+              .members
+              .map((m) => (
+                m.stringId === userEntity.stringId ? {
+                  ...m,
+                  stringId: userEntity.stringId,
+                  displayName: userEntity.displayName,
+                  profileImage: userEntity.profileImage,
+                } : m
+              )),
+          },
+        });
+      });
 
       return {
         success: true,

@@ -49,6 +49,9 @@ export type ClassroomsHashPatchRequest = {
 } | {
   operation: 'rename';
   name: string;
+} | {
+  operation: 'toggle';
+  start: boolean;
 };
 /* eslint-disable @typescript-eslint/indent */
 export type ClassroomsHashPatchResponsePayload<T extends ClassroomsHashPatchRequest['operation']>
@@ -60,6 +63,8 @@ export type ClassroomsHashPatchResponsePayload<T extends ClassroomsHashPatchRequ
   ? { passcode: string }
   : T extends 'rename'
   ? { name: string }
+  : T extends 'toggle'
+  ? Empty
   : never;
 export type ClassroomsHashPatchError = {
   code: 'NONEXISTENT_CLASSROOM';

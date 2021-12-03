@@ -47,7 +47,7 @@ const Welcome: React.FC = () => {
   }, [me.loaded, meInfo]);
 
   return (
-    <ContentPadding isFooterPresent>
+    <ContentPadding>
       <NarrowPageWrapper>
         <Title size="title">
           반갑습니다

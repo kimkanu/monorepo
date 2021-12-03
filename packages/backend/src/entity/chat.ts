@@ -19,6 +19,9 @@ export default class ChatEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ unique: true })
+  uuid: string;
+
   @ManyToOne(() => UserEntity, (user) => user.chats)
   author: UserEntity;
 

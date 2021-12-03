@@ -38,7 +38,7 @@ const Test: React.FC<Props> = ({ name }) => {
 
   if (name === '') {
     return (
-      <div className="w-full h-full max-w-sm flex flex-col justify-center items-center mx-auto gap-4">
+      <div className="w-full h-full max-w-md flex flex-col justify-center items-center mx-auto gap-4">
         {Object.entries(componentsToTest).map(([pathname, [description]]) => (
           <Link key={pathname} className="block relative w-full" to={`/tests/${pathname}`}>
             <TempButton width="full" label={description} />

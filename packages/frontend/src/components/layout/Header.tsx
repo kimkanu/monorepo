@@ -10,6 +10,7 @@ import {
   Person24Filled,
   SignOut24Filled,
 } from '@fluentui/react-icons';
+import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
@@ -22,11 +23,14 @@ import themeState from '../../recoil/theme';
 import toastState from '../../recoil/toast';
 import ScreenType from '../../types/screen';
 import { Theme } from '../../types/theme';
+import fetchAPI from '../../utils/fetch';
 import appHistory from '../../utils/history';
 import { mergeClassNames } from '../../utils/style';
 import Dropdown from '../alert/Dropdown';
 import AmbientButton from '../buttons/AmbientButton';
+import Button from '../buttons/Button';
 import LogoButton from '../buttons/LogoButton';
+import MemberList from '../classroom/MemberList';
 
 interface ProfileDropdownContentProps {
   src?: string;
@@ -147,7 +151,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
   const history = useHistory();
   const me = useRecoilValue(meState.atom);
   const mainClassroomHash = useRecoilValue(mainClassroomHashState.atom);
-  const mainClassroom = useRecoilValue(classroomsState.byHash(mainClassroomHash));
+  const [mainClassroom, setMainClassroom] = useRecoilState(classroomsState.byHash(mainClassroomHash));
 
   const classroomHash = location.pathname.match(/^\/classrooms\/(\w{3}-\w{3}-\w{3})/)?.[1];
   const inClassroom = !!classroomHash;
@@ -219,22 +223,27 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
       >
         <div className="flex items-center">
           {/* Back button or Logo */}
-          <div className="w-10 h-10 mr-4 flex justify-center items-center">
+          <div className="w-fit h-10 mr-4 flex justify-center items-center">
             {inClassroom ? (
-              <AmbientButton
-                dark={isMobileLandscapeClassroomUI}
-                alt="Back"
-                icon={(
-                  <IosArrowLtr24Regular
-                    className="inline-block"
-                    style={{ transform: 'translateX(3px)' }}
+              <>
+                {(!inClassroom || isClassroomButtonsVisible) && (
+                  <AmbientButton
+                    dark={isMobileLandscapeClassroomUI}
+                    alt="Back"
+                    icon={(
+                      <IosArrowLtr24Regular
+                        className="inline-block"
+                        style={{ transform: 'translateX(3px)' }}
+                      />
+                  )}
+                    onClick={() => {
+                      hideDropdowns();
+                      appHistory.goBack(history);
+                    }}
                   />
-              )}
-                onClick={() => {
-                  hideDropdowns();
-                  appHistory.goBack(history);
-                }}
-              />
+                )}
+                {screenType === ScreenType.MobileLandscape && !isUIHidden && <MemberList />}
+              </>
             ) : (
               <LogoButton
                 onClick={() => {
@@ -246,30 +255,65 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
           </div>
           {/* Classroom Name */}
           {mainClassroom && inClassroom && screenType === ScreenType.MobilePortrait && (
-          <div
-            style={{
-              maxWidth: 'calc(100% - 54px)',
-              lineClamp: 2,
-              WebkitLineClamp: 2,
-              display: '-webkit-box',
-              WebkitBoxOrient: 'vertical',
-            }}
-            className="flex items-center overflow-hidden max-h-full"
-          >
-            <span className="font-semibold text-base" style={{ lineHeight: '19px' }}>
-              {mainClassroom.name}
-            </span>
-          </div>
+            <div
+              style={{
+                maxWidth: 'calc(100% - 54px)',
+                lineClamp: 2,
+                WebkitLineClamp: 2,
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+              }}
+              className="flex items-center overflow-hidden max-h-full"
+            >
+              <span className="font-semibold text-base" style={{ lineHeight: '19px' }}>
+                {mainClassroom.name}
+              </span>
+            </div>
           )}
           {mainClassroom && inClassroom && screenType === ScreenType.Desktop && (
-          <div>
-            <span className="font-semibold text-base" style={{ lineHeight: '19px' }}>
-              {mainClassroom.name}
-            </span>
-          </div>
+            <div>
+              <span className="font-semibold text-base" style={{ lineHeight: '19px' }}>
+                {mainClassroom.name}
+              </span>
+            </div>
           )}
         </div>
-        <div className="flex gap-5">
+        <div className="flex gap-5 items-center">
+          {inClassroom && screenType !== ScreenType.MobilePortrait && (screenType === ScreenType.Desktop || !isUIHidden) && (
+            <div className="w-fit px-2 flex">
+              <Button
+                type="primary"
+                width="fit-content"
+                height={36}
+                text={mainClassroom?.isLive ? 'End' : 'Start'}
+                onClick={async () => {
+                  if (!mainClassroom) return;
+                  const response = await fetchAPI(
+                    'PATCH /classrooms/:hash',
+                    { hash: mainClassroom.hash! },
+                    { operation: 'toggle', start: !mainClassroom.isLive },
+                  ) as ClassroomsHashPatchResponse<'toggle'>;
+                  // TODO
+                }}
+              />
+              <Button
+                type="primary"
+                width="fit-content"
+                height={36}
+                text="Set Video"
+                onClick={() => {
+                  if (!mainClassroom) return;
+                  setMainClassroom((c) => ({
+                    ...c,
+                    video: {
+                      type: 'single',
+                      videoId: 'BcbmFxbdsJ0',
+                    },
+                  }));
+                }}
+              />
+            </div>
+          )}
           {/* Classroom Buttons */}
           {isClassroomButtonsVisible && (
             <>
@@ -341,7 +385,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
                       className="w-10 h-10 rounded-full overflow-hidden object-cover object-center shadow-button"
                       style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
                     />
-                    )}
+                  )}
                   isImageIcon
                   onClick={() => {
                     hideDropdowns();

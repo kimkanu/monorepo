@@ -83,8 +83,16 @@ export default function generateRoute(server: Server): Route {
         };
       }
 
+      const sockets = server.managers.user.users.get(user.stringId)?.sockets ?? [];
+      sockets.forEach((socket) => socket.emit('user/PatchBroadcast', {
+        patch: {
+          ssoAccounts: info.ssoAccounts.filter(({ provider: aProvider, providerId }) => (
+            aProvider !== ssoAccount.provider || providerId !== ssoAccount.providerId
+          )),
+        },
+      }));
+
       await ssoAccount.remove();
-      console.log('repo', await ssoAccountRepository.find());
       return {
         success: true,
         payload: {},

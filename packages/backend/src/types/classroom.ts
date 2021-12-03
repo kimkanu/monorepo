@@ -1,6 +1,6 @@
 import Crypto from 'crypto';
 
-import { YouTubeVideo } from '@team-10/lib';
+import { ClassroomJSON, ClassroomMemberJSON, YouTubeVideo } from '@team-10/lib';
 import { getConnection } from 'typeorm';
 
 import { PhotoChatEntity, TextChatEntity } from '../entity/chat';
@@ -18,7 +18,6 @@ export interface ClassroomVoiceState {
 
 export interface ClassroomYouTubeState {
   responseTime: Date | null;
-  videoId: string | null;
   currentTime: number | null;
   play: boolean;
 }
@@ -40,8 +39,6 @@ export default class Classroom {
 
   updatedAt: Date;
 
-  video: YouTubeVideo;
-
   isLive: boolean = false;
 
   /**
@@ -56,16 +53,15 @@ export default class Classroom {
 
   voice: ClassroomVoiceState;
 
-  youtube: ClassroomYouTubeState;
+  youtube: ClassroomYouTubeState & { video: YouTubeVideo | null };
 
   constructor(
     public server: Server,
     public entity: ClassroomEntity,
-  ) {}
-
-  async initialize() {
+  ) {
     this.hash = this.entity.hash;
     this.name = this.entity.name;
+    this.passcode = this.entity.passcode;
     this.instructor = this.entity.instructor;
     this.members = this.entity.members;
     this.updatedAt = this.entity.updatedAt;
@@ -76,11 +72,10 @@ export default class Classroom {
     };
     this.youtube = {
       responseTime: null,
-      videoId: null,
+      video: null,
       currentTime: null,
       play: false,
     };
-    await this.regeneratePasscode();
   }
 
   async connectMember(userId: string) {
@@ -102,8 +97,14 @@ export default class Classroom {
       // make a DB entry: attendance history entity, attend
       await attendanceEntity.save();
     }
+    const { members } = this.getClassroomJSON();
+    this.broadcast('classroom/PatchBroadcast', {
+      hash: this.hash,
+      patch: {
+        members: members.map((m) => (m.stringId === userId ? { ...m, isConnected: true } : m)),
+      },
+    });
 
-    // TODO: broadcast to others
     return true;
   }
 
@@ -127,7 +128,14 @@ export default class Classroom {
     }, 60 * 1000);
     this.temporaryDisconnectionTimeout.set(userId, timeout);
 
-    // TODO: broadcast to others
+    const { members } = this.getClassroomJSON();
+    this.broadcast('classroom/PatchBroadcast', {
+      hash: this.hash,
+      patch: {
+        members: members.map((m) => (m.stringId === userId ? { ...m, isConnected: false } : m)),
+      },
+    });
+
     return true;
   }
 
@@ -141,9 +149,23 @@ export default class Classroom {
       .relation(UserEntity, 'classrooms')
       .of(userEntity)
       .add(this.entity.id);
-    this.members.push(userEntity);
 
-    // TODO: broadcast to others
+    // broadcast to all
+    const { members } = this.getClassroomJSON();
+    this.broadcast('classroom/PatchBroadcast', {
+      hash: this.hash,
+      patch: {
+        members: [
+          ...members,
+          {
+            ...this.server.managers.user.getUserInfoJSONFromEntity(userEntity),
+            isConnected: true,
+          },
+        ] as ClassroomMemberJSON[],
+      },
+    });
+
+    this.members.push(userEntity);
   }
 
   async letMemberLeave(userEntity: UserEntity) {
@@ -152,18 +174,38 @@ export default class Classroom {
       .relation(UserEntity, 'classrooms')
       .of(userEntity)
       .remove(this.entity.id);
-    this.members.push(userEntity);
 
-    // TODO: broadcast to others
+    // broadcast to all
+    const { members } = this.getClassroomJSON();
+    this.broadcast('classroom/PatchBroadcast', {
+      hash: this.hash,
+      patch: {
+        members: members.filter(({ stringId }) => stringId !== userEntity.stringId),
+      },
+    });
+
+    this.members = this.members.filter(({ id }) => id !== userEntity.id);
   }
 
   async regeneratePasscode(): Promise<string> {
     this.passcode = Crypto.randomInt(1e6).toString().padStart(6, '0');
     this.entity.passcode = this.passcode;
     await this.entity.save();
-    return this.passcode;
 
-    // TODO: emit to the instructor only
+    // emit to the instructor only
+    const instructor = this.server.managers.user.users.get(this.instructor.stringId);
+    if (instructor) {
+      instructor.sockets.forEach((socket) => {
+        socket.emit('classroom/PatchBroadcast', {
+          hash: this.hash,
+          patch: {
+            passcode: this.passcode,
+          },
+        });
+      });
+    }
+
+    return this.passcode;
   }
 
   async rename(name: string): Promise<void> {
@@ -171,7 +213,13 @@ export default class Classroom {
     this.entity.name = name;
     await this.entity.save();
 
-    // TODO: broadcast to others
+    // broadcast to all
+    this.broadcast('classroom/PatchBroadcast', {
+      hash: this.hash,
+      patch: {
+        name,
+      },
+    });
   }
 
   async start() {
@@ -188,7 +236,13 @@ export default class Classroom {
     classHistoryEntity.classroom = this.entity;
     await classHistoryEntity.save();
 
-    // TODO: broadcast to others
+    this.broadcast('classroom/PatchBroadcast', {
+      hash: this.hash,
+      patch: {
+        isLive: true,
+      },
+    });
+
     return true;
   }
 
@@ -199,14 +253,18 @@ export default class Classroom {
     await this.entity.save();
 
     // TODO: create ClassHistoryEntity instance and save
-
     const classHistoryEntity = new ClassHistoryEntity();
     classHistoryEntity.start = this.isLive;
     classHistoryEntity.date = this.updatedAt;
     classHistoryEntity.classroom = this.entity;
     await classHistoryEntity.save();
-
-    // TODO: broadcast to others
+    // broadcast to all
+    this.broadcast('classroom/PatchBroadcast', {
+      hash: this.hash,
+      patch: {
+        isLive: false,
+      },
+    });
     return true;
   }
 
@@ -324,5 +382,52 @@ export default class Classroom {
     sockets.forEach((socket) => {
       socket.emit(eventName, message);
     });
+  }
+
+  getClassroomJSON(): ClassroomJSON {
+    return {
+      hash: this.hash,
+      name: this.name,
+      instructor: {
+        stringId: this.instructor.stringId,
+        displayName: this.instructor.displayName,
+        profileImage: this.instructor.profileImage,
+      },
+      members: Array.from(this.members.map(
+        ({ stringId, displayName, profileImage }) => ({
+          stringId,
+          displayName,
+          profileImage,
+          isConnected: this.connectedMemberIds.has(stringId),
+        }),
+      )),
+      video: this.youtube.video,
+      isLive: this.isLive,
+      updatedAt: this.updatedAt.getTime(),
+    };
+  }
+
+  getMyClassroomJSON(): ClassroomJSON {
+    return {
+      hash: this.hash,
+      name: this.name,
+      instructor: {
+        stringId: this.instructor.stringId,
+        displayName: this.instructor.displayName,
+        profileImage: this.instructor.profileImage,
+      },
+      members: Array.from(this.members.map(
+        ({ stringId, displayName, profileImage }) => ({
+          stringId,
+          displayName,
+          profileImage,
+          isConnected: this.connectedMemberIds.has(stringId),
+        }),
+      )),
+      video: this.youtube.video,
+      isLive: this.isLive,
+      passcode: this.passcode,
+      updatedAt: this.updatedAt.getTime(),
+    };
   }
 }

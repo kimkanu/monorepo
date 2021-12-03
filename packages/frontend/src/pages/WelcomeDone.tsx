@@ -18,7 +18,7 @@ const WelcomeDone: React.FC = () => {
   const location = useLocation();
 
   return (
-    <ContentPadding isFooterPresent>
+    <ContentPadding>
       <NarrowPageWrapper>
         <section>
           <Title size="title">

@@ -1,9 +1,10 @@
-import React from 'react';
-
 import {
   ChatType, ChatContent, TextChatContent, PhotoChatContent,
-} from '../../types/chat';
+} from '@team-10/lib';
+import React from 'react';
+
 import { stringifyDateTime } from '../../utils/date';
+import { mergeClassNames } from '../../utils/style';
 
 import MyPhotoChat from './MyPhotoChat';
 import MyTextChat from './MyTextChat';
@@ -16,7 +17,7 @@ interface MyChatProps {
 const MyChat: React.FC<MyChatProps> = ({
   type, dark, content,
 }) => (
-  type === ChatType.TEXT
+  type === 'text'
     ? <MyTextChat dark={dark} content={content as TextChatContent} />
     : <MyPhotoChat dark={dark} content={content as PhotoChatContent} />
 );
@@ -34,7 +35,12 @@ const MyChatBox: React.FC<Props> = ({
       {chats.map((chat) => (
         <MyChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
       ))}
-      <div className="text-tiny text-gray-500" style={{ padding: '3px 4px' }}>
+      <div
+        className={mergeClassNames(
+          'text-tiny', dark ? 'bg-gray-600 bg-opacity-70 text-white rounded-lg' : 'text-gray-500',
+        )}
+        style={{ padding: '3px 4px' }}
+      >
         {stringifyDateTime(chats.slice(-1)[0].sentAt)}
       </div>
     </div>

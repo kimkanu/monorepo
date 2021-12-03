@@ -9,10 +9,11 @@ const DebugWrapper: React.FC = ({ children }) => {
   return (
     process.env.NODE_ENV === 'production' ? null : (
       <div
-        className="absolute left-4 bottom-4 rounded-lg bg-white hover:bg-gray-200 cursor-pointer bg-opacity-95 z-debug px-8 py-6 shadow-dropdown-desktop transition-all"
+        className="absolute right-4 rounded-lg bg-white hover:bg-gray-200 cursor-pointer bg-opacity-95 z-debug px-8 py-6 shadow-dropdown-desktop transition-all"
         style={{
           width: 280,
-          transform: `translateX(${isVisible ? '0px' : '-250px'})`,
+          top: 72,
+          transform: `translateX(${isVisible ? '0px' : '250px'})`,
         }}
         onClick={(e) => {
           if (e.target === e.currentTarget) {

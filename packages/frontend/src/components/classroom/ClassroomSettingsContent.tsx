@@ -110,7 +110,7 @@ const ClassroomSettingsContent: React.FC<Props> = ({
                   icon={isCopyChecked ? <Checkmark20Regular className="z-10" /> : <Clipboard20Regular className="z-10" />}
                   className="absolute right-0 z-5 w-2/5 font-sans"
                   onClick={async () => {
-                    const ret = await copyTextToClipboard(`${classroom.hash} ${classroom.passcode}`);
+                    const ret = await copyTextToClipboard(`${classroom.hash} ${(classroom.passcode ?? '')}`.trim());
                     if (ret) {
                       setCopyChecked(true);
                       setTimeout(() => {
@@ -125,7 +125,7 @@ const ClassroomSettingsContent: React.FC<Props> = ({
         </div>
         {isInstructor && (
           <TextInput
-            value={classroom.passcode}
+            value={classroom.passcode!}
             icon={<LockClosed20Regular />}
             font="mono"
             align="left"
