@@ -66,6 +66,8 @@ export default class Classroom {
     this.members = this.entity.members;
     this.updatedAt = this.entity.updatedAt;
     this.connectedMemberIds = new Set();
+    this.temporarilyDisconnectedMemberIds = new Set();
+    this.temporaryDisconnectionTimeout = new Map();
     this.voice = {
       speaker: null,
       startedAt: null,
