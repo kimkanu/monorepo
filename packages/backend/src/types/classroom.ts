@@ -288,6 +288,7 @@ export default class Classroom {
   }
 
   async recordChatHistory(
+    senderId: string,
     chatContent: ChatContent,
     // Pass chat information here
   ) {
@@ -300,7 +301,7 @@ export default class Classroom {
     if (chatContent.type === 'text') {
       const chatTextEntity = new TextChatEntity();
       chatTextEntity.author = userEntity;
-      chatTextEntity.chatContent = chatContent;
+      chatTextEntity.text = (chatContent as ChatContent<'text'>).content.text;
       chatTextEntity.history = chatHistoryEntity;
 
       chatHistoryEntity.chat = chatTextEntity;
@@ -309,7 +310,8 @@ export default class Classroom {
     } else if (chatContent.type === 'photo') {
       const chatPhotoEntity = new PhotoChatEntity();
       chatPhotoEntity.author = userEntity;
-      chatPhotoEntity.chatContent = chatContent;
+      chatPhotoEntity.photo = (chatContent as ChatContent<'photo'>).content.photo;
+      chatPhotoEntity.alt = (chatContent as ChatContent<'photo'>).content.alt;
       chatPhotoEntity.history = chatHistoryEntity;
 
       chatHistoryEntity.chat = chatPhotoEntity;

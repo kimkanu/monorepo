@@ -33,11 +33,20 @@ export default class ChatEntity extends BaseEntity {
 @ChildEntity()
 export class TextChatEntity extends ChatEntity {
   @Column()
-  chatContent: ChatContent;
+  sentAt: Date;
+
+  @Column()
+  text: string;
 }
 
 @ChildEntity()
 export class PhotoChatEntity extends ChatEntity {
   @Column()
-  chatContent: ChatContent;
+  sentAt: Date;
+
+  @Column()
+  photo: string;
+
+  @Column()
+  alt: string;
 }
