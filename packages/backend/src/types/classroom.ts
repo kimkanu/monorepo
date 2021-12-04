@@ -1,6 +1,7 @@
 import Crypto from 'crypto';
 
 import { ClassroomJSON, ClassroomMemberJSON, YouTubeVideo } from '@team-10/lib';
+import { ChatContent } from '@team-10/lib/src/types/chat';
 import { getConnection } from 'typeorm';
 
 import { PhotoChatEntity, TextChatEntity } from '../entity/chat';
@@ -225,7 +226,6 @@ export default class Classroom {
   }
 
   async start() {
-    this.isLive = true;
     this.updatedAt = new Date();
     this.entity.updatedAt = this.updatedAt;
     await this.entity.save();
@@ -233,7 +233,7 @@ export default class Classroom {
     // TODO: create ClassHistoryEntity instance and save
 
     const classHistoryEntity = new ClassHistoryEntity();
-    classHistoryEntity.start = this.isLive;
+    classHistoryEntity.start = true;
     classHistoryEntity.date = this.updatedAt;
     classHistoryEntity.classroom = this.entity;
     await classHistoryEntity.save();
@@ -249,14 +249,13 @@ export default class Classroom {
   }
 
   async end() {
-    this.isLive = false;
     this.updatedAt = new Date();
     this.entity.updatedAt = this.updatedAt;
     await this.entity.save();
 
     // TODO: create ClassHistoryEntity instance and save
     const classHistoryEntity = new ClassHistoryEntity();
-    classHistoryEntity.start = this.isLive;
+    classHistoryEntity.start = false;
     classHistoryEntity.date = this.updatedAt;
     classHistoryEntity.classroom = this.entity;
     await classHistoryEntity.save();
@@ -289,11 +288,7 @@ export default class Classroom {
   }
 
   async recordChatHistory(
-    isText: Boolean,
-    senderId: string,
-    text: string,
-    photoUrl: string,
-    sentAt: Date,
+    chatContent: ChatContent,
     // Pass chat information here
   ) {
     const userEntity = this.members.find(({ stringId }) => stringId === senderId);
@@ -301,31 +296,28 @@ export default class Classroom {
 
     // TODO: create chat entity instance (text or photo, or other type..?)
     const chatHistoryEntity = new ChatHistoryEntity();
-    const chatTextEntity = new TextChatEntity();
-    const chatPhotoEntity = new PhotoChatEntity();
-    if (isText === true) {
+
+    if (chatContent.type === 'text') {
+      const chatTextEntity = new TextChatEntity();
       chatTextEntity.author = userEntity;
-      chatTextEntity.text = text;
+      chatTextEntity.chatContent = chatContent;
       chatTextEntity.history = chatHistoryEntity;
 
       chatHistoryEntity.chat = chatTextEntity;
-    } else {
+      chatHistoryEntity.classroom = this.entity;
+      await chatTextEntity.save();
+    } else if (chatContent.type === 'photo') {
+      const chatPhotoEntity = new PhotoChatEntity();
       chatPhotoEntity.author = userEntity;
-      chatPhotoEntity.photoUrl = photoUrl;
+      chatPhotoEntity.chatContent = chatContent;
       chatPhotoEntity.history = chatHistoryEntity;
 
       chatHistoryEntity.chat = chatPhotoEntity;
+      chatHistoryEntity.classroom = this.entity;
+      await chatPhotoEntity.save();
     }
     // create ChatHistoryEntity instance
     // TODO: set appropriate information and save
-    chatHistoryEntity.classroom = this.entity;
-    chatHistoryEntity.sentAt = sentAt;
-
-    if (isText === true) {
-      await chatTextEntity.save();
-    } else {
-      await chatPhotoEntity.save();
-    }
     await chatHistoryEntity.save();
     return true;
   }

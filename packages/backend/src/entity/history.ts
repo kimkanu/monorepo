@@ -39,9 +39,6 @@ export class ChatHistoryEntity extends HistoryEntity {
     cascade: true,
   })
   chat: ChatEntity;
-
-  @Column({ type: 'timestamptz' })
-  sentAt: Date;
 }
 
 @ChildEntity()
@@ -62,7 +59,7 @@ export class ClassHistoryEntity extends HistoryEntity {
   date: Date;
 
   @Column()
-  start: Boolean;
+  start: boolean;
 }
 
 @ChildEntity()
@@ -74,5 +71,5 @@ export class AttendanceHistoryEntity extends HistoryEntity {
   date: Date;
 
   @Column()
-  connected: Boolean;
+  connected: boolean;
 }

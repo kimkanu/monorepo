@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import { ChatContent } from '@team-10/lib';
 import {
   BaseEntity,
   Entity,
@@ -32,11 +33,11 @@ export default class ChatEntity extends BaseEntity {
 @ChildEntity()
 export class TextChatEntity extends ChatEntity {
   @Column()
-  text: string;
+  chatContent: ChatContent;
 }
 
 @ChildEntity()
 export class PhotoChatEntity extends ChatEntity {
   @Column()
-  photoUrl: string;
+  chatContent: ChatContent;
 }

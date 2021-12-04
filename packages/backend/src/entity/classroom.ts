@@ -40,7 +40,4 @@ export default class ClassroomEntity extends BaseEntity {
 
   @Column({ type: 'timestamptz' })
   updatedAt: Date;
-
-  @OneToOne(() => ClassHistoryEntity, (history) => history.classroom)
-  history: ClassHistoryEntity;
 }
