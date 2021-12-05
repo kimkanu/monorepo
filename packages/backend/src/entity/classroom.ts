@@ -3,14 +3,13 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToOne,
   ManyToOne,
   ManyToMany,
   OneToMany,
   JoinTable,
 } from 'typeorm';
 
-import History, { ClassHistoryEntity } from './history';
+import History from './history';
 import User from './user';
 
 @Entity()
