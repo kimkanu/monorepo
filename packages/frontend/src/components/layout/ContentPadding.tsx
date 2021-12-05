@@ -12,7 +12,7 @@ const ContentPadding = React.forwardRef<HTMLDivElement, React.PropsWithChildren<
     const [width] = useWindowSize();
     const screenType = useScreenType();
     const isMobileLandscape = screenType === ScreenType.MobileLandscape;
-  
+
     const location = useLocation();
     const classrooms = useRecoilValue(classroomsState.atom);
     const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
