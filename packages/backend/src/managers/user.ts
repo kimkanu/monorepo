@@ -21,6 +21,7 @@ interface SerializableUserInfo {
   initialized: boolean;
   classroomHashes: string[];
   myClassroomHashes: string[];
+  language: string;
 }
 
 export default class UserManager {
@@ -104,6 +105,7 @@ export default class UserManager {
       })),
       classroomHashes: userEntity.classrooms.map((c) => c.hash),
       myClassroomHashes: userEntity.myClassrooms.map((c) => c.hash),
+      language: userEntity.language,
     };
   }
 

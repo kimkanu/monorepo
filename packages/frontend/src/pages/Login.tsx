@@ -1,5 +1,6 @@
 import { providers } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -16,6 +17,7 @@ const Login: React.FC = () => {
   const history = useHistory();
   const me = useRecoilValue(meState.atom);
   const setLoading = useSetRecoilState(loadingState.atom);
+  const { t } = useTranslation('login');
 
   React.useEffect(() => {
     if (me.loaded && me.info) {
@@ -27,7 +29,7 @@ const Login: React.FC = () => {
   return (
     <ContentPadding>
       <div className="mx-auto mb-16" style={{ maxWidth: 360 }}>
-        <Title size="title">로그인</Title>
+        <Title size="title">{t('login')}</Title>
         <div className="flex flex-col gap-6">
           {providers.map((provider) => (
             <LoginButton

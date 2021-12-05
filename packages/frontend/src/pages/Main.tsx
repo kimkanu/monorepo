@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -13,12 +14,13 @@ const Main = React.forwardRef<HTMLDivElement>((props, ref) => {
   const classrooms = useRecoilValue(classroomsState.atom);
   const me = useRecoilValue(meState.atom);
   const history = useHistory();
+  const { t } = useTranslation('main');
 
   return (
     <ContentPadding ref={ref}>
       {!me.loaded ? null : me.info ? (
         <>
-          <Title size="title">내 수업</Title>
+          <Title size="title">{t('class')}</Title>
           <ClassList
             userId={me.info.stringId}
             classrooms={classrooms}
@@ -29,7 +31,7 @@ const Main = React.forwardRef<HTMLDivElement>((props, ref) => {
         </>
       ) : (
         <>
-          <Title size="title">로그인 해주세요!</Title>
+          <Title size="title">{t('login')}</Title>
         </>
       )}
     </ContentPadding>

@@ -1,5 +1,6 @@
 import { ClassroomsHashPatchResponse, SocketClassroom } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import Button from '../components/buttons/Button';
@@ -22,6 +23,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
   const meInfo = useRecoilValue(meState.info);
   const myId = useRecoilValue(meState.id);
   const screenType = useScreenType();
+  const { t } = useTranslation('classroom');
 
   const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
 
@@ -68,7 +70,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
               type="primary"
               width="fit-content"
               height={36}
-              text={classroom?.isLive ? 'End' : 'Start'}
+              text={classroom?.isLive ? t('end') : t('start')}
               onClick={async () => {
                 if (!classroom) return;
                 const response = await fetchAPI(
@@ -83,7 +85,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
               type="primary"
               width="fit-content"
               height={36}
-              text="Set Video"
+              text={t('set')}
               onClick={() => {
                 if (!classroom) return;
                 setClassroom((c) => ({

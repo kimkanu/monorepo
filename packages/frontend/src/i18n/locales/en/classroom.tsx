@@ -1,0 +1,17 @@
+export default {
+  mode: 'en',
+  noVideo: 'No videos are shared.',
+  start: 'Start',
+  end: 'End',
+  set: 'Set video',
+  startClass: 'Class has started.',
+  endClass: 'Class is finished.',
+  setting: 'Settings',
+  classInfo: 'Class Information',
+  className: 'Class Name',
+  classMg: 'Class Management',
+  copy: 'Copy',
+  reset: 'Reset',
+  leave: 'Leave the Class',
+  remove: 'Remove the Class',
+};

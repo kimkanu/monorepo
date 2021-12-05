@@ -4,6 +4,7 @@ import {
 import { SSOAccountJSON } from '@team-10/lib';
 import CancelablePromise from 'cancelable-promise';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
 
 import meState from '../../recoil/me';
@@ -37,6 +38,7 @@ const ProfileSettingContent: React.FC<Props> = ({
   const [meInfo, setMeInfo] = useRecoilState(meState.info);
   const [displayName, setDisplayName] = React.useState(initialDisplayName);
   const [isInitial, setInitial] = React.useState(true);
+  const { t } = useTranslation('profile');
 
   React.useEffect(() => {
     if (!isInitial) return;
@@ -48,7 +50,7 @@ const ProfileSettingContent: React.FC<Props> = ({
   return (
     <NarrowPageWrapper>
       <section className="mb-16">
-        <Title size="title">내 프로필</Title>
+        <Title size="title">{t('myProfile')}</Title>
         <ProfileImageEditor
           src={profileImage}
           isChanging={isProfileImageChanging}
@@ -66,7 +68,7 @@ const ProfileSettingContent: React.FC<Props> = ({
               style={{ transform: 'scale(83.33%)', transformOrigin: 'top left' }}
             />
           )}
-          placeholderText="이름"
+          placeholderText={t('name')}
           align="center"
           validator={(newDisplayName) => new CancelablePromise<boolean>((
             resolve, reject, onCancel,
@@ -110,7 +112,7 @@ const ProfileSettingContent: React.FC<Props> = ({
             });
           })}
         />
-        <Title size="sect" className="mb-12 mt-4">연결된 소셜 계정</Title>
+        <Title size="sect" className="mb-12 mt-4">{t('connect')}</Title>
         <SSOAccountList
           onAdd={onSSOAccountsAdd}
           ssoAccounts={ssoAccounts}
