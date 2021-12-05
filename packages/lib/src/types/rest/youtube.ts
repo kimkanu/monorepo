@@ -1,5 +1,3 @@
-import { YouTubeVideo } from '..';
-
 import { Response, Empty } from '.';
 
 export type YouTubeEndpoints =

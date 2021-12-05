@@ -39,7 +39,7 @@ const useYouTubeSearch = () => {
     ).then((response) => {
       if (response.success) {
         setError(null);
-        setNextPageToken(response.payload.nextPageToken);
+        setNextPageToken(response.payload.nextPageToken ?? null);
         setItems((i) => [...i, ...response.payload.result]);
       } else {
         setError(response.error);

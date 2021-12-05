@@ -1,31 +1,26 @@
 import { Video16Filled, WeatherPartlyCloudyDay16Regular } from '@fluentui/react-icons';
 import { SocketClassroom, SocketYouTube } from '@team-10/lib';
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
 
+import useMainClassroom from '../../hooks/useMainClassroom';
 import useSocket from '../../hooks/useSocket';
 import classroomsState from '../../recoil/classrooms';
+import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
-import { classroomPrefixRegex } from '../../utils/history';
+import appHistory, { classroomPrefixRegex } from '../../utils/history';
 
-interface Props {
-  children: (
-    onReady: (player: YouTubePlayer) => void,
-    onStateChange: (state: number, player: YouTubePlayer) => void,
-    isInstructor: boolean,
-    duration: number,
-    volume: number | null,
-    setVolume: React.Dispatch<React.SetStateAction<number | null>>,
-  ) => React.ReactElement;
-}
+import YTPlayer from './YTPlayer';
+import YTPlayerControl from './YTPlayerControl';
+import YTWrapper from './YTWrapper';
 
 type PlayerState = 'playing' | 'paused';
 
-const YTSynchronizer: React.FC<Props> = ({ children }) => {
+const YTSynchronizer: React.FC = () => {
   const SECONDS = 1000;
   const REQUEST_TIMEOUT = 3 * SECONDS;
   const SYNC_PERIOD = 20 * SECONDS;
@@ -35,10 +30,12 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
   const [duration, setDuration] = React.useState<number>(0);
   const [player, setPlayer] = React.useState<YouTubePlayer | null>(null);
   const [lastBroadcast, setlastBroadcast] = React.useState<boolean | null>(null);
+  const [currentTime, setCurrentTime] = React.useState(0);
 
   const location = useLocation();
+  const history = useHistory();
   const myId = useRecoilValue(meState.id);
-  const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
+  const hash = useRecoilValue(mainClassroomHashState.atom);
   const [classroom, setClassroom] = useRecoilState(classroomsState.byHash(hash));
   const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
   const isStudent = !!classroom && classroom.instructor!.stringId !== myId;
@@ -263,7 +260,38 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
     player?.setVolume(volume || 0);
   }, [volume]);
 
-  return <>{children(onReady, onStateChange, isInstructor, duration, volume, setVolume)}</>;
+  return (
+    <YTWrapper
+      isPresent={!!classroom?.video}
+      inClassroom={classroomPrefixRegex.test(location.pathname)}
+      onClick={() => {
+        if (classroom) {
+          appHistory.push(`/classrooms/${classroom.hash}`, history);
+        }
+      }}
+    >
+      <YTPlayerControl
+        isInstructor={isInstructor}
+        duration={duration}
+        volume={volume}
+        setVolume={setVolume}
+        currentTime={currentTime}
+      >
+        <YTPlayer
+          videoId={classroom?.video?.videoId}
+          onReady={onReady}
+          onStateChange={onStateChange}
+          setCurrentTime={setCurrentTime}
+          options={isInstructor ? undefined : {
+            playerVars: {
+              controls: 0,
+              disablekb: 1,
+            },
+          }}
+        />
+      </YTPlayerControl>
+    </YTWrapper>
+  );
 };
 
 export default YTSynchronizer;
