@@ -5,8 +5,9 @@ import useMainClassroom from '../../hooks/useMainClassroom';
 import meState from '../../recoil/me';
 import { clamp } from '../../utils/math';
 import VoiceBuffer from '../../utils/VoiceBuffer';
-import VoiceChat from '../voice/VoiceChat';
-import WaveVisualizer from '../voice/WaveVisualizer';
+
+import VoiceChat from './VoiceChat';
+import WaveVisualizer from './WaveVisualizer';
 
 const VoiceWrapper: React.FC = () => {
   const [audioContext, setAudioContext] = React.useState<AudioContext | null>(null);

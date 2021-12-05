@@ -1,11 +1,14 @@
 import Crypto from 'crypto';
 
 import { ClassroomJSON, ClassroomMemberJSON, YouTubeVideo } from '@team-10/lib';
+import { ChatContent } from '@team-10/lib/src/types/chat';
 import { getConnection } from 'typeorm';
 
-import { TextChatEntity } from '../entity/chat';
+import { PhotoChatEntity, TextChatEntity } from '../entity/chat';
 import ClassroomEntity from '../entity/classroom';
-import { ChatHistoryEntity, VoiceHistoryEntity } from '../entity/history';
+import {
+  ClassHistoryEntity, ChatHistoryEntity, VoiceHistoryEntity, AttendanceHistoryEntity,
+} from '../entity/history';
 import UserEntity from '../entity/user';
 import Server from '../server';
 
@@ -64,6 +67,8 @@ export default class Classroom {
     this.members = this.entity.members;
     this.updatedAt = this.entity.updatedAt;
     this.connectedMemberIds = new Set();
+    this.temporarilyDisconnectedMemberIds = new Set();
+    this.temporaryDisconnectionTimeout = new Map();
     this.voice = {
       speaker: null,
       startedAt: null,
@@ -77,20 +82,24 @@ export default class Classroom {
   }
 
   async connectMember(userId: string) {
+    const userEntity = this.members.find(({ stringId }) => stringId === userId);
+    if (!userEntity) return false;
     this.connectedMemberIds.add(userId);
 
     // TODO: 임시적으로 끊긴 유저라면 DB 접근 없이 timeout만 clear & delete하고,
     // TODO: 그렇지 않다면 DB에 출석 history entity 만들어서 저장하기
-    /*
     if (this.temporarilyDisconnectedMemberIds.has(userId)) {
       clearTimeout(this.temporaryDisconnectionTimeout.get(userId)!);
       this.temporaryDisconnectionTimeout.delete(userId);
     } else {
+      const attendanceEntity = new AttendanceHistoryEntity();
+      attendanceEntity.classroom = this.entity;
+      attendanceEntity.user = userEntity;
+      attendanceEntity.date = new Date();
+      attendanceEntity.connected = true;
       // make a DB entry: attendance history entity, attend
-      // await attendanceEntity.save();
+      await attendanceEntity.save();
     }
-    */
-
     const { members } = this.getClassroomJSON();
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
@@ -98,21 +107,29 @@ export default class Classroom {
         members: members.map((m) => (m.stringId === userId ? { ...m, isConnected: true } : m)),
       },
     });
+
+    return true;
   }
 
   disconnectMember(userId: string) {
+    const userEntity = this.members.find(({ stringId }) => stringId === userId);
+    if (!userEntity) return false;
     this.connectedMemberIds.delete(userId);
 
     // TODO: 임시적으로 끊긴 멤버 관리하기, 일정 timeout 이후에는 db에 나간 것으로 저장
-    /*
     this.temporarilyDisconnectedMemberIds.add(userId);
     const timeout = setTimeout(async () => {
       this.temporarilyDisconnectedMemberIds.delete(userId);
       // make a DB entry: attendance history entity, disconnected
+      const attendanceEntity = new AttendanceHistoryEntity();
+      attendanceEntity.classroom = this.entity;
+      attendanceEntity.user = userEntity;
+      attendanceEntity.date = new Date();
+      attendanceEntity.connected = false;
+
       await attendanceEntity.save();
     }, 60 * 1000);
     this.temporaryDisconnectionTimeout.set(userId, timeout);
-    */
 
     const { members } = this.getClassroomJSON();
     this.broadcast('classroom/PatchBroadcast', {
@@ -121,6 +138,8 @@ export default class Classroom {
         members: members.map((m) => (m.stringId === userId ? { ...m, isConnected: false } : m)),
       },
     });
+
+    return true;
   }
 
   hasMember(userId: string) {
@@ -207,37 +226,39 @@ export default class Classroom {
   }
 
   async start() {
-    this.isLive = true;
     this.updatedAt = new Date();
     this.entity.updatedAt = this.updatedAt;
     await this.entity.save();
 
     // TODO: create ClassHistoryEntity instance and save
-    /*
+
     const classHistoryEntity = new ClassHistoryEntity();
     classHistoryEntity.start = true;
     classHistoryEntity.date = this.updatedAt;
     classHistoryEntity.classroom = this.entity;
     await classHistoryEntity.save();
-    */
 
-    // broadcast to all
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
       patch: {
         isLive: true,
       },
     });
+
+    return true;
   }
 
   async end() {
-    this.isLive = false;
     this.updatedAt = new Date();
     this.entity.updatedAt = this.updatedAt;
     await this.entity.save();
 
     // TODO: create ClassHistoryEntity instance and save
-
+    const classHistoryEntity = new ClassHistoryEntity();
+    classHistoryEntity.start = false;
+    classHistoryEntity.date = this.updatedAt;
+    classHistoryEntity.classroom = this.entity;
+    await classHistoryEntity.save();
     // broadcast to all
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
@@ -245,6 +266,7 @@ export default class Classroom {
         isLive: false,
       },
     });
+    return true;
   }
 
   async recordVoiceHistory(
@@ -267,31 +289,38 @@ export default class Classroom {
 
   async recordChatHistory(
     senderId: string,
+    chatContent: ChatContent,
     // Pass chat information here
   ) {
     const userEntity = this.members.find(({ stringId }) => stringId === senderId);
     if (!userEntity) return false;
 
     // TODO: create chat entity instance (text or photo, or other type..?)
-    // const chatEntity = new TextChatEntity();
-
-    // create ChatHistoryEntity instance
     const chatHistoryEntity = new ChatHistoryEntity();
 
+    if (chatContent.type === 'text') {
+      const chatTextEntity = new TextChatEntity();
+      chatTextEntity.author = userEntity;
+      chatTextEntity.text = (chatContent as ChatContent<'text'>).content.text;
+      chatTextEntity.history = chatHistoryEntity;
+
+      chatHistoryEntity.chat = chatTextEntity;
+      chatHistoryEntity.classroom = this.entity;
+      await chatTextEntity.save();
+    } else if (chatContent.type === 'photo') {
+      const chatPhotoEntity = new PhotoChatEntity();
+      chatPhotoEntity.author = userEntity;
+      chatPhotoEntity.photo = (chatContent as ChatContent<'photo'>).content.photo;
+      chatPhotoEntity.alt = (chatContent as ChatContent<'photo'>).content.alt;
+      chatPhotoEntity.history = chatHistoryEntity;
+
+      chatHistoryEntity.chat = chatPhotoEntity;
+      chatHistoryEntity.classroom = this.entity;
+      await chatPhotoEntity.save();
+    }
+    // create ChatHistoryEntity instance
     // TODO: set appropriate information and save
-    /*
-    chatEntity.author = chat.author;
-    chatEntity.text = chat.text;
-    chatEntity.history = chatHistoryEntity;
-
-    chatHistoryEntity.classroom = this.entity;
-    chatHistoryEntity.sentAt = chat.sentAt;
-    chatHistoryEntity.chat = chatEntity;
-
-    await chatEntity.save();
     await chatHistoryEntity.save();
-    */
-
     return true;
   }
 

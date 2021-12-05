@@ -39,9 +39,6 @@ export class ChatHistoryEntity extends HistoryEntity {
     cascade: true,
   })
   chat: ChatEntity;
-
-  @Column({ type: 'timestamptz' })
-  sentAt: Date;
 }
 
 @ChildEntity()
@@ -54,4 +51,25 @@ export class VoiceHistoryEntity extends HistoryEntity {
 
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   speaker: UserEntity;
+}
+
+@ChildEntity()
+export class ClassHistoryEntity extends HistoryEntity {
+  @Column({ type: 'timestamptz' })
+  date: Date;
+
+  @Column()
+  start: boolean;
+}
+
+@ChildEntity()
+export class AttendanceHistoryEntity extends HistoryEntity {
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  user: UserEntity;
+
+  @Column({ type: 'timestamptz' })
+  date: Date;
+
+  @Column()
+  connected: boolean;
 }
