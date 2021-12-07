@@ -4,6 +4,8 @@ import auth from './auth';
 import classrooms from './classrooms';
 import Route from './route';
 import toasts from './toasts';
+import translate from './translate';
+
 import users from './users';
 
 export default function generateRoute(server: Server): Route {
@@ -18,6 +20,7 @@ export default function generateRoute(server: Server): Route {
   route.use(classrooms);
   route.use(users);
   route.use(toasts);
+  route.use(translate);
 
   return route;
 }

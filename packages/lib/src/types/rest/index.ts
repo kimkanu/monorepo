@@ -5,11 +5,11 @@ import {
   ClassroomsResponseType,
 } from './classrooms';
 import {
-  ToastsEndpoints,
-  ToastsPathParams,
-  ToastsRequestBodyType,
-  ToastsResponseType,
-} from './toasts';
+  TranslateEndpoints,
+  TranslatePathParams,
+  TranslateRequestBodyType,
+  TranslateResponseType,
+} from './translate';
 import {
   UsersEndpoints,
   UsersPathParams,
@@ -56,23 +56,23 @@ export type Endpoints =
   | 'GET /'
   | UsersEndpoints
   | ClassroomsEndpoints
-  | ToastsEndpoints;
+  | TranslateEndpoints;
 export type PathParams =
   { 'GET /': Empty }
   & UsersPathParams
   & ClassroomsPathParams
-  & ToastsPathParams;
+  & TranslatePathParams;
 export type RequestBodyType =
   { 'GET /': Empty }
   & UsersRequestBodyType
   & ClassroomsRequestBodyType
-  & ToastsRequestBodyType;
+  & TranslateRequestBodyType;
 export type ResponseType =
   { 'GET /': Response<Empty, never> }
   & UsersResponseType
   & ClassroomsResponseType
-  & ToastsResponseType;
+  & TranslateResponseType;
 
 export * from './users';
 export * from './classrooms';
-export * from './toasts';
+export * from './translate';
