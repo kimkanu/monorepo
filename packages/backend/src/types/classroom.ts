@@ -297,6 +297,8 @@ export default class Classroom {
     classHistoryEntity.date = this.updatedAt;
     classHistoryEntity.classroom = this.entity;
     await classHistoryEntity.save();
+
+    this.youtube.video = null;
     // broadcast to all
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,

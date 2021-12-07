@@ -48,6 +48,7 @@ const YTSynchronizer: React.FC = () => {
   const [
     syncResponse, setSyncResponse,
   ] = React.useState<SocketYouTube.Broadcast.ChangePlayStatus | null>(null);
+  const [playlist, setPlaylist] = React.useState<string[] | null>(null);
 
   const { socket, connected } = useSocket<
   SocketYouTube.Events.Response & SocketClassroom.Events.Response, SocketYouTube.Events.Request
@@ -75,13 +76,21 @@ const YTSynchronizer: React.FC = () => {
     setPlayer(newPlayer);
     console.log('onStateChange', newPlayerState, newPlayer.getPlaylistIndex());
 
+    if (classroom.video?.type === 'playlist' && newPlayer.getPlaylist()) {
+      setPlaylist(newPlayer.getPlaylist() as string[]);
+    } else if (classroom.video?.type === 'single') {
+      setPlaylist(null);
+    }
+
     setClassroom((c) => ({
       ...c,
       video: !c!.video ? c!.video : c!.video.type === 'single' ? c!.video : {
         type: 'playlist',
         playlistId: c!.video.playlistId,
         videoId: (newPlayer as any).getVideoData().video_id,
-        index: newPlayer.getPlaylistIndex(),
+        index: (newPlayer.getPlaylist() ?? playlist ?? []).findIndex(
+          (v) => v === (newPlayer as any).getVideoData().video_id,
+        ),
       },
     }));
 
@@ -160,6 +169,8 @@ const YTSynchronizer: React.FC = () => {
           player.seekTo(time, true);
         }
       }
+
+      console.log('synchronize');
 
       // handle videoId changes
       setClassroom((c) => ({
@@ -292,7 +303,7 @@ const YTSynchronizer: React.FC = () => {
         currentTime={currentTime}
       >
         <YTPlayer
-          videoId={classroom?.video?.videoId}
+          videoId={isInstructor && classroom?.video?.type === 'playlist' ? undefined : classroom?.video?.videoId}
           onReady={onReady}
           onStateChange={onStateChange}
           setCurrentTime={setCurrentTime}
