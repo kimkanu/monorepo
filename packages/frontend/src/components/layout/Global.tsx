@@ -6,6 +6,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import useSocket from '../../hooks/useSocket';
 
+import i18n from '../../i18n';
 import classroomsState from '../../recoil/classrooms';
 import loadingState from '../../recoil/loading';
 import meState from '../../recoil/me';
@@ -106,6 +107,17 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       })
       .finally(() => {
         setLoading(false);
+      });
+  }, []);
+
+  React.useEffect(() => {
+    fetchAPI('GET /users/lang')
+      .then((response) => {
+        console.log('response', response.success);
+        if (response.success && response.payload.lang) {
+          console.log('language ', response.payload.lang);
+          i18n.changeLanguage(response.payload.lang);
+        }
       });
   }, []);
 

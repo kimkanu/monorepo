@@ -1,5 +1,7 @@
 /* eslint-disable class-methods-use-this */
-import { Provider, SSOAccountJSON, UserInfoJSON } from '@team-10/lib';
+import {
+  Provider, SSOAccountJSON, UserInfoJSON, UserLangJSON,
+} from '@team-10/lib';
 import { Socket } from 'socket.io';
 import { getConnection } from 'typeorm';
 
@@ -114,6 +116,13 @@ export default class UserManager {
       stringId: userEntity.stringId,
       displayName: userEntity.displayName,
       profileImage: userEntity.profileImage,
+    };
+  }
+
+  getUserLangJSONFromEntity(userEntity: UserEntity): UserLangJSON {
+    return {
+      stringId: userEntity.stringId,
+      language: userEntity.language,
     };
   }
 

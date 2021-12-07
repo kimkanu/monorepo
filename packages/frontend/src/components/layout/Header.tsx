@@ -123,7 +123,12 @@ const LanguageSelectionDropdownContent: React.FC = () => (
       style={{
         transitionProperty: 'background-color, border-color, color, fill, stroke',
       }}
-      onClick={() => (i18n.changeLanguage('ko'))}
+      onClick={() => {
+        i18n.changeLanguage('ko');
+        fetchAPI('PATCH /users/lang', {}, {
+          language: 'ko',
+        });
+      }}
     >
       <i className="twa twa-kr text-big" />
       {' '}
@@ -136,7 +141,12 @@ const LanguageSelectionDropdownContent: React.FC = () => (
       style={{
         transitionProperty: 'background-color, border-color, color, fill, stroke',
       }}
-      onClick={() => (i18n.changeLanguage('en'))}
+      onClick={() => {
+        i18n.changeLanguage('en');
+        fetchAPI('PATCH /users/lang', {}, {
+          language: 'en',
+        });
+      }}
     >
       <i className="twa twa-us text-big absolute" style={{ transform: 'translate(6px, 6px)', zIndex: 1 }} />
       <i className="twa twa-gb text-big" style={{ transform: 'translate(-6px, -6px)' }} />

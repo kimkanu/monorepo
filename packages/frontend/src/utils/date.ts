@@ -1,7 +1,9 @@
+import i18n from '../i18n';
+
 export function stringifyDateTime(date: Date): string {
   return [
     stringifyDate(date),
-    `${stringifyHours(date)}:${date.getMinutes().toString().padStart(2, '0')}`,
+    stringifyTime(date),
   ].join(' ').trim();
 }
 
@@ -12,17 +14,26 @@ export function stringifyDate(date: Date): string {
   }
   // 어제
   if (isYesterday(date)) {
+    if (i18n.language === 'en') {
+      return 'yesterday';
+    }
     return '어제';
   }
   // 올해
   if (date.getFullYear() === new Date().getFullYear()) {
-    return `${(date.getMonth() + 1).toString().padStart(2, '0')}월 ${date.getDate()}일`;
+    if (i18n.language === 'en') {
+      return Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
+    }
+    return Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric' }).format(date);
   }
   return stringifyDateConsistent(date);
 }
 
 export function stringifyDateConsistent(date: Date): string {
-  return `${date.getFullYear()}년 ${(date.getMonth() + 1).toString().padStart(2, '0')}월 ${date.getDate().toString().padStart(2, '0')}일`;
+  if (i18n.language === 'en') {
+    return Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(date);
+  }
+  return Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' }).format(date);
 }
 
 export function isToday(date: Date): boolean {
@@ -39,7 +50,9 @@ export function isYesterday(date: Date): boolean {
     && date.getFullYear() === yesterday.getFullYear();
 }
 
-export function stringifyHours(date: Date): string {
-  const hours = date.getHours();
-  return `${hours < 12 ? '오전' : '오후'} ${(hours % 12).toString().padStart(2, '0') || 12}`;
+export function stringifyTime(date: Date): string {
+  if (i18n.language === 'en') {
+    return Intl.DateTimeFormat('en-US', { timeStyle: 'short' }).format(date);
+  }
+  return Intl.DateTimeFormat('ko-KR', { timeStyle: 'short' }).format(date);
 }
