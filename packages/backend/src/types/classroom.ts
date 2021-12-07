@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import Crypto from 'crypto';
 
 import { ClassroomJSON, ClassroomMemberJSON, YouTubeVideo } from '@team-10/lib';
@@ -85,13 +86,16 @@ export default class Classroom {
     const userEntity = this.members.find(({ stringId }) => stringId === userId);
     if (!userEntity) return false;
     this.connectedMemberIds.add(userId);
+    console.log('a member connected', userId);
 
     // TODO: 임시적으로 끊긴 유저라면 DB 접근 없이 timeout만 clear & delete하고,
     // TODO: 그렇지 않다면 DB에 출석 history entity 만들어서 저장하기
     if (this.temporarilyDisconnectedMemberIds.has(userId)) {
       clearTimeout(this.temporaryDisconnectionTimeout.get(userId)!);
       this.temporaryDisconnectionTimeout.delete(userId);
+      this.temporarilyDisconnectedMemberIds.delete(userId);
     } else {
+      console.log('a member attended the classroom', userId);
       const attendanceEntity = new AttendanceHistoryEntity();
       attendanceEntity.classroom = this.entity;
       attendanceEntity.user = userEntity;
@@ -114,30 +118,64 @@ export default class Classroom {
   disconnectMember(userId: string) {
     const userEntity = this.members.find(({ stringId }) => stringId === userId);
     if (!userEntity) return false;
+    if (!this.connectedMemberIds.has(userId)) return;
+    if (this.temporarilyDisconnectedMemberIds.has(userId)) return;
+
     this.connectedMemberIds.delete(userId);
 
+    // instructor가 연결이 끊기면 youtube를 일시정지
+    if (this.instructor.stringId === userId) {
+      this.youtube.currentTime = this.youtube.currentTime === null
+        ? null
+        : this.youtube.play
+          ? this.youtube.currentTime
+              + (Date.now() - (this.youtube.responseTime?.getTime() ?? Date.now())) / 1000
+          : this.youtube.currentTime;
+      this.youtube.play = false;
+    }
+
     // TODO: 임시적으로 끊긴 멤버 관리하기, 일정 timeout 이후에는 db에 나간 것으로 저장
+
+    if (this.temporarilyDisconnectedMemberIds.has(userId)) return;
     this.temporarilyDisconnectedMemberIds.add(userId);
     const timeout = setTimeout(async () => {
-      this.temporarilyDisconnectedMemberIds.delete(userId);
-      // make a DB entry: attendance history entity, disconnected
-      const attendanceEntity = new AttendanceHistoryEntity();
-      attendanceEntity.classroom = this.entity;
-      attendanceEntity.user = userEntity;
-      attendanceEntity.date = new Date();
-      attendanceEntity.connected = false;
+      if (this.temporarilyDisconnectedMemberIds.has(userId)) {
+        this.temporarilyDisconnectedMemberIds.delete(userId);
+        // make a DB entry: attendance history entity, disconnected
+        const attendanceEntity = new AttendanceHistoryEntity();
+        attendanceEntity.classroom = this.entity;
+        attendanceEntity.user = userEntity;
+        attendanceEntity.date = new Date();
+        attendanceEntity.connected = false;
 
-      await attendanceEntity.save();
-    }, 60 * 1000);
+        await attendanceEntity.save();
+
+        this.temporaryDisconnectionTimeout.delete(userId);
+        console.log('a member exited the classroom', userId);
+      }
+    }, 1.5 * 60 * 1000);
+    clearTimeout(this.temporaryDisconnectionTimeout.get(userId) ?? undefined!);
     this.temporaryDisconnectionTimeout.set(userId, timeout);
 
-    const { members } = this.getClassroomJSON();
+    const { video, members } = this.getClassroomJSON();
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
       patch: {
+        video,
         members: members.map((m) => (m.stringId === userId ? { ...m, isConnected: false } : m)),
       },
     });
+
+    this.broadcastExcept(
+      'youtube/ChangePlayStatusBroadcast',
+      [this.instructor.stringId],
+      {
+        hash: this.hash,
+        play: this.youtube.play,
+        videoId: video?.videoId ?? null,
+        time: this.youtube.currentTime,
+      },
+    );
 
     return true;
   }
@@ -264,6 +302,7 @@ export default class Classroom {
       hash: this.hash,
       patch: {
         isLive: false,
+        video: null,
       },
     });
     return true;
@@ -397,7 +436,10 @@ export default class Classroom {
           isConnected: this.connectedMemberIds.has(stringId),
         }),
       )),
-      video: this.youtube.video,
+      video: this.youtube.video ? {
+        type: 'single',
+        videoId: this.youtube.video.videoId,
+      } : null,
       isLive: this.isLive,
       updatedAt: this.updatedAt.getTime(),
     };

@@ -62,44 +62,60 @@ const YouTubeItem: React.FC<{ desc: YouTubeVideoDescription }> = ({
     creator,
     video,
   },
-}) => (
-  <button type="button" className="flex gap-4 p-4 text-left hover:bg-gray-200 rounded-8 transition-button" style={{ margin: '0 -16px', width: 'calc(100% + 32px)' }}>
-    <img
-      src={thumbnail}
-      alt={`${video.type === 'single' ? '비디오' : '재생목록'} ${video.id}의 섬네일`}
-      className="object-cover object-center rounded-2xl shadow-button"
-      style={{ width: 156, height: 88, '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
-    />
-    <div style={{ width: 'calc(100% - 172px)' }}>
-      <div
-        style={{
-          lineClamp: 2,
-          WebkitLineClamp: 2,
-          display: '-webkit-box',
-          WebkitBoxOrient: 'vertical',
-          lineHeight: '24px',
-          height: 48,
-        }}
-        className="text-emph font-bold overflow-hidden"
-      >
-        {title}
+}) => {
+  const location = useLocation();
+  const history = useHistory();
+  const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
+  const setClassroom = useSetRecoilState(classroomsState.byHash(hash));
+
+  return (
+    <button
+      type="button"
+      className="flex gap-4 p-4 text-left hover:bg-gray-200 rounded-8 transition-button"
+      style={{ margin: '0 -16px', width: 'calc(100% + 32px)' }}
+      onClick={() => {
+        if (!hash) return;
+        setClassroom((c) => (!c ? null : {
+          ...c,
+          video,
+        }));
+        appHistory.goBack(history);
+      }}
+    >
+      <img
+        src={thumbnail}
+        alt={`${video.type === 'single' ? `비디오 ${video.videoId}` : `재생목록 ${video.playlistId}`}의 섬네일`}
+        className="object-cover object-center rounded-2xl shadow-button"
+        style={{ width: 156, height: 88, '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
+      />
+      <div style={{ width: 'calc(100% - 172px)' }}>
+        <div
+          style={{
+            lineClamp: 2,
+            WebkitLineClamp: 2,
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            lineHeight: '24px',
+            height: 48,
+          }}
+          className="text-emph font-bold overflow-hidden"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: title }}
+        />
+        <div className="truncate text-tiny text-gray-600" style={{ lineHeight: '20px' }}>
+          {creator}
+          <br />
+          {video.type === 'single' ? '비디오' : '재생목록'}
+          {' · '}
+          {publishedAt.slice(0, 10)}
+        </div>
       </div>
-      <div className="truncate text-tiny text-gray-600" style={{ lineHeight: '20px' }}>
-        {creator}
-        <br />
-        {video.type === 'single' ? '비디오' : '재생목록'}
-        {' · '}
-        {publishedAt.slice(0, 10)}
-      </div>
-    </div>
-  </button>
-);
+    </button>
+  );
+};
 
 const ClassroomShare: React.FC = () => {
-  const classrooms = useRecoilValue(classroomsState.atom);
   const me = useRecoilValue(meState.atom);
-  const addClassroom = useSetRecoilState(classroomsState.new);
-  const addToast = useSetRecoilState(toastState.new);
   const location = useLocation();
   const history = useHistory();
 
@@ -150,7 +166,7 @@ const ClassroomShare: React.FC = () => {
 
       <div>
         {items.map((item) => (
-          <YouTubeItem key={item.video.id} desc={item} />
+          <YouTubeItem key={(item.video as any).playlistId ?? item.video.videoId} desc={item} />
         ))}
 
         {(isLoading || items.length > 0) && (

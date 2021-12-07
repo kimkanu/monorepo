@@ -46,8 +46,7 @@ export default function generateRoute(server: Server): Route {
     'GET /youtube',
     isAuthenticatedOrFail,
     async (params) => {
-      // TODO: set lang params
-      const apiKey = 'AIzaSyC_Ms6NQD4h6EwV3RibF44774fETecNI4U';
+      const apiKey = process.env.YOUTUBE_API_KEY;
 
       if (!params.q || typeof params.q !== 'string') {
         return {
@@ -74,18 +73,25 @@ export default function generateRoute(server: Server): Route {
           }`,
         ).then(({ body }) => JSON.parse(body)) as SearchResult;
 
-        const result: YouTubeVideoDescription[] = response.items
-          .filter(({ id }) => ['youtube#video', 'youtube#playlist'].includes(id.kind))
-          .map((item) => ({
-            creator: item.snippet.channelTitle,
-            publishedAt: item.snippet.publishedAt,
-            thumbnail: item.snippet.thumbnails.medium.url,
-            title: item.snippet.title,
-            video: {
-              type: item.id.kind === 'youtube#video' ? 'single' : 'playlist',
-              id: item.id.kind === 'youtube#video' ? item.id.videoId : item.id.playlistId,
-            },
-          }));
+        const result: YouTubeVideoDescription[] = await Promise.all(
+          response.items
+            .filter(({ id }) => ['youtube#video', 'youtube#playlist'].includes(id.kind))
+            .map(async (item) => ({
+              creator: item.snippet.channelTitle,
+              publishedAt: item.snippet.publishedAt,
+              thumbnail: item.snippet.thumbnails.medium.url,
+              title: item.snippet.title,
+              video: item.id.kind === 'youtube#video' ? {
+                type: 'single' as 'single',
+                videoId: item.id.videoId,
+              } : {
+                type: 'playlist' as 'playlist',
+                videoId: await got(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${item.id.playlistId}&key=${apiKey}&maxResults=1`).then((r) => JSON.parse(r.body).items[0].snippet.resourceId.videoId),
+                playlistId: item.id.playlistId,
+                index: 0,
+              },
+            })),
+        );
 
         return {
           success: true,

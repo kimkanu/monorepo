@@ -1,3 +1,5 @@
+import { YouTubeVideo } from '..';
+
 import { Response, Empty } from '.';
 
 export type YouTubeEndpoints =
@@ -21,7 +23,7 @@ export interface YouTubeVideoDescription {
   title: string;
   publishedAt: string; // ISO string
   creator: string;
-  video: { type: 'single' | 'playlist'; id: string };
+  video: YouTubeVideo;
 }
 export type YouTubeGetError = {
   code: 'INVALID_INFORMATION';
