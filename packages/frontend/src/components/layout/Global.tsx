@@ -4,6 +4,7 @@ import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
+import useMainClassroom from '../../hooks/useMainClassroom';
 import useSocket from '../../hooks/useSocket';
 
 import classroomsState from '../../recoil/classrooms';
@@ -56,6 +57,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
   const inClassroom = classroomPrefixRegex.test(location.pathname);
 
   const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
+  const mainClassroom = useMainClassroom();
   const toasts = useRecoilValue(toastState.atom);
   const addToast = useSetRecoilState(toastState.new);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
@@ -129,29 +131,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
 
       <Loading loading={loading} />
 
-      <YTSynchronizer>
-        {(onReady, onStateChange, isInstructor, duration, volume, setVolume) => (
-          <YTWrapper
-            isPresent={!!classrooms[0]?.video}
-            inClassroom={inClassroom}
-            onClick={() => {
-              if (classrooms[0]?.hash) {
-                appHistory.push(`/classrooms/${classrooms[0]?.hash}`, history);
-              }
-            }}
-          >
-            <YTPlayerControl
-              isInstructor={isInstructor}
-              videoId={classrooms[0]?.video?.videoId}
-              duration={duration}
-              volume={volume}
-              setVolume={setVolume}
-              onReady={onReady}
-              onStateChange={onStateChange}
-            />
-          </YTWrapper>
-        )}
-      </YTSynchronizer>
+      <YTSynchronizer />
 
       <ToastDisplay toasts={toasts} />
     </div>

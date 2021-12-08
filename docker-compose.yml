@@ -44,6 +44,7 @@ services:
       AUTH_GITHUB_CLIENT_SECRET: ${AUTH_GITHUB_CLIENT_SECRET}
       IMGUR_CLIENT_ID: ${IMGUR_CLIENT_ID}
       IMAGGA_AUTH_KEYS: ${IMAGGA_AUTH_KEYS}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
     command: bash -c 'yarn set version 3.1.0 && yarn install && yarn plugin import workspace-tools && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
     volumes:
       - ./packages/lib/:/app/packages/lib/
@@ -77,6 +78,7 @@ services:
       AUTH_GITHUB_CLIENT_SECRET: ${AUTH_GITHUB_CLIENT_SECRET}
       IMGUR_CLIENT_ID: ${IMGUR_CLIENT_ID}
       IMAGGA_AUTH_KEYS: ${IMAGGA_AUTH_KEYS}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
     command: bash -c 'yarn set version ./.yarn/releases/yarn-3.1.0.cjs && yarn install && (yarn workspace @team-10/frontend run ${NODE_ENV} & PORT=${BACKEND_PORT} yarn workspace @team-10/backend run ${NODE_ENV})'
     volumes:
       - ./packages/lib/:/app/packages/lib/

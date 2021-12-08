@@ -20,46 +20,25 @@ const timeToHMS = (time:number) => {
 
 interface Props {
   isInstructor: boolean;
-  videoId?: string | null;
   duration: number;
   volume: number | null;
+  currentTime: number;
   setVolume: React.Dispatch<React.SetStateAction<number | null>>;
-  onReady?: (player: YouTubePlayer) => void;
-  onStateChange?: (state: number, player: YouTubePlayer) => void;
 }
 
 const YTPlayerControl: React.FC<Props> = ({
-  isInstructor, videoId, duration, volume, setVolume, onReady, onStateChange,
+  isInstructor, duration, volume, setVolume, currentTime, children,
 }) => {
   const ref = React.useRef<HTMLDivElement>(null);
-  const [currentTime, setCurrentTime] = React.useState(0);
   const progress = duration
     ? (currentTime / duration) * (ref.current ? ref.current?.offsetWidth : 0) : 0;
 
   if (isInstructor) {
-    return (
-      <YTPlayer
-        videoId={videoId}
-        onReady={onReady}
-        onStateChange={onStateChange}
-        setCurrentTime={setCurrentTime}
-      />
-    );
+    return <>{children}</>;
   }
   return (
     <div className="w-full h-full absolute">
-      <YTPlayer
-        videoId={videoId}
-        onReady={onReady}
-        onStateChange={onStateChange}
-        setCurrentTime={setCurrentTime}
-        options={{
-          playerVars: {
-            controls: 0,
-            disablekb: 1,
-          },
-        }}
-      />
+      {children}
       <div className="w-full absolute bottom-2 z-100">
         <div className="w-full mx-auto opacity-0 hover:opacity-100 transition-all duration-300">
           <div className="bg-gray-500 bg-opacity-50 z-50 w-11/12 h-1 mb-4 mx-auto" ref={ref}>

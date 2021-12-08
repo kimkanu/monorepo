@@ -15,29 +15,7 @@ const YouTubeSyncTest: React.FC = () => {
   const location = useLocation();
 
   return (
-    <YTSynchronizer>
-      {(onReady, onStateChange, isInstructor, duration, volume, setVolume) => (
-        <YTWrapper
-          isPresent={!!classrooms[0]?.video}
-          inClassroom
-          onClick={() => {
-            if (classrooms[0]?.hash) {
-              console.log('sync test');
-            }
-          }}
-        >
-          <YTPlayerControl
-            isInstructor={isInstructor}
-            videoId={classrooms[0]?.video?.videoId}
-            duration={duration}
-            volume={volume}
-            setVolume={setVolume}
-            onReady={onReady}
-            onStateChange={onStateChange}
-          />
-        </YTWrapper>
-      )}
-    </YTSynchronizer>
+    <YTSynchronizer />
   );
 };
 

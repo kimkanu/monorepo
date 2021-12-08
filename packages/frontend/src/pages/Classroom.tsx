@@ -4,6 +4,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import Button from '../components/buttons/Button';
 import ClassroomChat from '../components/classroom/ClassroomChat';
+import ClassroomInstructorButtons from '../components/classroom/ClassroomInstructorButtons';
 import useScreenType from '../hooks/useScreenType';
 import useSocket from '../hooks/useSocket';
 import classroomsState from '../recoil/classrooms';
@@ -64,37 +65,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
             }}
             className="absolute w-full p-4 flex justify-end"
           >
-            <Button
-              type="primary"
-              width="fit-content"
-              height={36}
-              text={classroom?.isLive ? 'End' : 'Start'}
-              onClick={async () => {
-                if (!classroom) return;
-                const response = await fetchAPI(
-                  'PATCH /classrooms/:hash',
-                  { hash: classroom.hash! },
-                  { operation: 'toggle', start: !classroom.isLive },
-                ) as ClassroomsHashPatchResponse<'toggle'>;
-                // TODO
-              }}
-            />
-            <Button
-              type="primary"
-              width="fit-content"
-              height={36}
-              text="Set Video"
-              onClick={() => {
-                if (!classroom) return;
-                setClassroom((c) => ({
-                  ...c,
-                  video: {
-                    type: 'single',
-                    videoId: 'BcbmFxbdsJ0',
-                  },
-                }));
-              }}
-            />
+            <ClassroomInstructorButtons />
           </div>
         )}
         {screenType !== ScreenType.MobileLandscape && (
