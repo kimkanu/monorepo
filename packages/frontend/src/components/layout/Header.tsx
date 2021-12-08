@@ -30,6 +30,7 @@ import Dropdown from '../alert/Dropdown';
 import AmbientButton from '../buttons/AmbientButton';
 import Button from '../buttons/Button';
 import LogoButton from '../buttons/LogoButton';
+import ClassroomInstructorButtons from '../classroom/ClassroomInstructorButtons';
 import MemberList from '../classroom/MemberList';
 
 interface ProfileDropdownContentProps {
@@ -281,37 +282,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
         <div className="flex gap-5 items-center">
           {inClassroom && screenType !== ScreenType.MobilePortrait && (screenType === ScreenType.Desktop || !isUIHidden) && (
             <div className="w-fit px-2 flex">
-              <Button
-                type="primary"
-                width="fit-content"
-                height={36}
-                text={mainClassroom?.isLive ? 'End' : 'Start'}
-                onClick={async () => {
-                  if (!mainClassroom) return;
-                  const response = await fetchAPI(
-                    'PATCH /classrooms/:hash',
-                    { hash: mainClassroom.hash! },
-                    { operation: 'toggle', start: !mainClassroom.isLive },
-                  ) as ClassroomsHashPatchResponse<'toggle'>;
-                  // TODO
-                }}
-              />
-              <Button
-                type="primary"
-                width="fit-content"
-                height={36}
-                text="Set Video"
-                onClick={() => {
-                  if (!mainClassroom) return;
-                  setMainClassroom((c) => ({
-                    ...c,
-                    video: {
-                      type: 'single',
-                      videoId: 'BcbmFxbdsJ0',
-                    },
-                  }));
-                }}
-              />
+              <ClassroomInstructorButtons />
             </div>
           )}
           {/* Classroom Buttons */}
@@ -323,7 +294,8 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
                 icon={<People24Filled />}
                 filled
                 onClick={() => {
-                  appHistory.push(`/classrooms/${classroomHash!}/members`, history);
+                  if (!classroomHash) return;
+                  appHistory.push(`/classrooms/${classroomHash}/members`, history);
                 }}
               />
               <AmbientButton

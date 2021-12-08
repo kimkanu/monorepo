@@ -4,7 +4,7 @@ import React from 'react';
 import YTPlayer from './YTPlayer';
 
 test('`No videos are shared.` message should be present when the videoId is not given.', () => {
-  const { container } = render(<YTPlayer />);
+  const { container } = render(<YTPlayer>No videos are shared.</YTPlayer>);
   const noVideosMessageElement = screen.getByText(/No videos are shared./i);
   expect(noVideosMessageElement).toBeInTheDocument();
   expect(container.getElementsByClassName('youtubeContainer').length).toBe(0);
