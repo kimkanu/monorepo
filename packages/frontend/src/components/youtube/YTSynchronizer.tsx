@@ -1,31 +1,29 @@
 import { Video16Filled, WeatherPartlyCloudyDay16Regular } from '@fluentui/react-icons';
-import { SocketClassroom, SocketYouTube } from '@team-10/lib';
+import { ClassroomsHashPatchResponse, SocketClassroom, SocketYouTube } from '@team-10/lib';
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
+import { useTranslation } from 'react-i18next';
 
+import useMainClassroom from '../../hooks/useMainClassroom';
 import useSocket from '../../hooks/useSocket';
 import classroomsState from '../../recoil/classrooms';
+import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
-import { classroomPrefixRegex } from '../../utils/history';
+import fetchAPI from '../../utils/fetch';
+import appHistory, { classroomPrefixRegex } from '../../utils/history';
+import Button from '../buttons/Button';
 
-interface Props {
-  children: (
-    onReady: (player: YouTubePlayer) => void,
-    onStateChange: (state: number, player: YouTubePlayer) => void,
-    isInstructor: boolean,
-    duration: number,
-    volume: number | null,
-    setVolume: React.Dispatch<React.SetStateAction<number | null>>,
-  ) => React.ReactElement;
-}
+import YTPlayer from './YTPlayer';
+import YTPlayerControl from './YTPlayerControl';
+import YTWrapper from './YTWrapper';
 
 type PlayerState = 'playing' | 'paused';
 
-const YTSynchronizer: React.FC<Props> = ({ children }) => {
+const YTSynchronizer: React.FC = () => {
   const SECONDS = 1000;
   const REQUEST_TIMEOUT = 3 * SECONDS;
   const SYNC_PERIOD = 20 * SECONDS;
@@ -35,11 +33,15 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
   const [duration, setDuration] = React.useState<number>(0);
   const [player, setPlayer] = React.useState<YouTubePlayer | null>(null);
   const [lastBroadcast, setlastBroadcast] = React.useState<boolean | null>(null);
+  const [currentTime, setCurrentTime] = React.useState(0);
+  const [isLoadingStart, setLoadingStart] = React.useState(false);
 
   const location = useLocation();
+  const history = useHistory();
   const myId = useRecoilValue(meState.id);
-  const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
+  const hash = useRecoilValue(mainClassroomHashState.atom);
   const [classroom, setClassroom] = useRecoilState(classroomsState.byHash(hash));
+  const inClassroom = /^\/classrooms\/\w{3}-\w{3}-\w{3}/.test(location.pathname);
   const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
   const isStudent = !!classroom && classroom.instructor!.stringId !== myId;
   const addToast = useSetRecoilState(toastState.new);
@@ -47,10 +49,13 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
   const [
     syncResponse, setSyncResponse,
   ] = React.useState<SocketYouTube.Broadcast.ChangePlayStatus | null>(null);
+  const [playlist, setPlaylist] = React.useState<string[] | null>(null);
 
   const { socket, connected } = useSocket<
   SocketYouTube.Events.Response & SocketClassroom.Events.Response, SocketYouTube.Events.Request
   >('/');
+
+  const { t } = useTranslation('classroom');
 
   const onReady = (target: YouTubePlayer) => {
     setPlayer(target);
@@ -72,7 +77,25 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
   const onStateChange = React.useCallback((newPlayerState: number, newPlayer: YouTubePlayer) => {
     if (!hash || !classroom) return () => {};
     setPlayer(newPlayer);
-    console.log('onStateChange', newPlayerState, newPlayer);
+    console.log('onStateChange', newPlayerState, newPlayer.getPlaylistIndex());
+
+    if (classroom.video?.type === 'playlist' && newPlayer.getPlaylist()) {
+      setPlaylist(newPlayer.getPlaylist() as string[]);
+    } else if (classroom.video?.type === 'single') {
+      setPlaylist(null);
+    }
+
+    setClassroom((c) => ({
+      ...c,
+      video: !c!.video ? c!.video : c!.video.type === 'single' ? c!.video : {
+        type: 'playlist',
+        playlistId: c!.video.playlistId,
+        videoId: (newPlayer as any).getVideoData().video_id,
+        index: (newPlayer.getPlaylist() ?? playlist ?? []).findIndex(
+          (v) => v === (newPlayer as any).getVideoData().video_id,
+        ),
+      },
+    }));
 
     let timeout: number | undefined;
     let listener: (response: SocketYouTube.Response.ChangePlayStatus) => void | undefined;
@@ -149,6 +172,8 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
           player.seekTo(time, true);
         }
       }
+
+      console.log('synchronize');
 
       // handle videoId changes
       setClassroom((c) => ({
@@ -263,7 +288,106 @@ const YTSynchronizer: React.FC<Props> = ({ children }) => {
     player?.setVolume(volume || 0);
   }, [volume]);
 
-  return <>{children(onReady, onStateChange, isInstructor, duration, volume, setVolume)}</>;
+  return (
+    <YTWrapper
+      isPresent={!!classroom?.video}
+      inClassroom={classroomPrefixRegex.test(location.pathname)}
+      onClick={() => {
+        if (classroom) {
+          appHistory.push(`/classrooms/${classroom.hash}`, history);
+        }
+      }}
+    >
+      <YTPlayerControl
+        isInstructor={isInstructor}
+        duration={duration}
+        volume={volume}
+        setVolume={setVolume}
+        currentTime={currentTime}
+      >
+        <YTPlayer
+          videoId={isInstructor && classroom?.video?.type === 'playlist' ? undefined : classroom?.video?.videoId}
+          onReady={onReady}
+          onStateChange={onStateChange}
+          setCurrentTime={setCurrentTime}
+          options={isInstructor ? (classroom?.video?.type === 'playlist' ? {
+            playerVars: {
+              listType: 'playlist',
+              list: classroom?.video.playlistId,
+            },
+          } : undefined) : {
+            playerVars: {
+              controls: 0,
+              disablekb: 1,
+            },
+          }}
+        >
+          {inClassroom && isInstructor && !!classroom && !classroom.isLive && (
+            <Button
+              width="fit-content"
+              style={{ width: 152 }}
+              type="primary"
+              text={t('start')}
+              isLoading={isLoadingStart}
+              onClick={async () => {
+                if (!classroom) return;
+                setLoadingStart(true);
+                const response = await fetchAPI(
+                  'PATCH /classrooms/:hash',
+                  { hash: classroom.hash! },
+                  { operation: 'toggle', start: true },
+                ) as ClassroomsHashPatchResponse<'toggle'>;
+                if (!response.success) {
+                  addToast({
+                    sentAt: new Date(),
+                    type: 'error',
+                    message: `[${response.error.code}]`,
+                  });
+                }
+                setLoadingStart(false);
+              }}
+            />
+          )}
+          {inClassroom && isInstructor && !!classroom && classroom.isLive && !classroom.video && (
+            <div className="flex flex-col gap-4 items-center">
+              <Button
+                width="fit-content"
+                type="primary"
+                text={t('shareVideo')}
+                onClick={async () => {
+                  appHistory.push(`/classrooms/${classroom.hash}/share`, history);
+                }}
+              />
+              <Button
+                width="fit-content"
+                style={{ width: 136 }}
+                type="destructive"
+                text={t('end')}
+                isLoading={isLoadingStart}
+                onClick={async () => {
+                  if (!classroom) return;
+                  setLoadingStart(true);
+                  const response = await fetchAPI(
+                    'PATCH /classrooms/:hash',
+                    { hash: classroom.hash! },
+                    { operation: 'toggle', start: false },
+                  ) as ClassroomsHashPatchResponse<'toggle'>;
+                  if (!response.success) {
+                    addToast({
+                      sentAt: new Date(),
+                      type: 'error',
+                      message: `[${response.error.code}]`,
+                    });
+                  }
+                  setLoadingStart(false);
+                }}
+              />
+            </div>
+          )}
+        </YTPlayer>
+      </YTPlayerControl>
+    </YTWrapper>
+  );
 };
 
 export default YTSynchronizer;

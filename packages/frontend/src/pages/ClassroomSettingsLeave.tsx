@@ -2,6 +2,7 @@ import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useTranslation } from 'react-i18next';
 
 import Dialog from '../components/alert/Dialog';
 import Button from '../components/buttons/Button';
@@ -28,6 +29,7 @@ const ClassroomSettingsLeave: React.FC = () => {
 
   const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
   const isStudent = !!classroom && classroom.instructor!.stringId !== myId;
+  const { t } = useTranslation('classroom');
 
   React.useEffect(() => {
     if (classroomName === null) {
@@ -126,7 +128,7 @@ const ClassroomSettingsLeave: React.FC = () => {
               )
               : '수업 아이디와 비밀번호가 있다면 언제든지 다시 들어올 수 있습니다.'}
           </p>
-          <Button width="full" type="destructive" text={isInstructor ? '수업 삭제하기' : '수업 나가기'} onClick={onLeave} isLoading={isLoading} />
+          <Button width="full" type="destructive" text={isInstructor ? t('remove') : t('leave')} onClick={onLeave} isLoading={isLoading} />
         </>
       )}
     </Dialog>

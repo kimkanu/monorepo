@@ -1,9 +1,10 @@
 export default {
   mode: 'en',
   noVideo: 'No videos are shared.',
-  start: 'Start',
-  end: 'End',
-  set: 'Set video',
+  start: 'Start Class',
+  end: 'End Class',
+  changeVideo: 'Change Video',
+  stopShare: 'Stop Sharing',
   startClass: 'Class has started.',
   endClass: 'Class is finished.',
   setting: 'Settings',

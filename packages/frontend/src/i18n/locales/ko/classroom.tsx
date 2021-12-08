@@ -1,9 +1,10 @@
 export default {
   mode: 'ko',
   noVideo: '공유된 영상이 없습니다.',
-  start: '시작',
-  end: '끝',
-  set: '영상 공유',
+  start: '수업 시작하기',
+  end: '수업 끝내기',
+  changeVideo: '유튜브 영상 변경하기',
+  stopShare: '영상 공유 중지하기',
   startClass: '수업이 시작되었습니다.',
   endClass: '수업이 끝났습니다.',
   setting: '설정',

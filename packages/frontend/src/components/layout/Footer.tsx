@@ -64,10 +64,10 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
                     width: '100vw',
                   },
                   mobileLandscape: {
-                    width: 'calc(100vw - 18rem)',
+                    width: mainClassroom?.video ? 'calc(100vw - 18rem)' : '100vw',
                   },
                   desktop: {
-                    width: 'calc(100vw - 27rem)',
+                    width: mainClassroom?.video ? 'calc(100vw - 27rem)' : '100vw',
                   },
                 })(screenType),
               }}

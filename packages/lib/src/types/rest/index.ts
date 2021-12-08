@@ -16,6 +16,12 @@ import {
   UsersRequestBodyType,
   UsersResponseType,
 } from './users';
+import {
+  YouTubeEndpoints,
+  YouTubePathParams,
+  YouTubeRequestBodyType,
+  YouTubeResponseType,
+} from './youtube';
 
 export type Empty = Record<string, never>;
 
@@ -56,23 +62,28 @@ export type Endpoints =
   | 'GET /'
   | UsersEndpoints
   | ClassroomsEndpoints
-  | ToastsEndpoints;
+  | ToastsEndpoints
+  | YouTubeEndpoints;
 export type PathParams =
   { 'GET /': Empty }
   & UsersPathParams
   & ClassroomsPathParams
-  & ToastsPathParams;
+  & ToastsPathParams
+  & YouTubePathParams;
 export type RequestBodyType =
   { 'GET /': Empty }
   & UsersRequestBodyType
   & ClassroomsRequestBodyType
-  & ToastsRequestBodyType;
+  & ToastsRequestBodyType
+  & YouTubeRequestBodyType;
 export type ResponseType =
   { 'GET /': Response<Empty, never> }
   & UsersResponseType
   & ClassroomsResponseType
-  & ToastsResponseType;
+  & ToastsResponseType
+  & YouTubeResponseType;
 
 export * from './users';
 export * from './classrooms';
 export * from './toasts';
+export * from './youtube';
