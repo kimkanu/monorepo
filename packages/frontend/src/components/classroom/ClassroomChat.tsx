@@ -44,6 +44,7 @@ const useChats = (
     ).then((response) => {
       console.log('loaded');
       if (response.success) {
+        console.log(response.payload);
         setScrollBottom(
           wrapperRef.current
             ? wrapperRef.current.scrollHeight - wrapperRef.current.scrollTop
@@ -70,6 +71,7 @@ const useChats = (
   };
 
   const addChat = (chat: ChatContent) => {
+    if (chats.some((c) => c.id === chat.id)) return;
     setChats((i) => [...i, chat]);
   };
 
@@ -160,31 +162,6 @@ const ClassroomChat: React.FC<Props> = ({
 
     return () => {
       socket.off('chat/ChatBroadcast', listener);
-    };
-  }, [socket, hash]);
-
-  React.useEffect(() => {
-    const listener = ({ hash: chatClassroomHash, patch }: SocketClassroom.Broadcast.Patch) => {
-      console.log('chat', hash, patch);
-      if (hash === chatClassroomHash) {
-        if (typeof patch.isLive !== 'undefined') {
-          const chat: ChatContent<'feed'> = {
-            id: `FeedChat__${Date.now()}`,
-            type: 'feed',
-            sentAt: Date.now(),
-            content: {
-              type: 'class',
-              isStart: patch.isLive,
-            },
-          };
-          addChat(chat);
-        }
-      }
-    };
-    socket.on('classroom/PatchBroadcast', listener);
-
-    return () => {
-      socket.off('classroom/PatchBroadcast', listener);
     };
   }, [socket, hash]);
 

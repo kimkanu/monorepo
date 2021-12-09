@@ -6,8 +6,9 @@ import { ChatContent } from '@team-10/lib/src/types/chat';
 import {
   Between, getConnection, LessThanOrEqual, MoreThan,
 } from 'typeorm';
+import { v4 as uuidV4 } from 'uuid';
 
-import ChatEntity, { PhotoChatEntity, TextChatEntity } from '../entity/chat';
+import ChatEntity, { FeedChatEntity, PhotoChatEntity, TextChatEntity } from '../entity/chat';
 import ClassroomEntity from '../entity/classroom';
 import HistoryEntity, {
   ClassHistoryEntity, VoiceHistoryEntity, AttendanceHistoryEntity,
@@ -270,8 +271,6 @@ export default class Classroom {
     this.entity.updatedAt = this.updatedAt;
     await this.entity.save();
 
-    // TODO: create ClassHistoryEntity instance and save
-
     const classHistoryEntity = new ClassHistoryEntity();
     classHistoryEntity.start = true;
     classHistoryEntity.date = this.updatedAt;
@@ -283,7 +282,32 @@ export default class Classroom {
       hash: this.hash,
       patch: {
         isLive: true,
+        updatedAt: this.updatedAt.getTime(),
       },
+    });
+
+    const feedChat = new FeedChatEntity();
+    feedChat.uuid = uuidV4();
+    feedChat.sentAt = this.updatedAt;
+    feedChat.classroom = this.entity;
+    feedChat.json = JSON.stringify({
+      type: 'class',
+      isStart: true,
+    });
+    await feedChat.save();
+
+    this.broadcast('chat/ChatBroadcast', {
+      hash: this.hash,
+      chatId: feedChat.uuid,
+      message: {
+        id: feedChat.uuid,
+        type: 'feed',
+        content: {
+          type: 'class',
+          isStart: true,
+        },
+        sentAt: feedChat.sentAt.getTime(),
+      } as ChatContent<'feed'>,
     });
 
     return true;
@@ -309,9 +333,35 @@ export default class Classroom {
       hash: this.hash,
       patch: {
         isLive: false,
+        updatedAt: this.updatedAt.getTime(),
         video: null,
       },
     });
+
+    const feedChat = new FeedChatEntity();
+    feedChat.uuid = uuidV4();
+    feedChat.sentAt = this.updatedAt;
+    feedChat.classroom = this.entity;
+    feedChat.json = JSON.stringify({
+      type: 'class',
+      isStart: false,
+    });
+    await feedChat.save();
+
+    this.broadcast('chat/ChatBroadcast', {
+      hash: this.hash,
+      chatId: feedChat.uuid,
+      message: {
+        id: feedChat.uuid,
+        type: 'feed',
+        content: {
+          type: 'class',
+          isStart: false,
+        },
+        sentAt: feedChat.sentAt.getTime(),
+      } as ChatContent<'feed'>,
+    });
+
     return true;
   }
 
@@ -344,7 +394,7 @@ export default class Classroom {
     const chatEntities = lastChat
       ? await chatRepository.createQueryBuilder('chat')
         .innerJoinAndSelect('chat.classroom', 'classroom')
-        .innerJoinAndSelect('chat.author', 'author')
+        .leftJoinAndSelect('chat.author', 'author')
         .where('(chat.id < :lastChatId) AND (classroom.id = :classroomId)', {
           lastChatId: lastChat?.id ?? 0,
           classroomId: this.entity.id,
@@ -354,31 +404,11 @@ export default class Classroom {
         .getMany()
       : await chatRepository.createQueryBuilder('chat')
         .innerJoinAndSelect('chat.classroom', 'classroom')
-        .innerJoinAndSelect('chat.author', 'author')
+        .leftJoinAndSelect('chat.author', 'author')
         .where('classroom.id = :classroomId', { classroomId: this.entity.id })
         .orderBy('chat.id', 'ASC')
         .getMany();
-    const beforeChat = chatEntities.length === 0
-      ? undefined
-      : await chatRepository.createQueryBuilder('chat')
-        .innerJoinAndSelect('chat.classroom', 'classroom')
-        .innerJoinAndSelect('chat.author', 'author')
-        .where('(chat.id < :firstChatId) AND (classroom.id = :classroomId)', {
-          firstChatId: chatEntities[0].id,
-          classroomId: this.entity.id,
-        })
-        .orderBy('chat.id', 'DESC')
-        .getOne();
-    const classHistoryRepository = getConnection().getRepository(ClassHistoryEntity);
-    const classHistories = await classHistoryRepository.find(
-      !lastChat && !beforeChat ? undefined : {
-        where: {
-          date: !lastChat ? MoreThan(beforeChat!.sentAt)
-            : beforeChat ? Between(beforeChat.sentAt, lastChat.sentAt)
-              : LessThanOrEqual(lastChat.sentAt),
-        },
-      },
-    );
+
     const chats = await Promise.all(
       chatEntities.map(async (entity) => (entity instanceof TextChatEntity ? {
         id: entity.uuid,
@@ -401,21 +431,15 @@ export default class Classroom {
           photo: entity.photo,
           alt: entity.alt,
         },
-      } as ChatContent<'photo'> : null)),
+      } as ChatContent<'photo'> : entity instanceof FeedChatEntity ? {
+        id: entity.uuid,
+        type: 'feed',
+        sentAt: entity.sentAt.getTime(),
+        content: JSON.parse(entity.json),
+      } as ChatContent<'feed'> : null)),
     ).then((a) => a.filter((x) => x !== null)) as ChatContent[];
 
-    const classHistoryChats = classHistories.map((history) => ({
-      id: `FeedChat__${history.date.getTime()}`,
-      type: 'feed',
-      sentAt: history.date.getTime(),
-      content: {
-        type: 'class',
-        isStart: history.start,
-      },
-    }));
-
-    const allChats = [...chats, ...classHistoryChats];
-    return allChats.sort((c1, c2) => c1.sentAt - c2.sentAt);
+    return chats;
   }
 
   /**

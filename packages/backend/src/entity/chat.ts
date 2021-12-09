@@ -23,7 +23,7 @@ export default class ChatEntity extends BaseEntity {
   @Column({ unique: true })
   uuid: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.chats)
+  @ManyToOne(() => UserEntity, (user) => user.chats, { nullable: true })
   author: UserEntity;
 
   @Column()
@@ -46,4 +46,10 @@ export class PhotoChatEntity extends ChatEntity {
 
   @Column({ nullable: true })
   alt: string;
+}
+
+@ChildEntity()
+export class FeedChatEntity extends ChatEntity {
+  @Column()
+  json: string;
 }
