@@ -5,11 +5,14 @@ import {
 import React from 'react';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { useIntersectionObserver } from 'react-intersection-observer-hook';
-import { useRecoilState, useRecoilValue, atom } from 'recoil';
+import {
+  useRecoilState, useRecoilValue, atom, useSetRecoilState,
+} from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
 import meState from '../../recoil/me';
+import toastState from '../../recoil/toast';
 import fetchAPI from '../../utils/fetch';
 import { conditionalStyle } from '../../utils/style';
 import FeedChatBox from '../chat/FeedChatBox';
@@ -119,6 +122,7 @@ const ClassroomChat: React.FC<Props> = ({
 }) => {
   const [translatedChats, setTranslatedChats] = useRecoilState(translatedChatsAtom);
   const myId = useRecoilValue(meState.id);
+  const addToast = useSetRecoilState(toastState.new);
   const screenType = useScreenType();
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -233,8 +237,13 @@ const ClassroomChat: React.FC<Props> = ({
                         ...c,
                         [chatContent.id]: response.payload,
                       }));
-                    } else {
-                      // TODO: Toast
+                    } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
+                      addToast({
+                        type: 'warn',
+                        sentAt: new Date(),
+                        message: '지원되지 않는 언어입니다.',
+                      });
+                      throw new Error();
                     }
                   }}
                 />
@@ -255,8 +264,13 @@ const ClassroomChat: React.FC<Props> = ({
                         ...c,
                         [chatContent.id]: response.payload,
                       }));
-                    } else {
-                      // TODO: Toast
+                    } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
+                      addToast({
+                        type: 'warn',
+                        sentAt: new Date(),
+                        message: '지원되지 않는 언어입니다.',
+                      });
+                      throw new Error();
                     }
                   }}
                 />

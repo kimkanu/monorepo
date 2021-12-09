@@ -18,6 +18,7 @@ const OthersTextChat: React.FC<Props> = ({
 }) => {
   const [isTranslated, setTranslated] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
+  const [isTranslatable, setTranslatable] = React.useState(true);
   return (
     <div
       style={{ padding: '5px 12px' }}
@@ -27,26 +28,33 @@ const OthersTextChat: React.FC<Props> = ({
         styles.maxWidth,
       )}
     >
-      <div className="absolute bottom-0 w-8 h-8" style={{ right: -40 }}>
-        <AmbientButton
-          size={32}
-          dark={dark}
-          icon={isLoading
-            ? <SpinnerIos20Regular className="animate-spin block" style={{ height: 20 }} />
-            : isTranslated
-              ? <ArrowCounterclockwise20Regular />
-              : <Translate20Filled />}
-          onClick={() => {
-            if (!isLoading) return;
-            if (translation) {
-              setTranslated((t) => !t);
-            } else if (!isTranslated) {
-              setLoading(true);
-              onTranslate().then(() => setLoading(false));
-            }
-          }}
-        />
-      </div>
+      {isTranslatable && (
+        <div className="absolute bottom-0 w-8 h-8" style={{ right: -40 }}>
+          <AmbientButton
+            size={32}
+            dark={dark}
+            icon={isLoading
+              ? <SpinnerIos20Regular className="animate-spin block" style={{ height: 20 }} />
+              : isTranslated
+                ? <ArrowCounterclockwise20Regular />
+                : <Translate20Filled />}
+            onClick={() => {
+              if (!isLoading) return;
+              if (translation) {
+                setTranslated((t) => !t);
+              } else if (!isTranslated) {
+                setLoading(true);
+                onTranslate()
+                  .then(() => {
+                    setLoading(false);
+                    setTranslated(true);
+                  })
+                  .catch(() => setTranslatable(false));
+              }
+            }}
+          />
+        </div>
+      )}
       {content.text}
     </div>
   );
