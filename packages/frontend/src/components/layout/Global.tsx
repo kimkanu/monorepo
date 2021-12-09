@@ -12,6 +12,7 @@ import classroomsState from '../../recoil/classrooms';
 import languageState from '../../recoil/language';
 import loadingState from '../../recoil/loading';
 import meState from '../../recoil/me';
+import themeState from '../../recoil/theme';
 import toastState from '../../recoil/toast';
 import { Theme } from '../../types/theme';
 
@@ -65,6 +66,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
   const [loading, setLoading] = useRecoilState(loadingState.atom);
   const setMe = useSetRecoilState(meState.atom);
   const setLanguage = useSetRecoilState(languageState.atom);
+  const setTheme = useSetRecoilState(themeState.atom);
 
   const { connected } = useSocket('/');
 
@@ -103,6 +105,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
             response.payload.classrooms.map((c) => ({ ...c, speakerId: null })),
             response.payload.stringId,
           ));
+          setTheme(response.payload.theme);
         } else {
           setMe({ loaded: true, info: null });
         }
@@ -120,12 +123,18 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       .then((response) => {
         console.log(response);
         if (response.success) {
-
           i18n.changeLanguage(response.payload.language);
           setLanguage(response.payload.language);
         }
       });
   }, []);
+
+  React.useEffect(() => {
+    fetchAPI('PATCH /users/me', {}, {
+      theme,
+    });
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   return (
     <div className={className} style={style}>

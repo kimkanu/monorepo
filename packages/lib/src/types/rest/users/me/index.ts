@@ -30,7 +30,7 @@ export type UsersMePathParams = UsersMeSSOAccountsPathParams & UsersMeLanguagePa
 export type UsersMeRequestBodyType = UsersMeSSOAccountsRequestBodyType &
 UsersMeLanguageRequestBodyType & {
   'GET /users/me': Empty;
-  'PATCH /users/me': Partial<UserInfoJSON>;
+  'PATCH /users/me': Partial<UserMePatchableInfoJSON>;
   'DELETE /users/me': Empty;
 };
 export type UsersMeResponseType = UsersMeSSOAccountsResponseType &
@@ -61,6 +61,13 @@ export interface UserInfoMeJSON extends UserInfoJSON {
   initialized: boolean;
   ssoAccounts: SSOAccountJSON[];
   classrooms: ClassroomJSON[];
+  theme: Theme;
+}
+
+export type Theme = 'violet' | 'pink' | 'green' | 'blue';
+
+export interface UserMePatchableInfoJSON extends UserInfoJSON {
+  theme: Theme;
 }
 
 export * from './language';

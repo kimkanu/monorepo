@@ -1,4 +1,6 @@
-import { ClassroomJSON, Provider, UsersMePatchError } from '@team-10/lib';
+import {
+  ClassroomJSON, Provider, Theme, UsersMePatchError,
+} from '@team-10/lib';
 
 import { isAuthenticatedOrFail } from '../../../passport';
 import Server from '../../../server';
@@ -29,6 +31,7 @@ export default function generateRoute(server: Server): Route {
             provider: provider as Provider,
             providerId,
           })),
+          theme: userEntity.theme as Theme,
           initialized: userEntity.initialized,
           classrooms: (await Promise.all(
             userEntity.classrooms.map(
@@ -49,7 +52,7 @@ export default function generateRoute(server: Server): Route {
     isAuthenticatedOrFail,
     async (params, body, user, req) => {
       // Body validation
-      const { stringId, displayName } = body;
+      const { stringId, displayName, theme } = body;
       const { file } = req; // TODO
 
       let error: UsersMePatchError | null = null;
@@ -71,13 +74,22 @@ export default function generateRoute(server: Server): Route {
             details: 'Not a valid string ID',
           },
         };
-      } else if (!['string', 'undefined'].includes(typeof displayName)) {
+      } else if (!!theme && !['violet', 'pink', 'green', 'blue'].includes(theme)) {
         error = {
           code: 'INVALID_INFORMATION',
           statusCode: 400,
           extra: {
-            field: 'displayName',
-            details: 'Not a value of string type',
+            field: 'theme',
+            details: 'Invalid theme value',
+          },
+        };
+      } else if (stringId && !/^[\w\d._\-:]{3,}$/.test(stringId)) {
+        error = {
+          code: 'INVALID_INFORMATION',
+          statusCode: 400,
+          extra: {
+            field: 'stringId',
+            details: 'Not a valid string ID',
           },
         };
       } else if (file && !['image/png', 'image/jpeg', 'image/gif', 'image/tiff'].includes(file.mimetype)) {
@@ -119,6 +131,9 @@ export default function generateRoute(server: Server): Route {
       if (displayName) {
         userEntity.displayName = displayName;
       }
+      if (theme) {
+        userEntity.theme = theme;
+      }
       if (profileImageUploadResponse) {
         if (userEntity.profileImageDeleteHash) {
           await server.managers.image.delete(userEntity.profileImageDeleteHash);
@@ -138,6 +153,7 @@ export default function generateRoute(server: Server): Route {
           stringId: userEntity.stringId,
           displayName: userEntity.displayName,
           profileImage: userEntity.profileImage,
+          theme: userEntity.theme,
         },
       }));
 

@@ -4,7 +4,7 @@ import { Theme } from '../../types/theme';
 
 const themeAtom = atom<Theme>({
   key: 'themeAtom',
-  default: 'violet',
+  default: (localStorage.getItem('theme') ?? 'violet') as Theme,
 });
 
 export default themeAtom;

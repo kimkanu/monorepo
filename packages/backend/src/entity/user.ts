@@ -54,4 +54,7 @@ export default class UserEntity extends BaseEntity {
 
   @Column({ nullable: true })
   language: string;
+
+  @Column({ default: 'violet' })
+  theme: string;
 }
