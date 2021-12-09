@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilValue } from 'recoil';
 
-import langState from '../../recoil/language';
+import languageState from '../../recoil/language';
 import { stringifyDateConsistent } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -19,13 +19,13 @@ const FeedChat: React.FC<FeedChatProps> = ({
 }) => {
   const { t } = useTranslation('classroom');
   const [date, setDate] = React.useState('');
-  const lang = useRecoilValue(langState.atom);
+  const language = useRecoilValue(languageState.atom);
 
   React.useEffect(() => {
     if (content.type === 'date') {
       setDate(stringifyDateConsistent(new Date(content.date)));
     }
-  }, [lang]);
+  }, [language]);
 
   return (
     <div

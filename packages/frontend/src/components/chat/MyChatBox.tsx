@@ -5,7 +5,7 @@ import React from 'react';
 
 import { useRecoilValue } from 'recoil';
 
-import langState from '../../recoil/language';
+import languageState from '../../recoil/language';
 import { stringifyDateTime } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -45,10 +45,10 @@ const MyChatBox: React.FC<Props> = ({
   dark, chats, translations, onTranslate,
 }) => {
   const [date, setDate] = React.useState('');
-  const lang = useRecoilValue(langState.atom);
+  const language = useRecoilValue(languageState.atom);
   React.useEffect(() => {
     setDate(stringifyDateTime(new Date(chats.slice(-1)[0].sentAt)));
-  }, [lang]);
+  }, [language]);
 
   return (
     <div className="w-full flex justify-end gap-2">
