@@ -3622,6 +3622,7 @@ __metadata:
     "@types/react": ^17.0.0
     "@types/react-dom": ^17.0.0
     "@types/react-helmet": ^6.1.4
+    "@types/react-i18next": ^8.1.0
     "@types/react-router-dom": ^5.3.2
     "@types/react-router-transition": ^2.1.1
     "@types/react-transition-group": ^4.4.4
@@ -3641,7 +3642,7 @@ __metadata:
     eslint-plugin-react: ^7.26.1
     eslint-plugin-react-hooks: ^4.2.0
     http-proxy-middleware: ^2.0.1
-    i18next: ^21.5.4
+    i18next: ^21.6.0
     i18next-browser-languagedetector: ^6.1.2
     jest-fail-on-console: ^2.1.1
     postcss: ^7
@@ -4231,6 +4232,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 62f506297de26c39fc37383dccd7630253a66b2e3eb94d81ea9e6cd615fba57aee5453f6acd4b3e88dc0363f74a29305c483404899d1554f08bee8f4e716aa81
+  languageName: node
+  linkType: hard
+
+"@types/react-i18next@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@types/react-i18next@npm:8.1.0"
+  dependencies:
+    react-i18next: "*"
+  checksum: 2bfbafae138d8341444e88719cd49f3a8bdd0e0331e26126f64a646a25e85047378fecdad0b10a9273f7bdbdd16a824f0446b358d58d8e15f396c881dc6af5f7
   languageName: node
   linkType: hard
 
@@ -11518,12 +11528,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^21.5.4":
-  version: 21.5.4
-  resolution: "i18next@npm:21.5.4"
+"i18next@npm:^21.6.0":
+  version: 21.6.0
+  resolution: "i18next@npm:21.6.0"
   dependencies:
     "@babel/runtime": ^7.12.0
-  checksum: d8834fef527f9ec1d631639aedf5e8035b47f0da775f2973e1fa72036d2eb02e94f6a63d4ae97d35a7b0f108d87e948e0bc9fa3a43182717367f11844b7a95ab
+  checksum: 55e9f5e8a4bbf008c5e820015c972926451d08e0f9b1a843f4ad462dcf96b8699fb915f857cb07877fa539d83afbd53977b856cda1af85f2166093dd7ad0a5c9
   languageName: node
   linkType: hard
 
@@ -17811,7 +17821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^11.14.3":
+"react-i18next@npm:*, react-i18next@npm:^11.14.3":
   version: 11.14.3
   resolution: "react-i18next@npm:11.14.3"
   dependencies:
