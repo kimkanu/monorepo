@@ -7,10 +7,17 @@ import { mergeClassNames, Styled } from '../../utils/style';
 
 import styles from './ClassButton.module.css';
 
-const buttonStyles: { shadowColor: string; backgroundImage :string }[] = [
+const buttonStyles: { shadowColor: string; backgroundImage: string }[] = [
   { shadowColor: 'rgba(150, 50, 67, 0.5)', backgroundImage: 'linear-gradient(154.74deg, #FF4438 2.23%, #44244B 95.98%)' },
   { shadowColor: 'rgba(111, 109, 239, 0.6)', backgroundImage: 'linear-gradient(199.76deg, #47A7FF 14.47%, #AE0FD6 90.77%)' },
   { shadowColor: 'rgba(0, 0, 0, 0.25)', backgroundImage: 'linear-gradient(180deg, #161420 0%, #595867 100%)' },
+  { shadowColor: 'rgba(71, 102, 120, 0.5)', backgroundImage: 'linear-gradient(to top, #476678 0%, #a7b1b6 100%)' },
+  { shadowColor: 'rgba(118, 115, 213, 0.5)', backgroundImage: 'linear-gradient(-30deg, #3a73fe 0%, #ff7378 100%)' },
+  { shadowColor: 'rgba(0, 154, 236, 0.5)', backgroundImage: 'linear-gradient(20deg, #0088ff 0%, #00d8ae 100%)' },
+  { shadowColor: 'rgba(255, 91, 112, 0.5)', backgroundImage: 'linear-gradient(10deg, #ff4b82 0%, #ffbf03 100%)' },
+  { shadowColor: 'rgba(51, 8, 103, 0.4)', backgroundImage: 'linear-gradient(to bottom, #30cfd0 0%, #330867 100%)' },
+  { shadowColor: 'rgba(80, 82, 133, 0.5)', backgroundImage: 'linear-gradient(to top, #505285 0%, #585e92 12%, #65689f 25%, #7474b0 37%, #7e7ebb 50%, #8389c7 62%, #9795d4 75%, #a2a1dc 87%, #b5aee4 100%)' },
+  { shadowColor: '#ff084480', backgroundImage: 'linear-gradient(to top, #ff0844 0%, #ffb199 100%)' },
 ];
 
 interface Props {
