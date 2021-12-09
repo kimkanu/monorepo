@@ -53,3 +53,20 @@ export function stringifyTime(date: Date): string {
   }
   return Intl.DateTimeFormat('ko-KR', { timeStyle: 'short' }).format(date);
 }
+
+export function isSameDate(date1:number, date2:number): boolean {
+  const dateA = new Date(date1);
+  const dateB = new Date(date2);
+  if (dateA.getFullYear() !== dateB.getFullYear()) {
+    return false;
+  } if (dateA.getMonth() !== dateB.getMonth()) {
+    return false;
+  } if (dateA.getDate() !== dateB.getDate()) {
+    return false;
+  } if (dateA.getHours() !== dateB.getHours()) {
+    return false;
+  } if (dateA.getMinutes() !== dateB.getMinutes()) {
+    return false;
+  }
+  return true;
+}

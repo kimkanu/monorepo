@@ -19,7 +19,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import useScreenType from '../../hooks/useScreenType';
 import i18n from '../../i18n';
 import classroomsState from '../../recoil/classrooms';
-import languageAtom from '../../recoil/language/atom';
+import languageState from '../../recoil/language';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
 import themeState from '../../recoil/theme';
@@ -118,8 +118,7 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
 };
 
 const LanguageSelectionDropdownContent: React.FC = () => {
-  const [language, setLanguage] = useRecoilState(languageAtom);
-
+  const [language, setLanguage] = useRecoilState(languageState.atom);
   return (
     <div className="flex items-center">
       <button

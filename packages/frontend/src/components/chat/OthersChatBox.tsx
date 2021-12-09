@@ -4,6 +4,9 @@ import {
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useRecoilValue } from 'recoil';
+
+import languageState from '../../recoil/language';
 import { stringifyDateTime } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -47,6 +50,11 @@ interface Props {
 const OthersChatBox: React.FC<Props> = ({
   dark, sender, chats, translations, onTranslate,
 }) => {
+  const [date, setDate] = React.useState('');
+  const language = useRecoilValue(languageState.atom);
+  React.useEffect(() => {
+    setDate(stringifyDateTime(new Date(chats.slice(-1)[0].sentAt)));
+  }, [language]);
   const { t } = useTranslation('profile');
   return (
     <div className="w-full flex justify-start gap-2">
@@ -77,7 +85,8 @@ const OthersChatBox: React.FC<Props> = ({
         >
           {sender.displayName}
           {' ㆍ '}
-          {stringifyDateTime(new Date(chats.slice(-1)[0].sentAt))}
+          {date}
+
         </div>
       </div>
     </div>
