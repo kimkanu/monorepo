@@ -12,6 +12,7 @@ import {
 
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
+import languageAtom from '../../recoil/language/atom';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
 import fetchAPI from '../../utils/fetch';
@@ -135,6 +136,7 @@ const ClassroomChat: React.FC<Props> = ({
   const [translatedChats, setTranslatedChats] = useRecoilState(translatedChatsAtom);
   const myId = useRecoilValue(meState.id);
   const addToast = useSetRecoilState(toastState.new);
+  const language = useRecoilValue(languageAtom);
   const screenType = useScreenType();
   const { t } = useTranslation('classroom');
 
@@ -191,6 +193,10 @@ const ClassroomChat: React.FC<Props> = ({
     resetHash(hash ?? '');
     console.log(`resetHash(${hash ?? ''});`);
   }, [hash]);
+
+  React.useEffect(() => {
+    setTranslatedChats({});
+  }, [language]);
 
   React.useEffect(() => {
     if (wrapperRef.current) {

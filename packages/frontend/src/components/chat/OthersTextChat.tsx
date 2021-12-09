@@ -1,7 +1,9 @@
 import { SpinnerIos20Regular, Translate20Filled, ArrowCounterclockwise20Regular } from '@fluentui/react-icons/lib/cjs/index';
 import { TextChatContent } from '@team-10/lib';
 import React from 'react';
+import { useRecoilValue } from 'recoil';
 
+import languageAtom from '../../recoil/language/atom';
 import { mergeClassNames } from '../../utils/style';
 import AmbientButton from '../buttons/AmbientButton';
 
@@ -19,6 +21,13 @@ const OthersTextChat: React.FC<Props> = ({
   const [isTranslated, setTranslated] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [isTranslatable, setTranslatable] = React.useState(true);
+  const language = useRecoilValue(languageAtom);
+
+  React.useEffect(() => {
+    setTranslatable(true);
+    setTranslated(false);
+  }, [language]);
+
   return (
     <div
       style={{ padding: '5px 12px' }}

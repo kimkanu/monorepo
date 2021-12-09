@@ -120,7 +120,7 @@ export default function generateRoute(server: Server): Route {
         return JSON.parse(response.body).langCode;
       })();
 
-      const targetLanguage = 'ko'; // TODO
+      const targetLanguage = user.language;
 
       if (language === targetLanguage) {
         return {
