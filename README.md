@@ -13,5 +13,11 @@
 Wiki 참고
 
 
+## Report
+https://2021-fall-cs492c-team-10.github.io/report/
+
+
 ## Prototype Design
 [피그마 UI 디자인](https://www.figma.com/file/Y4GVrTepriDoMHRtV1giG8/Frontend-Project-Design-Proposal-Draft?node-id=11%3A347])
+
+

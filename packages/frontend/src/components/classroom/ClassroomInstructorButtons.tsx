@@ -1,11 +1,12 @@
 import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
-import { useTranslation } from 'react-i18next';
 
 import classroomsState from '../../recoil/classrooms';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
+import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
 import fetchAPI from '../../utils/fetch';
 import appHistory from '../../utils/history';
@@ -17,11 +18,12 @@ const ClassroomInstructorButtons: React.FC = () => {
     classroomsState.byHash(mainClassroomHash),
   );
   const history = useHistory();
+  const myId = useRecoilValue(meState.id);
   const addToast = useSetRecoilState(toastState.new);
   const [isLoading, setLoading] = React.useState(false);
   const { t } = useTranslation('classroom');
 
-  return mainClassroom?.video ? (
+  return mainClassroom?.instructor?.stringId === myId && mainClassroom?.video ? (
     <div className="w-fit px-2 flex gap-6">
       {!!mainClassroom && (
         <Button

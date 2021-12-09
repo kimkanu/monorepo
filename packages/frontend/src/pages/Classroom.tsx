@@ -67,7 +67,7 @@ const Classroom: React.FC<Props> = ({ hash }) => {
           </div>
         )}
         {screenType !== ScreenType.MobileLandscape && (
-          <ClassroomChat isInstructor={isInstructor} dark={false} />
+          <ClassroomChat hash={hash} isInstructor={isInstructor} dark={false} />
         )}
       </>
     ) : null

@@ -96,6 +96,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
             loaded: true,
             info: response.payload,
           });
+          console.log('response.payload.classrooms', response.payload.classrooms);
           setClassrooms(sortClassrooms(
             response.payload.classrooms.map((c) => ({ ...c, speakerId: null })),
             response.payload.stringId,

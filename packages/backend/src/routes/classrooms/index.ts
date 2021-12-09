@@ -244,5 +244,42 @@ export default function generateRoute(server: Server): Route {
     },
   );
 
+  route.accept(
+    'GET /classrooms/:hash/chats',
+    isAuthenticatedOrFail,
+    async (params, body, user) => {
+      const { hash, chatId } = params;
+      const userId = user.stringId;
+
+      const classroom = await server.managers.classroom.get(hash);
+      if (!classroom) {
+        return {
+          success: false,
+          error: {
+            code: 'NONEXISTENT_CLASSROOM',
+            statusCode: 400,
+            extra: {} as Empty,
+          },
+        };
+      }
+
+      if (!classroom.hasMember(userId)) {
+        return {
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            statusCode: 403,
+            extra: {},
+          },
+        };
+      }
+
+      return {
+        success: true,
+        payload: await classroom.getChats(chatId),
+      };
+    },
+  );
+
   return route;
 }

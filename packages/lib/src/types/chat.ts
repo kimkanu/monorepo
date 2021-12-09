@@ -1,4 +1,4 @@
-import { UserInfoJSON } from '.';
+import { DateNumber, UserInfoJSON } from '.';
 
 export type ChatType = 'text' | 'photo' | 'feed';
 export type FeedType = 'date' | 'class';
@@ -19,7 +19,7 @@ export type ChatContent<T extends ChatType = ChatType> = {
   id: string;
   type: T;
   content: TypedChatContent<T>;
-  sentAt: Date;
+  sentAt: DateNumber;
   sender?: UserInfoJSON;
 };
 
@@ -47,7 +47,7 @@ export interface CommonFeedChatContent<F extends FeedType> {
 }
 
 export interface DateFeedChatContent extends CommonFeedChatContent<'date'> {
-  date: Date;
+  date: DateNumber;
 }
 
 export interface ClassFeedChatContent extends CommonFeedChatContent<'class'> {

@@ -24,7 +24,7 @@ const FeedChat: React.FC<FeedChatProps> = ({
       )}
     >
       {content.type === 'date' ? (
-        stringifyDateConsistent(content.date)
+        stringifyDateConsistent(new Date(content.date))
       ) : (
         content.isStart ? t('startClass') : t('endClass')
       )}
