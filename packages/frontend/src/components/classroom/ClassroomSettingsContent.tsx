@@ -51,7 +51,6 @@ const ClassroomSettingsContent: React.FC<Props> = ({
             onInput={onInputClassroomName}
             icon={<Book20Regular />}
             name="courseName"
-            font="mono"
             placeholderText={t('className')}
             align="left"
             validator={(newName) => new CancelablePromise<boolean>((

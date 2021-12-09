@@ -14,10 +14,7 @@ export function stringifyDate(date: Date): string {
   }
   // 어제
   if (isYesterday(date)) {
-    if (i18n.language === 'en') {
-      return 'yesterday';
-    }
-    return '어제';
+    return i18n.language === 'en' ? 'Yesterday' : '어제';
   }
   // 올해
   if (date.getFullYear() === new Date().getFullYear()) {

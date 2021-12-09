@@ -1,5 +1,6 @@
 import { Add20Regular, ArrowHookUpLeft20Regular } from '@fluentui/react-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -7,13 +8,13 @@ import Button from '../components/buttons/Button';
 import NarrowPageWrapper from '../components/elements/NarrowPageWrapper';
 import Title from '../components/elements/Title';
 import ContentPadding from '../components/layout/ContentPadding';
-import meState from '../recoil/me';
 import themeState from '../recoil/theme';
 import appHistory from '../utils/history';
 
 const WelcomeDone: React.FC = () => {
   const theme = useRecoilValue(themeState.atom);
 
+  const { t } = useTranslation('welcome');
   const history = useHistory();
   const location = useLocation();
 
@@ -22,7 +23,7 @@ const WelcomeDone: React.FC = () => {
       <NarrowPageWrapper>
         <section>
           <Title size="title">
-            가입 완료!
+            {t('welldone')}
             {' '}
             <i className="twa twa-raised-hands" />
           </Title>
@@ -33,7 +34,7 @@ const WelcomeDone: React.FC = () => {
               lineHeight: 1.6,
             }}
           >
-            온라인과 오프라인의 장점을 접목한
+            {t('welcomeDoneDesc1')}
             {' '}
             <span
               className="font-black"
@@ -45,14 +46,14 @@ const WelcomeDone: React.FC = () => {
             >
               Blearn!
             </span>
-            에서 즐겁고 편하게 공부하세요!
+            {t('welcomeDoneDesc2')}
           </p>
           <div className="flex flex-col gap-6 mb-16">
             <Button
               width="full"
               type="primary"
               icon={<Add20Regular />}
-              text="수업 추가하러 가기"
+              text={t('add')}
               onClick={() => {
                 appHistory.replace('/classrooms/new', history);
               }}
@@ -61,7 +62,7 @@ const WelcomeDone: React.FC = () => {
               width="full"
               type="neutral"
               icon={<ArrowHookUpLeft20Regular />}
-              text="이전 페이지로 돌아가기"
+              text={t('back')}
               onClick={() => {
                 const query = new URLSearchParams(location.search).get('redirect_uri') ?? '/';
                 appHistory.replace(query, history);

@@ -3,6 +3,7 @@ import {
   ChatContent, ResponseError, SocketChat, SocketClassroom,
 } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { useIntersectionObserver } from 'react-intersection-observer-hook';
 import {
@@ -124,6 +125,7 @@ const ClassroomChat: React.FC<Props> = ({
   const myId = useRecoilValue(meState.id);
   const addToast = useSetRecoilState(toastState.new);
   const screenType = useScreenType();
+  const { t } = useTranslation('classroom');
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 
@@ -156,14 +158,14 @@ const ClassroomChat: React.FC<Props> = ({
       addToast({
         type: 'warn',
         sentAt: new Date(),
-        message: '설정해 둔 언어로 쓰여 있습니다.',
+        message: t('unnecessaryTranslation'),
       });
       throw new Error();
     } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
       addToast({
         type: 'warn',
         sentAt: new Date(),
-        message: '지원되지 않는 언어입니다.',
+        message: t('unsupportedTranslation'),
       });
       throw new Error();
     }

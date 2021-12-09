@@ -1,6 +1,5 @@
 import { Provider } from '@team-10/lib';
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
 
 import GitHubLogo from '../../assets/github-logo.svg';
@@ -44,7 +43,7 @@ const LoginButton: React.FC<Props> = ({
         onClick={onClick}
       />
       <div style={{ width: 62 }} className="absolute h-12 left-0 top-0 flex justify-center items-center pointer-events-none select-none">
-        <img src={logos[provider]} className={providerClassName[provider]} alt={`${provider.toLocaleUpperCase()} 로고`} />
+        <img src={logos[provider]} className={providerClassName[provider]} alt={t('logo', { s: `${provider.toLocaleUpperCase()}` })} />
       </div>
     </div>
   );

@@ -25,11 +25,6 @@ export interface UserInfoJSON {
   profileImage: string;
 }
 
-export interface UserLangJSON {
-  stringId: string;
-  language: string;
-}
-
 export type UsersEndpoints =
   | UsersMeEndpoints
   | UsersOtherEndpoints;

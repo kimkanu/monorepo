@@ -67,6 +67,7 @@ const YouTubeItem: React.FC<{ desc: YouTubeVideoDescription }> = ({
   const history = useHistory();
   const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
   const setClassroom = useSetRecoilState(classroomsState.byHash(hash));
+  const { t } = useTranslation('classroom');
 
   return (
     <button
@@ -84,7 +85,7 @@ const YouTubeItem: React.FC<{ desc: YouTubeVideoDescription }> = ({
     >
       <img
         src={thumbnail}
-        alt={`${video.type === 'single' ? `비디오 ${video.videoId}` : `재생목록 ${video.playlistId}`}의 섬네일`}
+        alt={t('thumbnail', { s: video.type === 'single' ? `${t('video')} ${video.videoId}` : `${t('playlist')} ${video.playlistId}` })}
         className="object-cover object-center rounded-2xl shadow-button"
         style={{ width: 156, height: 88, '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
       />
@@ -105,7 +106,7 @@ const YouTubeItem: React.FC<{ desc: YouTubeVideoDescription }> = ({
         <div className="truncate text-tiny text-gray-600" style={{ lineHeight: '20px' }}>
           {creator}
           <br />
-          {video.type === 'single' ? '비디오' : '재생목록'}
+          {video.type === 'single' ? t('video') : t('playlist')}
           {' · '}
           {publishedAt.slice(0, 10)}
         </div>
@@ -170,7 +171,7 @@ const ClassroomShare: React.FC = () => {
           <YouTubeItem key={(item.video as any).playlistId ?? item.video.videoId} desc={item} />
         ))}
 
-        {(isLoading || (hasNextPage && items.length)) && (
+        {(isLoading || (hasNextPage && items.length > 0)) && (
           <div ref={sentryRef} style={{ transform: 'scale(200%)' }} className="w-5 h-5 m-auto pt-6 py-10">
             <SpinnerIos20Regular className="stroke-current stroke-2 text-gray-300 block w-5 h-5 animate-spin" />
           </div>
