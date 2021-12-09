@@ -127,6 +127,7 @@ export default function generateRoute(server: Server): Route {
       const userEntity = await server.managers.user.getEntityOrFail(user.stringId);
       if (stringId) {
         userEntity.stringId = stringId;
+        userEntity.initialized = true;
       }
       if (displayName) {
         userEntity.displayName = displayName;
@@ -142,7 +143,6 @@ export default function generateRoute(server: Server): Route {
         userEntity.profileImageDeleteHash = profileImageUploadResponse.deletehash ?? null!;
       }
 
-      userEntity.initialized = true;
       await userEntity.save();
 
       req.user = userEntity;

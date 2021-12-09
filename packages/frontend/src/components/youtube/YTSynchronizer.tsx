@@ -1,11 +1,11 @@
 import { Video16Filled, WeatherPartlyCloudyDay16Regular } from '@fluentui/react-icons';
 import { ClassroomsHashPatchResponse, SocketClassroom, SocketYouTube } from '@team-10/lib';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
-import { useTranslation } from 'react-i18next';
 
 import useMainClassroom from '../../hooks/useMainClassroom';
 import useSocket from '../../hooks/useSocket';
