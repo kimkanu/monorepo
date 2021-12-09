@@ -1,4 +1,4 @@
-import { ClassroomJSON } from '..';
+import { ChatContent, ClassroomJSON } from '..';
 
 import { ClassroomHash } from './common';
 
@@ -29,7 +29,11 @@ export namespace SocketClassroom {
     hash: ClassroomHash;
   }
   export type JoinResponse =
-    | ({ success: true; isVideoPlaying: boolean; videoTime: DateNumber | null } & ClassroomJSON)
+    | ({
+      success: true;
+      isVideoPlaying: boolean;
+      videoTime: DateNumber | null;
+    } & ClassroomJSON)
     | {
       success: false;
       reason: typeof JoinFailReason[keyof typeof JoinFailReason];

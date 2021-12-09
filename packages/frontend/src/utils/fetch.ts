@@ -35,7 +35,7 @@ export default async function fetchAPI<E extends Endpoints>(
     } : {}),
   });
   if (response.status === 401) {
-    return { success: false, error: unauthorizedError };
+    return { success: false, error: unauthorizedError } as ResponseType[E];
   }
   return response.json() as Promise<ResponseType[E]>;
 }

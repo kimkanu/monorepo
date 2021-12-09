@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { EyeShow24Regular, EyeHide24Regular } from '@fluentui/react-icons';
+import { PhotoChatContent, SocketChat } from '@team-10/lib';
 import React from 'react';
 import { spring, Motion } from 'react-motion';
 import { useLocation } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { useRecoilValue } from 'recoil';
 
 import useMainClassroom from '../../hooks/useMainClassroom';
 import useScreenType from '../../hooks/useScreenType';
+import useSocket from '../../hooks/useSocket';
 import classroomsState from '../../recoil/classrooms';
 import meState from '../../recoil/me';
 import ScreenType from '../../types/screen';
@@ -33,6 +35,30 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
   const isVisible = classrooms.some(({ isLive }) => isLive) || inClassroom;
 
   const [text, setText] = React.useState('');
+
+  const { socket } = useSocket<SocketChat.Events.Response, SocketChat.Events.Request>('/');
+  const onSend = async () => {
+    if (!socket || !mainClassroom || !text.trim()) return;
+    socket.emit('chat/Send', {
+      hash: mainClassroom.hash,
+      message: {
+        type: 'text',
+        text,
+      },
+    });
+    setText('');
+  };
+  const onPhoto = async (photo: Blob) => {
+    console.log(photo, socket, mainClassroom);
+    if (!socket || !mainClassroom) return;
+    socket.emit('chat/Send', {
+      hash: mainClassroom.hash,
+      message: {
+        type: 'photo',
+        photo: await photo.arrayBuffer(),
+      },
+    });
+  };
 
   return (
     <Motion style={{
@@ -102,7 +128,7 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
                 )}
               </div>
               <div className="flex items-center content-center justify-between px-4">
-                <ChatInput dark={false} text={text} onInput={setText} />
+                <ChatInput dark={false} text={text} onInput={setText} onPhoto={onPhoto} onSend={onSend} />
               </div>
             </>
           )}
@@ -112,7 +138,7 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
             <>
               {!isUIHidden && (
               <div className="pl-1 py-2">
-                <ChatInput dark text={text} onInput={setText} />
+                <ChatInput dark text={text} onInput={setText} onPhoto={onPhoto} onSend={onSend} />
               </div>
               )}
               {inClassroom && (
@@ -128,6 +154,7 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
                   {!isUIHidden && (
                   <div className="fixed overflow-y-auto overflow-x-hidden left-0" style={{ width: 416, bottom: 72 }}>
                     <ClassroomChat
+                      hash={mainClassroom?.hash}
                       isInstructor={mainClassroom?.instructor.stringId === meInfo?.stringId}
                       dark
                     />
@@ -159,7 +186,7 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
                   bottom: 76,
                 }}
               >
-                <ChatInput dark={false} text={text} onInput={setText} extended />
+                <ChatInput dark={false} text={text} onInput={setText} onPhoto={onPhoto} onSend={onSend} extended />
               </div>
             </>
           )}

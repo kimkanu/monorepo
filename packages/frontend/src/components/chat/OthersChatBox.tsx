@@ -37,9 +37,14 @@ const OthersChatBox: React.FC<Props> = ({
 }) => (
   <div className="w-full flex justify-start gap-2">
     <div className="w-8 h-8 rounded-full overflow-hidden">
-      <img className="w-full h-full" alt={`${sender.displayName}의 프로필 사진`} src={sender.profileImage} />
+      <img
+        className="w-full h-full shadow-button"
+        style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
+        alt={`${sender.displayName}의 프로필 사진`}
+        src={sender.profileImage}
+      />
     </div>
-    <div className="flex flex-col gap-1.5 items-start" style={{ maxWidth: 'calc(100% - 40px)' }}>
+    <div className="flex flex-col gap-1.5 items-start w-full" style={{ maxWidth: 'calc(100% - 40px)' }}>
       {chats.map((chat) => (
         <OthersChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
       ))}
@@ -51,7 +56,7 @@ const OthersChatBox: React.FC<Props> = ({
       >
         {sender.displayName}
         {' ㆍ '}
-        {stringifyDateTime(chats.slice(-1)[0].sentAt)}
+        {stringifyDateTime(new Date(chats.slice(-1)[0].sentAt))}
       </div>
     </div>
   </div>

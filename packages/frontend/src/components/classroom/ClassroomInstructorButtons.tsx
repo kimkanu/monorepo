@@ -5,6 +5,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 
 import classroomsState from '../../recoil/classrooms';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
+import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
 import fetchAPI from '../../utils/fetch';
 import appHistory from '../../utils/history';
@@ -16,10 +17,11 @@ const ClassroomInstructorButtons: React.FC = () => {
     classroomsState.byHash(mainClassroomHash),
   );
   const history = useHistory();
+  const myId = useRecoilValue(meState.id);
   const addToast = useSetRecoilState(toastState.new);
   const [isLoading, setLoading] = React.useState(false);
 
-  return mainClassroom?.video ? (
+  return mainClassroom?.instructor?.stringId === myId && mainClassroom?.video ? (
     <div className="w-fit px-2 flex gap-6">
       {!!mainClassroom && (
         <Button
@@ -27,7 +29,7 @@ const ClassroomInstructorButtons: React.FC = () => {
           width="fit-content"
           height={36}
           isLoading={isLoading}
-          text={mainClassroom.isLive ? '수업 끝내기' : '수업 시작하기'}
+          text={mainClassroom.isLive ? '수업 끝' : '수업 시작'}
           onClick={async () => {
             if (!mainClassroom) return;
             setLoading(true);
@@ -52,7 +54,7 @@ const ClassroomInstructorButtons: React.FC = () => {
           type="primary"
           width="fit-content"
           height={36}
-          text="유튜브 영상 변경하기"
+          text="영상 변경"
           onClick={async () => {
             appHistory.push(`/classrooms/${mainClassroom.hash}/share`, history);
           }}
@@ -63,7 +65,7 @@ const ClassroomInstructorButtons: React.FC = () => {
           type="destructive"
           width="fit-content"
           height={36}
-          text="영상 공유 중지하기"
+          text="공유 중지"
           onClick={() => {
             if (!mainClassroom) return;
             setMainClassroom((c) => ({

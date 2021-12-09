@@ -5,12 +5,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   TableInheritance,
-  OneToOne,
   ManyToOne,
   ChildEntity,
 } from 'typeorm';
-
-import ChatEntity from './chat';
 
 import Classroom from './classroom';
 import UserEntity from './user';
@@ -31,14 +28,6 @@ export default class HistoryEntity extends BaseEntity {
 
   @ManyToOne(() => Classroom, (classroom) => classroom.histories, { onDelete: 'CASCADE' })
   classroom: Classroom;
-}
-
-@ChildEntity()
-export class ChatHistoryEntity extends HistoryEntity {
-  @OneToOne(() => ChatEntity, {
-    cascade: true,
-  })
-  chat: ChatEntity;
 }
 
 @ChildEntity()

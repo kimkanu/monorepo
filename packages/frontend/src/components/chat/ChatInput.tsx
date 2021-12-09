@@ -13,13 +13,13 @@ interface Props {
   dark: boolean; // 모바일 가로 교실 화면인지
   text: string;
   onInput?: (newText: string) => void;
-  onPhotoButtonClick?: React.MouseEventHandler;
+  onPhoto: (file: Blob) => void;
   onSend?: () => void;
   extended?: boolean;
 }
 
 const ChatInput: React.FC<Props> = ({
-  dark, extended = false, text, onInput, onPhotoButtonClick, onSend,
+  dark, extended = false, text, onInput, onPhoto, onSend,
 }) => (
   <div
     className={mergeClassNames(
@@ -39,11 +39,32 @@ const ChatInput: React.FC<Props> = ({
           />
         </div>
         <div style={{ height: 60 }} className="w-full flex flex-row justify-between">
-          <AmbientButton
-            size={48}
-            icon={<Image24Regular />}
-            onClick={onPhotoButtonClick}
-          />
+          <div className="w-12 h-12 overflow-hidden flex">
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+            <label
+              htmlFor="ChatInput__input"
+              className={mergeClassNames(
+                'flex justify-center items-center transition rounded-full bg-transparent w-12 h-12 cursor-pointer',
+                dark ? 'text-white bg-gray-800 hover:bg-gray-500 hover:bg-opacity-50' : 'text-gray-700 hover:bg-gray-200',
+              )}
+            >
+              <Image24Regular />
+            </label>
+            <input
+              id="ChatInput__input"
+              style={{ width: 0 }}
+              type="file"
+              accept="image/png, image/jpeg, image/gif, image/tiff"
+              onChange={(e) => {
+                const file = e.currentTarget.files?.[0];
+                if (file) {
+                  onPhoto(file);
+                  console.log(file);
+                  e.currentTarget.value = '';
+                }
+              }}
+            />
+          </div>
           <AmbientButton
             size={48}
             icon={<Send24Filled className="text-primary-500" />}
@@ -55,12 +76,32 @@ const ChatInput: React.FC<Props> = ({
       </div>
     ) : (
       <div className={mergeClassNames('w-full flex flex-row justify-center', dark ? 'gap-2' : 'gap-4')}>
-        <AmbientButton
-          size={48}
-          icon={<Image24Regular />}
-          onClick={onPhotoButtonClick}
-          dark={dark}
-        />
+        <div className="w-12 h-12 overflow-hidden flex">
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+          <label
+            htmlFor="ChatInput__input"
+            className={mergeClassNames(
+              'flex justify-center items-center transition rounded-full bg-transparent w-12 h-12 cursor-pointer',
+              dark ? 'text-white bg-gray-800 hover:bg-gray-500 hover:bg-opacity-50' : 'text-gray-700 hover:bg-gray-200',
+            )}
+          >
+            <Image24Regular />
+          </label>
+          <input
+            id="ChatInput__input"
+            style={{ width: 0 }}
+            type="file"
+            accept="image/png, image/jpeg, image/gif, image/tiff"
+            onChange={(e) => {
+              const file = e.currentTarget.files?.[0];
+              if (file) {
+                onPhoto(file);
+                console.log(file);
+                e.currentTarget.value = '';
+              }
+            }}
+          />
+        </div>
         <TextInput
           value={text}
           onInput={onInput}

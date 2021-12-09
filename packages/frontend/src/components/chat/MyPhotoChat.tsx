@@ -10,7 +10,7 @@ interface Props {
   content: PhotoChatContent;
 }
 const MyPhotoChat: React.FC<Props> = ({ dark, content }) => (
-  <div className={mergeClassNames('rounded-2xl overflow-hidden', styles.maxWidth)}>
+  <div className={mergeClassNames('rounded-2xl overflow-hidden', styles.maxWidth)} style={{ maxHeight: 280 }}>
     <img className={dark ? 'opacity-50' : ''} src={content.photo} alt={content.alt} />
   </div>
 );
