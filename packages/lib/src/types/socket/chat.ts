@@ -47,16 +47,6 @@ export namespace SocketChat {
     BAD_REQUEST: -3 as -3,
     INTERNAL_SERVER_ERROR: -4 as -4,
   };
-  export function sendDeniedReasonAsMessage(
-    reason: typeof SendDeniedReason[keyof typeof SendDeniedReason],
-  ): string {
-    return {
-      [SendDeniedReason.UNAUTHORIZED]: '현재 로그아웃 상태입니다.',
-      [SendDeniedReason.NOT_MEMBER]: '이 수업을 가르치거나 듣는 사람이 아닙니다.',
-      [SendDeniedReason.BAD_REQUEST]: '잘못된 요청입니다.',
-      [SendDeniedReason.INTERNAL_SERVER_ERROR]: '내부 서버 에러가 발생했습니다.',
-    }[reason];
-  }
 
   type ChatRequest = {
     type: 'text';

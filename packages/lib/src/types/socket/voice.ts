@@ -53,11 +53,21 @@ export namespace SocketVoice {
   };
   export function permissionDeniedReasonAsMessage(
     reason: typeof PermissionDeniedReason[keyof typeof PermissionDeniedReason],
+    lang: 'ko' | 'en' = 'en',
   ): string {
     return {
-      [PermissionDeniedReason.UNAUTHORIZED]: '현재 로그아웃 상태입니다.',
-      [PermissionDeniedReason.NOT_MEMBER]: '이 수업을 가르치거나 듣는 사람이 아닙니다.',
-      [PermissionDeniedReason.SOMEONE_IS_SPEAKING]: '누군가 이미 이야기하고 있습니다.',
+      [PermissionDeniedReason.UNAUTHORIZED]: {
+        ko: '현재 로그아웃 상태입니다.',
+        en: 'You are not authorized.',
+      }[lang],
+      [PermissionDeniedReason.NOT_MEMBER]: {
+        ko: '이 수업을 가르치거나 듣는 사람이 아닙니다.',
+        en: 'You are not in this class.',
+      }[lang],
+      [PermissionDeniedReason.SOMEONE_IS_SPEAKING]: {
+        ko: '누군가 이미 이야기하고 있습니다.',
+        en: 'Someone else is speaking.',
+      }[lang],
     }[reason];
   }
 
@@ -86,12 +96,25 @@ export namespace SocketVoice {
   };
   export function stateChangeEndReasonAsMessage(
     reason: typeof StateChangeEndReason[keyof typeof StateChangeEndReason],
+    lang: 'ko' | 'en' = 'en',
   ): string {
     return {
-      [StateChangeEndReason.NORMAL]: '말하기가 정상적으로 종료되었습니다.',
-      [StateChangeEndReason.SESSION_EXPIRED]: '세션이 만료되었습니다.',
-      [StateChangeEndReason.CONNECTION_LOST]: '말씀하시는 분의 접속이 끊겼습니다.',
-      [StateChangeEndReason.INTERRUPTED_BY_INSTRUCTOR]: '강의자에 의해 말하기가 종료되었습니다.',
+      [StateChangeEndReason.NORMAL]: {
+        ko: '',
+        en: '',
+      }[lang],
+      [StateChangeEndReason.SESSION_EXPIRED]: {
+        ko: '세션이 만료되었습니다.',
+        en: 'The session has expired.',
+      }[lang],
+      [StateChangeEndReason.CONNECTION_LOST]: {
+        ko: '말씀하시는 분의 접속이 끊겼습니다.',
+        en: 'The speaker is disconnected.',
+      }[lang],
+      [StateChangeEndReason.INTERRUPTED_BY_INSTRUCTOR]: {
+        ko: '강의자에 의해 말하기가 종료되었습니다.',
+        en: 'The instructor interrupted the speaker.',
+      }[lang],
     }[reason];
   }
 
@@ -117,15 +140,6 @@ export namespace SocketVoice {
     NOT_MEMBER: -2 as -2,
     NOT_SPEAKER: -5 as -5,
   };
-  export function streamSendDeniedReasonAsMessage(
-    reason: typeof StreamSendDeniedReason[keyof typeof StreamSendDeniedReason],
-  ): string {
-    return {
-      [StreamSendDeniedReason.UNAUTHORIZED]: '현재 로그아웃 상태입니다.',
-      [StreamSendDeniedReason.NOT_MEMBER]: '이 수업을 가르치거나 듣는 사람이 아닙니다.',
-      [StreamSendDeniedReason.NOT_SPEAKER]: '말하기 권한이 없습니다.',
-    }[reason];
-  }
 
   /* Received voices */
   export interface StreamReceiveBroadcast {

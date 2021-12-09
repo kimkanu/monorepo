@@ -1,6 +1,7 @@
 import { Search20Regular, SpinnerIos20Regular } from '@fluentui/react-icons';
 import { ResponseError, YouTubeVideoDescription } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -11,7 +12,6 @@ import Title from '../components/elements/Title';
 import TextInput from '../components/input/TextInput';
 import classroomsState from '../recoil/classrooms';
 import meState from '../recoil/me';
-import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
 import appHistory, { classroomPrefixRegex } from '../utils/history';
 
@@ -67,6 +67,7 @@ const YouTubeItem: React.FC<{ desc: YouTubeVideoDescription }> = ({
   const history = useHistory();
   const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
   const setClassroom = useSetRecoilState(classroomsState.byHash(hash));
+  const { t } = useTranslation('classroom');
 
   return (
     <button
@@ -84,7 +85,7 @@ const YouTubeItem: React.FC<{ desc: YouTubeVideoDescription }> = ({
     >
       <img
         src={thumbnail}
-        alt={`${video.type === 'single' ? `비디오 ${video.videoId}` : `재생목록 ${video.playlistId}`}의 섬네일`}
+        alt={t('thumbnail', { s: video.type === 'single' ? `${t('video')} ${video.videoId}` : `${t('playlist')} ${video.playlistId}` })}
         className="object-cover object-center rounded-2xl shadow-button"
         style={{ width: 156, height: 88, '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
       />
@@ -105,7 +106,7 @@ const YouTubeItem: React.FC<{ desc: YouTubeVideoDescription }> = ({
         <div className="truncate text-tiny text-gray-600" style={{ lineHeight: '20px' }}>
           {creator}
           <br />
-          {video.type === 'single' ? '비디오' : '재생목록'}
+          {video.type === 'single' ? t('video') : t('playlist')}
           {' · '}
           {publishedAt.slice(0, 10)}
         </div>
@@ -133,6 +134,7 @@ const ClassroomShare: React.FC = () => {
     disabled: !!error || !searchText,
     rootMargin: '0px 0px 400px 0px',
   });
+  const { t } = useTranslation('classroom');
 
   return (
     <Dialog
@@ -140,12 +142,12 @@ const ClassroomShare: React.FC = () => {
       onClose={() => appHistory.goBack(history)}
       style={{ width: 480, maxWidth: '100vw' }}
     >
-      <Title size="sect">영상 공유</Title>
+      <Title size="sect">{t('share')}</Title>
 
       <TextInput
         value={searchText}
         onInput={setSearchText}
-        placeholderText="유튜브 영상 검색"
+        placeholderText={t('search')}
         containerClassName={!isLoading && items.length === 0 ? 'mt-8 mb-2' : 'my-8'}
         onSubmit={() => {
           loadMore(searchText);
@@ -169,7 +171,7 @@ const ClassroomShare: React.FC = () => {
           <YouTubeItem key={(item.video as any).playlistId ?? item.video.videoId} desc={item} />
         ))}
 
-        {(isLoading || (hasNextPage && items.length)) && (
+        {(isLoading || (hasNextPage && items.length > 0)) && (
           <div ref={sentryRef} style={{ transform: 'scale(200%)' }} className="w-5 h-5 m-auto pt-6 py-10">
             <SpinnerIos20Regular className="stroke-current stroke-2 text-gray-300 block w-5 h-5 animate-spin" />
           </div>

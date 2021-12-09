@@ -12,10 +12,12 @@ import {
 } from '@fluentui/react-icons';
 import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
+import i18n from '../../i18n';
 import classroomsState from '../../recoil/classrooms';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
@@ -44,22 +46,23 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
   const meInfo = useRecoilValue(meState.info);
   const history = useHistory();
   const addToast = useSetRecoilState(toastState.new);
+  const { t } = useTranslation('profile');
 
   return (
     <div className="flex flex-col items-center">
       <img
         src={src}
-        alt="프로필 사진"
+        alt={t('profileImageOnly')}
         style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
         className="w-28 h-28 rounded-full overflow-hidden shadow-button object-cover object-center my-8"
       />
       <span className="text-sub inline-flex max-w-full whitespace-nowrap gap-1">
-        <span>안녕하세요, </span>
+        <span>{t('hello')}</span>
         <span className="font-bold inline-block overflow-hidden overflow-ellipsis">{displayName}</span>
-        <span> 님!</span>
+        <span>{t('mark')}</span>
       </span>
       <div className="w-full flex flex-col justify-start mt-8">
-        <span className="text-gray-800 font-bold">테마 선택</span>
+        <span className="text-gray-800 font-bold">{t('theme')}</span>
         <div className="mt-3 bg-gray-100 rounded-xl py-4 px-10 flex justify-between">
           {(['violet', 'pink', 'green', 'blue'] as Theme[]).map((color) => (
             <button key={color} type="button" aria-label="Violet" className={`bg-${color}-500 hover:bg-${color}-700 w-10 h-10 rounded-full transition-colors`} onClick={() => setTheme(color)}>
@@ -69,7 +72,7 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
         </div>
       </div>
       <div className="w-full flex flex-col justify-start mt-8">
-        <span className="text-gray-800 font-bold">계정 관리</span>
+        <span className="text-gray-800 font-bold">{t('accountMg')}</span>
         <div className="flex flex-col gap-1 mt-3">
           <button
             type="button"
@@ -85,13 +88,13 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
                 addToast({
                   type: 'error',
                   sentAt: new Date(),
-                  message: '서비스 이용에 필요한 정보를 먼저 입력해 주세요!',
+                  message: t('message'),
                 });
               }
             }}
           >
             <Person24Filled className="mr-6 text-gray-700" />
-            <span className="text-emph">내 프로필 보기</span>
+            <span className="text-emph">{t('seeProfile')}</span>
           </button>
           <button
             type="button"
@@ -105,7 +108,7 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
             }}
           >
             <SignOut24Filled className="mr-6 text-gray-700" />
-            <span className="text-emph">로그아웃</span>
+            <span className="text-emph">{t('logout')}</span>
           </button>
         </div>
       </div>
@@ -113,34 +116,60 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
   );
 };
 
-const LanguageSelectionDropdownContent: React.FC = () => (
-  <div className="flex items-center">
-    <button
-      type="button"
-      className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
-      style={{
-        transitionProperty: 'background-color, border-color, color, fill, stroke',
-      }}
-    >
-      <i className="twa twa-kr text-big" />
-      {' '}
-      <span style={{ lineHeight: '32px' }}>한국어</span>
-    </button>
-    <div className="mx-4 bg-gray-200" style={{ width: 1, height: 24 }} />
-    <button
-      type="button"
-      className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
-      style={{
-        transitionProperty: 'background-color, border-color, color, fill, stroke',
-      }}
-    >
-      <i className="twa twa-us text-big absolute" style={{ transform: 'translate(6px, 6px)', zIndex: 1 }} />
-      <i className="twa twa-gb text-big" style={{ transform: 'translate(-6px, -6px)' }} />
-      {' '}
-      <span style={{ lineHeight: '32px' }}>English</span>
-    </button>
-  </div>
-);
+const LanguageSelectionDropdownContent: React.FC = () => {
+  const [language, setLanguage] = React.useState(i18n.language);
+
+  return (
+    <div className="flex items-center">
+      <button
+        type="button"
+        className={mergeClassNames(
+          'flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2',
+          language === 'ko' ? 'cursor-default bg-gray-200' : '',
+        )}
+        style={{
+          transitionProperty: 'background-color, border-color, color, fill, stroke',
+        }}
+        onClick={() => {
+          if (i18n.language === 'ko') return;
+          i18n.changeLanguage('ko');
+          setLanguage('ko');
+          fetchAPI('PATCH /users/me/language', {}, {
+            language: 'ko',
+          });
+        }}
+      >
+        <i className="twa twa-kr text-big" />
+        {' '}
+        <span style={{ lineHeight: '32px' }}>한국어</span>
+      </button>
+      <div className="mx-4 bg-gray-200" style={{ width: 1, height: 24 }} />
+      <button
+        type="button"
+        className={mergeClassNames(
+          'flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2',
+          language === 'en' ? 'cursor-default bg-gray-200' : '',
+        )}
+        style={{
+          transitionProperty: 'background-color, border-color, color, fill, stroke',
+        }}
+        onClick={() => {
+          if (i18n.language === 'en') return;
+          i18n.changeLanguage('en');
+          setLanguage('en');
+          fetchAPI('PATCH /users/me/language', {}, {
+            language: 'en',
+          });
+        }}
+      >
+        <i className="twa twa-us text-big absolute" style={{ transform: 'translate(6px, 6px)', zIndex: 1 }} />
+        <i className="twa twa-gb text-big" style={{ transform: 'translate(-6px, -6px)' }} />
+        {' '}
+        <span style={{ lineHeight: '32px' }}>English</span>
+      </button>
+    </div>
+  );
+};
 
 interface Props {
   isUIHidden: boolean;
@@ -152,7 +181,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
   const history = useHistory();
   const me = useRecoilValue(meState.atom);
   const mainClassroomHash = useRecoilValue(mainClassroomHashState.atom);
-  const [mainClassroom, setMainClassroom] = useRecoilState(classroomsState.byHash(mainClassroomHash));
+  const mainClassroom = useRecoilValue(classroomsState.byHash(mainClassroomHash));
 
   const classroomHash = location.pathname.match(/^\/classrooms\/(\w{3}-\w{3}-\w{3})/)?.[1];
   const inClassroom = !!classroomHash;

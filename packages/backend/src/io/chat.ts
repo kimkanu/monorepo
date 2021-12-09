@@ -78,7 +78,7 @@ const ioChatHandler = (
           sentAt: Date.now(),
           content: {
             photo: imageData.link,
-            alt: altText?.ko ?? '', // TODO
+            alt: altText?.[userEntity.language] ?? '', // TODO
           },
         };
       } else if (message.type === 'text') {

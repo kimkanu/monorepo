@@ -1,5 +1,6 @@
 import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -28,6 +29,7 @@ const ClassroomSettingsLeave: React.FC = () => {
 
   const isInstructor = !!classroom && classroom.instructor!.stringId === myId;
   const isStudent = !!classroom && classroom.instructor!.stringId !== myId;
+  const { t } = useTranslation('classroom');
 
   React.useEffect(() => {
     if (classroomName === null) {
@@ -67,7 +69,7 @@ const ClassroomSettingsLeave: React.FC = () => {
         addToast({
           type: 'info',
           sentAt: new Date(),
-          message: '수업이 삭제되었습니다.',
+          message: t('removed'),
         });
       } else {
         addToast({
@@ -84,7 +86,7 @@ const ClassroomSettingsLeave: React.FC = () => {
         addToast({
           type: 'info',
           sentAt: new Date(),
-          message: '수업에서 나갔습니다.',
+          message: t('left'),
         });
       } else {
         addToast({
@@ -111,22 +113,22 @@ const ClassroomSettingsLeave: React.FC = () => {
       {!!classroom && (
         <>
           <Title size="sect" style={{ lineHeight: '120%', wordBreak: 'keep-all' }}>
-            {isInstructor ? '정말 수업을 삭제하시겠습니까?' : '정말 수업에서 나가시겠습니까?'}
+            {isInstructor ? t('confirmRemove') : t('confirmLeave')}
           </Title>
           <p className="py-6 text-emph" style={{ lineHeight: '160%', wordBreak: 'keep-all' }}>
             {isInstructor
               ? (
                 <span>
-                  수업의 학생 목록, 수업 기록, 채팅 등
+                  {t('confirmRemoveDesc1')}
                   {' '}
-                  <strong>모든 정보가 삭제됩니다.</strong>
+                  <strong>{t('confirmRemoveDesc2')}</strong>
                   {' '}
-                  계속하시겠습니까?
+                  {t('confirmRemoveDesc3')}
                 </span>
               )
-              : '수업 아이디와 비밀번호가 있다면 언제든지 다시 들어올 수 있습니다.'}
+              : t('confirmLeaveDesc')}
           </p>
-          <Button width="full" type="destructive" text={isInstructor ? '수업 삭제하기' : '수업 나가기'} onClick={onLeave} isLoading={isLoading} />
+          <Button width="full" type="destructive" text={isInstructor ? t('remove') : t('leave')} onClick={onLeave} isLoading={isLoading} />
         </>
       )}
     </Dialog>

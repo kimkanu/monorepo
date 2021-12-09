@@ -1,5 +1,6 @@
 import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 
@@ -20,6 +21,7 @@ const ClassroomInstructorButtons: React.FC = () => {
   const myId = useRecoilValue(meState.id);
   const addToast = useSetRecoilState(toastState.new);
   const [isLoading, setLoading] = React.useState(false);
+  const { t } = useTranslation('classroom');
 
   return mainClassroom?.instructor?.stringId === myId && mainClassroom?.video ? (
     <div className="w-fit px-2 flex gap-6">
@@ -29,7 +31,7 @@ const ClassroomInstructorButtons: React.FC = () => {
           width="fit-content"
           height={36}
           isLoading={isLoading}
-          text={mainClassroom.isLive ? '수업 끝' : '수업 시작'}
+          text={mainClassroom.isLive ? t('end') : t('start')}
           onClick={async () => {
             if (!mainClassroom) return;
             setLoading(true);
@@ -54,7 +56,7 @@ const ClassroomInstructorButtons: React.FC = () => {
           type="primary"
           width="fit-content"
           height={36}
-          text="영상 변경"
+          text={t('changeVideo')}
           onClick={async () => {
             appHistory.push(`/classrooms/${mainClassroom.hash}/share`, history);
           }}
@@ -65,7 +67,7 @@ const ClassroomInstructorButtons: React.FC = () => {
           type="destructive"
           width="fit-content"
           height={36}
-          text="공유 중지"
+          text={t('stopShare')}
           onClick={() => {
             if (!mainClassroom) return;
             setMainClassroom((c) => ({

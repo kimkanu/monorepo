@@ -5,6 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
+import { useTranslation } from 'react-i18next';
 
 import useMainClassroom from '../../hooks/useMainClassroom';
 import useSocket from '../../hooks/useSocket';
@@ -53,6 +54,8 @@ const YTSynchronizer: React.FC = () => {
   const { socket, connected } = useSocket<
   SocketYouTube.Events.Response & SocketClassroom.Events.Response, SocketYouTube.Events.Request
   >('/');
+
+  const { t } = useTranslation('classroom');
 
   const onReady = (target: YouTubePlayer) => {
     setPlayer(target);
@@ -324,7 +327,7 @@ const YTSynchronizer: React.FC = () => {
               width="fit-content"
               style={{ width: 152 }}
               type="primary"
-              text="수업 시작하기"
+              text={t('start')}
               isLoading={isLoadingStart}
               onClick={async () => {
                 if (!classroom) return;
@@ -350,7 +353,7 @@ const YTSynchronizer: React.FC = () => {
               <Button
                 width="fit-content"
                 type="primary"
-                text="유튜브 영상 공유하기"
+                text={t('shareVideo')}
                 onClick={async () => {
                   appHistory.push(`/classrooms/${classroom.hash}/share`, history);
                 }}
@@ -359,7 +362,7 @@ const YTSynchronizer: React.FC = () => {
                 width="fit-content"
                 style={{ width: 136 }}
                 type="destructive"
-                text="수업 끝내기"
+                text={t('end')}
                 isLoading={isLoadingStart}
                 onClick={async () => {
                   if (!classroom) return;

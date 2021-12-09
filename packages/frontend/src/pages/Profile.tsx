@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
@@ -14,6 +15,8 @@ const Profile: React.FC = () => {
   const [meInfo, setMeInfo] = useRecoilState(meState.info);
   const addToast = useSetRecoilState(toastState.new);
   const history = useHistory();
+
+  const { t } = useTranslation('profile');
 
   const [profileImage, setProfileImage] = React.useState('');
   const [isProfileImageChanging, setProfileImageChanging] = React.useState(false);
@@ -45,7 +48,7 @@ const Profile: React.FC = () => {
                 addToast({
                   sentAt: new Date(),
                   type: 'info',
-                  message: '프로필 사진 변경이 완료되었습니다!',
+                  message: t('profileChangeComplete'),
                 });
               }
             } else {

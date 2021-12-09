@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { YouTubePlayer } from 'youtube-player/dist/types';
 
@@ -23,6 +24,7 @@ const YTPlayer: React.FC<Styled<Props>> = ({
   const ref = React.useRef<HTMLDivElement>(null);
   const size = useSize(ref);
   let interval: NodeJS.Timeout | null = null;
+  const { t } = useTranslation('classroom');
 
   return (
     <div

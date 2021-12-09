@@ -4,6 +4,8 @@ import {
 import { Provider, providers, SSOAccountJSON } from '@team-10/lib';
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import GitHubLogo from '../../assets/github-logo.svg';
 import NaverLogo from '../../assets/naver-logo.svg';
 import { mergeClassNames } from '../../utils/style';
@@ -53,20 +55,23 @@ interface Props {
   onAdd: () => void;
 }
 
-const SSOAccountList: React.FC<Props> = ({ ssoAccounts, onRemove, onAdd }) => (
-  <div className="flex flex-col gap-4">
-    {ssoAccounts.map(
-      (ssoAccount) => (
-        <SSOAccountItem
-          ssoAccount={ssoAccount}
-          removable={ssoAccounts.length > 1}
-          onRemove={() => onRemove(ssoAccount)}
-          key={`${ssoAccount.provider}:${ssoAccount.providerId}`}
-        />
-      ),
-    )}
-    {ssoAccounts.length < providers.length && <Button width="full" type="primary" text="다른 소셜 계정 연결" icon={<Add20Regular />} onClick={onAdd} />}
-  </div>
-);
+const SSOAccountList: React.FC<Props> = ({ ssoAccounts, onRemove, onAdd }) => {
+  const { t } = useTranslation('profile');
 
+  return (
+    <div className="flex flex-col gap-4">
+      {ssoAccounts.map(
+        (ssoAccount) => (
+          <SSOAccountItem
+            ssoAccount={ssoAccount}
+            removable={ssoAccounts.length > 1}
+            onRemove={() => onRemove(ssoAccount)}
+            key={`${ssoAccount.provider}:${ssoAccount.providerId}`}
+          />
+        ),
+      )}
+      {ssoAccounts.length < providers.length && <Button width="full" type="primary" text={t('other')} icon={<Add20Regular />} onClick={onAdd} />}
+    </div>
+  );
+};
 export default SSOAccountList;

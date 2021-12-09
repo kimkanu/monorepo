@@ -1,6 +1,7 @@
 import { ContactCard20Filled, SpinnerIos20Regular } from '@fluentui/react-icons';
 import CancelablePromise from 'cancelable-promise';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 
@@ -17,6 +18,7 @@ import appHistory from '../utils/history';
 const Welcome: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
+  const { t } = useTranslation('welcome');
 
   const me = useRecoilValue(meState.atom);
   const [meInfo, setMeInfo] = useRecoilState(meState.info);
@@ -50,16 +52,16 @@ const Welcome: React.FC = () => {
     <ContentPadding>
       <NarrowPageWrapper>
         <Title size="title">
-          반갑습니다
+          {t('welcome')}
           {' '}
           <i className="twa twa-grinning" />
         </Title>
         <p className="text-emph text-center my-12">
-          서비스 이용에 필요한 정보를 채워주세요!
+          {t('fillInformation')}
         </p>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <span className="text-base text-left font-bold text-gray-800">이름</span>
+            <span className="text-base text-left font-bold text-gray-800">{t('name')}</span>
             <TextInput
               value={displayName}
               nextRef={idRef}
@@ -86,7 +88,7 @@ const Welcome: React.FC = () => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <span className="text-base text-left font-bold text-gray-800">아이디</span>
+            <span className="text-base text-left font-bold text-gray-800">{t('id')}</span>
             <TextInput
               ref_={idRef}
               nextRef={buttonRef}
@@ -142,7 +144,7 @@ const Welcome: React.FC = () => {
               ref_={buttonRef}
               width="full"
               type="primary"
-              text={!isWaitingResponse ? '가입 완료하기' : undefined}
+              text={!isWaitingResponse ? t('join') : undefined}
               icon={continueButtonIcon}
               disabled={!displayName || !isStringIdValid}
               className={isWaitingResponse ? 'pointer-events-none' : undefined}
@@ -172,7 +174,7 @@ const Welcome: React.FC = () => {
                   addToast({
                     sentAt: new Date(),
                     type: 'error',
-                    message: '알 수 없는 오류가 발생했습니다.',
+                    message: t('unknownErrorOccurred'),
                   });
                 }
               }}

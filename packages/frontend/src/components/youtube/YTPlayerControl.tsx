@@ -1,12 +1,8 @@
 import {
-  Circle16Filled,
   SpeakerMute24Filled, Speaker224Filled,
 } from '@fluentui/react-icons';
 
 import React from 'react';
-import { YouTubePlayer } from 'youtube-player/dist/types';
-
-import YTPlayer from './YTPlayer';
 
 const timeToHMS = (time:number) => {
   const h = Math.floor(time / 3600);

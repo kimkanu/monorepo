@@ -407,6 +407,7 @@ export default class Classroom {
         .leftJoinAndSelect('chat.author', 'author')
         .where('classroom.id = :classroomId', { classroomId: this.entity.id })
         .orderBy('chat.id', 'ASC')
+        .limit(50)
         .getMany();
 
     const chats = await Promise.all(
