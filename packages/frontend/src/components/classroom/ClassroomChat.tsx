@@ -142,6 +142,33 @@ const ClassroomChat: React.FC<Props> = ({
     rootMargin: '0px 0px 400px 0px',
   });
 
+  const onTranslate = async (chatContent: ChatContent) => {
+    const response = await fetchAPI(
+      'GET /translate',
+      { chatId: chatContent.id } as any,
+    );
+    if (response.success) {
+      setTranslatedChats((c) => ({
+        ...c,
+        [chatContent.id]: response.payload,
+      }));
+    } else if (response.error.code === 'UNNECESSARY_TRANSLATION') {
+      addToast({
+        type: 'warn',
+        sentAt: new Date(),
+        message: '설정해 둔 언어로 쓰여 있습니다.',
+      });
+      throw new Error();
+    } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
+      addToast({
+        type: 'warn',
+        sentAt: new Date(),
+        message: '지원되지 않는 언어입니다.',
+      });
+      throw new Error();
+    }
+  };
+
   const { socket, connected } = useSocket<
   SocketChat.Events.Response & SocketClassroom.Events.Response,
   SocketChat.Events.Request & SocketClassroom.Events.Response
@@ -226,26 +253,7 @@ const ClassroomChat: React.FC<Props> = ({
                   dark={dark}
                   chats={chatChunks}
                   translations={translatedChats}
-                  onTranslate={async (chatContent) => {
-                    const response = await fetchAPI(
-                      'GET /translate',
-                      { chatId: chatContent.id } as any,
-                    );
-                    if (response.success) {
-                      console.log(response.payload);
-                      setTranslatedChats((c) => ({
-                        ...c,
-                        [chatContent.id]: response.payload,
-                      }));
-                    } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
-                      addToast({
-                        type: 'warn',
-                        sentAt: new Date(),
-                        message: '지원되지 않는 언어입니다.',
-                      });
-                      throw new Error();
-                    }
-                  }}
+                  onTranslate={onTranslate}
                 />
               ) : (
                 <OthersChatBox
@@ -254,25 +262,7 @@ const ClassroomChat: React.FC<Props> = ({
                   sender={chatChunks[0].sender!}
                   chats={chatChunks}
                   translations={translatedChats}
-                  onTranslate={async (chatContent) => {
-                    const response = await fetchAPI(
-                      'GET /translate',
-                      { chatId: chatContent.id } as any,
-                    );
-                    if (response.success) {
-                      setTranslatedChats((c) => ({
-                        ...c,
-                        [chatContent.id]: response.payload,
-                      }));
-                    } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
-                      addToast({
-                        type: 'warn',
-                        sentAt: new Date(),
-                        message: '지원되지 않는 언어입니다.',
-                      });
-                      throw new Error();
-                    }
-                  }}
+                  onTranslate={onTranslate}
                 />
               )
         ))}

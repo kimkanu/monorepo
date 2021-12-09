@@ -121,6 +121,17 @@ export default function generateRoute(server: Server): Route {
       })();
 
       const targetLanguage = 'ko'; // TODO
+
+      if (language === targetLanguage) {
+        return {
+          success: false,
+          error: {
+            code: 'UNNECESSARY_TRANSLATION',
+            statusCode: 400,
+            extra: {} as Empty,
+          },
+        };
+      }
       if (!supportedTranslations.includes(`${language} -> ${targetLanguage}`)) {
         return {
           success: false,

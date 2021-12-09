@@ -26,6 +26,10 @@ export type TranslateGetError = {
   statusCode: 400;
   extra: Empty;
 } | {
+  code: 'UNNECESSARY_TRANSLATION';
+  statusCode: 400;
+  extra: Empty;
+} | {
   code: 'UNSUPPORTED_TRANSLATION';
   statusCode: 400;
   extra: Empty;
