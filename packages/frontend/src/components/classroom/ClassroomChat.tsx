@@ -21,6 +21,11 @@ const chatsAtom = atom<ChatContent[]>({
   default: [],
 });
 
+const translatedChatsAtom = atom<{ [chatId: string]: string }>({
+  key: 'translatedChatsAtom',
+  default: {},
+});
+
 const useChats = (
   wrapperRef: React.RefObject<HTMLDivElement>,
   setScrollBottom: (scrollBottom: number) => void,
@@ -112,6 +117,7 @@ interface Props {
 const ClassroomChat: React.FC<Props> = ({
   isInstructor, dark, hash,
 }) => {
+  const [translatedChats, setTranslatedChats] = useRecoilState(translatedChatsAtom);
   const myId = useRecoilValue(meState.id);
   const screenType = useScreenType();
 
@@ -215,14 +221,44 @@ const ClassroomChat: React.FC<Props> = ({
                   key={`${myId}-${chatChunks[0].sentAt}`}
                   dark={dark}
                   chats={chatChunks}
+                  translations={translatedChats}
+                  onTranslate={async (chatContent) => {
+                    const response = await fetchAPI(
+                      'GET /translate',
+                      { chatId: chatContent.id } as any,
+                    );
+                    if (response.success) {
+                      console.log(response.payload);
+                      setTranslatedChats((c) => ({
+                        ...c,
+                        [chatContent.id]: response.payload,
+                      }));
+                    } else {
+                      // TODO: Toast
+                    }
+                  }}
                 />
-              )
-              : (
+              ) : (
                 <OthersChatBox
                   key={`${chatChunks[0].sender!.stringId}-${chatChunks[0].sentAt}`}
                   dark={dark}
                   sender={chatChunks[0].sender!}
                   chats={chatChunks}
+                  translations={translatedChats}
+                  onTranslate={async (chatContent) => {
+                    const response = await fetchAPI(
+                      'GET /translate',
+                      { chatId: chatContent.id } as any,
+                    );
+                    if (response.success) {
+                      setTranslatedChats((c) => ({
+                        ...c,
+                        [chatContent.id]: response.payload,
+                      }));
+                    } else {
+                      // TODO: Toast
+                    }
+                  }}
                 />
               )
         ))}

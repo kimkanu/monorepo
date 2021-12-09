@@ -1,74 +1,154 @@
+import { Empty } from '@team-10/lib';
+import got from 'got/dist/source';
+import { getConnection } from 'typeorm';
+
+import ChatEntity, { TextChatEntity } from '../entity/chat';
+import { isAuthenticatedOrFail } from '../passport';
 import Server from '../server';
 
 import Route from './route';
 
-/**
- * 예시 route입니다.
- * @param server Server instance
- * @returns Route
- */
-
-/* 파파고 api 구현 부분 수정 */
-const request = require('request');
-
-const apiurl = 'https://openapi.naver.com/v1/papago/n2mt';
-const clientid = 'YOUR_CLIENT_ID';
-const clientsecret = 'YOUR_CLIENT_SECRET';
-const query = '번역할 문장을 입력하세요.';
-
-const option = {
-  url: apiurl,
-  form: { source: 'ko', target: 'en', text: query },
-  headers: { 'X-Naver-Client-Id': clientid, 'X-Naver-Client-Secret': clientsecret },
-};
-
-function translation(error, response, body) {
-  if (!error && response.statusCode === 200) {
-    console.log(JSON.parse(body));
-  } else {
-    console.log(`error =  ${response.statusCode}`);
+interface NMTResponse {
+  message: {
+    result: {
+      translatedText: string;
+    }
   }
 }
 
-request.post(option, translation(error, Response, body));
+const supportedTranslations = [
+  'ko -> en',
+  'ja -> en',
+  'fr -> en',
+  'zh-cn -> en',
+  'zh-tw -> en',
+  'en -> ko',
+  'ja -> ko',
+  'zh-cn -> ko',
+  'zh-tw -> ko',
+  'vi -> ko',
+  'id -> ko',
+  'th -> ko',
+  'de -> ko',
+  'ru -> ko',
+  'es -> ko',
+  'it -> ko',
+  'fr -> ko',
+];
 
-/*
-function login(req, res) {
-  const options = {
-    url: apiurl,
-    form: { source: 'ko', target: 'en', text: query },
-    headers: { 'X-Naver-Client-Id': clientid, 'X-Naver-Client-Secret': clientsecret },
-  };
-  request.post(options, post);
-}
-
-function post(error, response, body) {
-  if (!error && response.statusCode === 200) {
-    res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
-    res.end(body);
-  } else {
-    res.status(response.statusCode).end();
-    console.log('error = ' + response.statusCode);
-  }
-};
-
-app.listen(3000, console.log('http://127.0.0.1:3000/translate app listening on port 3000!'));
-*/
 export default function generateRoute(server: Server): Route {
   const route = new Route(server);
 
   route.accept(
     'GET /translate',
-    async (params, body, user, req, res, next) => {
-      /* chatid가 존재하는지 확인하고 chatid의 채팅을 파파고 api로 */
-      console.log('/translate로 GET 요청이 들어옴');
-      console.log(params);
-      const text = { body };
+    isAuthenticatedOrFail,
+    async (params, body, user) => {
+      const { chatId } = params;
+      const userId = user.stringId;
+
+      const chatEntity = await getConnection()
+        .getRepository(ChatEntity).findOne({
+          where: {
+            uuid: chatId,
+          },
+          join: {
+            alias: 'chat',
+            innerJoinAndSelect: {
+              classroom: 'chat.classroom',
+            },
+          },
+        });
+      if (!chatEntity) {
+        return {
+          success: false,
+          error: {
+            code: 'NONEXISTENT_CHAT',
+            statusCode: 404,
+            extra: {} as Empty,
+          },
+        };
+      }
+      if (!(chatEntity instanceof TextChatEntity)) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_CHAT_TYPE',
+            statusCode: 400,
+            extra: {} as Empty,
+          },
+        };
+      }
+
+      const classroom = await server.managers.classroom.get(chatEntity.classroom.hash);
+      if (!classroom) {
+        return {
+          success: false,
+          error: {
+            code: 'NONEXISTENT_CLASSROOM',
+            statusCode: 400,
+            extra: {} as Empty,
+          },
+        };
+      }
+
+      if (!classroom.hasMember(userId)) {
+        return {
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            statusCode: 403,
+            extra: {},
+          },
+        };
+      }
+
+      const query = chatEntity.text;
+      const language = await (async () => {
+        const response = await got(
+          'https://openapi.naver.com/v1/papago/detectLangs',
+          {
+            method: 'post',
+            form: {
+              query,
+            },
+            headers: {
+              'X-Naver-Client-Id': process.env.AUTH_NAVER_CLIENT_ID,
+              'X-Naver-Client-Secret': process.env.AUTH_NAVER_CLIENT_SECRET,
+            },
+          },
+        );
+        return JSON.parse(response.body).langCode;
+      })();
+
+      const targetLanguage = 'ko'; // TODO
+      if (!supportedTranslations.includes(`${language} -> ${targetLanguage}`)) {
+        return {
+          success: false,
+          error: {
+            code: 'UNSUPPORTED_TRANSLATION',
+            statusCode: 400,
+            extra: {} as Empty,
+          },
+        };
+      }
+
+      const response = await got(
+        'https://openapi.naver.com/v1/papago/n2mt',
+        {
+          method: 'post',
+          form: {
+            source: language, target: targetLanguage, text: query,
+          },
+          headers: {
+            'X-Naver-Client-Id': process.env.AUTH_NAVER_CLIENT_ID,
+            'X-Naver-Client-Secret': process.env.AUTH_NAVER_CLIENT_SECRET,
+          },
+        },
+      );
+
       return {
         success: true,
-        payload: {
-          message: '1234',
-        },
+        payload: (JSON.parse(response.body) as NMTResponse).message.result.translatedText,
       };
     },
   );
