@@ -10,4 +10,5 @@ export default {
   classroomId: 'Classroom ID',
   password: 'Password',
   className: 'Class Name',
+  logo: 'Logo',
 };

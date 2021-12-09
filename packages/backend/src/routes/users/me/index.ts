@@ -5,6 +5,7 @@ import Server from '../../../server';
 import Classroom from '../../../types/classroom';
 import Route from '../../route';
 
+import language from './language';
 import ssoAccounts from './ssoAccounts';
 
 export default function generateRoute(server: Server): Route {
@@ -180,6 +181,7 @@ export default function generateRoute(server: Server): Route {
   //   },
   // );
 
+  route.use(language);
   route.use(ssoAccounts);
 
   return route;

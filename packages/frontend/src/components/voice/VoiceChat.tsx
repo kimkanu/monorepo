@@ -10,6 +10,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
+import i18n from '../../i18n';
 import classroomsState from '../../recoil/classrooms';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
@@ -57,9 +58,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
   // MediaRecorder의 onDataAvailable에 들어갈 audio segment의 대략적 길이 (ms)
   const TIME_SLICE = 400;
-
-  // Permission grant request를 얼마 주기로 날릴 건지 (한 번만 날리면 무시될 수도 있기 때문)
-  const REQUESTING_PERMISSION_INTERVAL = 500;
 
   // WRONG_SEQUENCE_TIMEOUT
   const WRONG_SEQUENCE_TIMEOUT = 2 * TIME_SLICE;
@@ -112,11 +110,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
   const timeoutsWrongSequenceIndex = React.useRef(
     new Map<number, ReturnType<typeof setTimeout>>(),
   );
-
-  // Permission request가 무시됐을 때를 대비해 여러 번 보내는 interval
-  const [
-    requestingPermissionInterval, setRequestingPermissionInterval,
-  ] = React.useState<ReturnType<typeof setInterval> | null>(null);
 
   const bufferLength = analyser?.frequencyBinCount ?? 0;
   const dataArray = React.useRef(new Uint8Array(bufferLength));
@@ -191,21 +184,21 @@ const VoiceChat: React.FC<Styled<Props>> = ({
             addToast({
               type: 'error',
               sentAt: new Date(),
-              message: '먼저 로그인 해주세요.',
+              message: t('loginFirst'),
             });
             redirectTo('/login');
           } else if (response.reason === SocketVoice.StreamSendDeniedReason.NOT_MEMBER) {
             addToast({
               type: 'error',
               sentAt: new Date(),
-              message: '먼저 수업에 참가해야 합니다.',
+              message: t('joinFirst'),
             });
             redirectTo('/');
           } else if (response.reason === SocketVoice.StreamSendDeniedReason.NOT_SPEAKER) {
             addToast({
               type: 'error',
               sentAt: new Date(),
-              message: '현재 누군가 말하고 있습니다.',
+              message: t('someoneSpeaking'),
             });
             isSpeaking.current = 'none';
           }
@@ -305,7 +298,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     if (recorderStatus === 'failed') {
       addToast({
         type: 'error',
-        message: '마이크 사용 권한을 얻는 데에 실패했습니다! 마이크 사용 권한을 허용해 주세요.',
+        message: t('recorderPermissionDenied'),
         sentAt: new Date(),
       });
     }
@@ -354,8 +347,11 @@ const VoiceChat: React.FC<Styled<Props>> = ({
           addToast({
             sentAt: new Date(),
             type: 'error',
-            message: `음성 채팅 권한을 얻는 데에 실패했습니다. ${
-              SocketVoice.permissionDeniedReasonAsMessage(response.reason)
+            message: `${t('permissionDenied')} ${
+              SocketVoice.permissionDeniedReasonAsMessage(
+                response.reason,
+                i18n.language === 'ko' ? 'ko' : i18n.language === 'en' ? 'en' : undefined,
+              )
             }`,
           });
         }

@@ -3,6 +3,7 @@ import {
   ChatContent, ResponseError, SocketChat, SocketClassroom,
 } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { useIntersectionObserver } from 'react-intersection-observer-hook';
 import {
@@ -21,9 +22,17 @@ import FeedChatBox from '../chat/FeedChatBox';
 import MyChatBox from '../chat/MyChatBox';
 import OthersChatBox from '../chat/OthersChatBox';
 
-const chatsAtom = atom<ChatContent[]>({
+const chatsAtom = atom<{
+  chats: ChatContent[];
+  lastChatId: string | null | undefined;
+  lastHash: string;
+}>({
   key: 'chatsAtom',
-  default: [],
+  default: {
+    chats: [],
+    lastChatId: undefined,
+    lastHash: '',
+  },
 });
 
 const translatedChatsAtom = atom<{ [chatId: string]: string }>({
@@ -35,10 +44,9 @@ const useChats = (
   wrapperRef: React.RefObject<HTMLDivElement>,
   setScrollBottom: (scrollBottom: number) => void,
 ) => {
-  const [chats, setChats] = useRecoilState(chatsAtom);
+  const [{ chats, lastChatId, lastHash }, setChatsState] = useRecoilState(chatsAtom);
   const [isLoading, setLoading] = React.useState(false);
   const [hash, setHash] = React.useState<string>('');
-  const [lastChatId, setLastChatId] = React.useState<string | null | undefined>(undefined);
   const [error, setError] = React.useState<ResponseError | null>(null);
 
   const loadMore = React.useCallback((newHash: string) => {
@@ -61,8 +69,11 @@ const useChats = (
             : 0,
         );
         setError(null);
-        setLastChatId(response.payload[0]?.id ?? null);
-        setChats((i) => [...response.payload, ...i]);
+        setChatsState((s) => ({
+          ...s,
+          chats: [...response.payload, ...s.chats],
+          lastChatId: response.payload[0]?.id ?? null,
+        }));
       } else {
         setError(response.error);
       }
@@ -74,15 +85,16 @@ const useChats = (
   const resetHash = (newHash: string) => {
     console.log('resetHash', newHash);
     if (newHash === hash) return;
-    setLastChatId(undefined);
+    if (newHash === lastHash) return;
+    if (!newHash) return;
     setHash(newHash);
-    setChats([]);
+    setChatsState(({ chats: [], lastChatId: undefined, lastHash: newHash }));
     loadMore(newHash);
   };
 
   const addChat = (chat: ChatContent) => {
     if (chats.some((c) => c.id === chat.id)) return;
-    setChats((i) => [...i, chat]);
+    setChatsState((s) => ({ ...s, chats: [...s.chats, chat] }));
   };
 
   return {
@@ -127,6 +139,7 @@ const ClassroomChat: React.FC<Props> = ({
   const myId = useRecoilValue(meState.id);
   const addToast = useSetRecoilState(toastState.new);
   const screenType = useScreenType();
+  const { t } = useTranslation('classroom');
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 
@@ -159,14 +172,14 @@ const ClassroomChat: React.FC<Props> = ({
       addToast({
         type: 'warn',
         sentAt: new Date(),
-        message: '설정해 둔 언어로 쓰여 있습니다.',
+        message: t('unnecessaryTranslation'),
       });
       throw new Error();
     } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
       addToast({
         type: 'warn',
         sentAt: new Date(),
-        message: '지원되지 않는 언어입니다.',
+        message: t('unsupportedTranslation'),
       });
       throw new Error();
     }
@@ -179,6 +192,7 @@ const ClassroomChat: React.FC<Props> = ({
 
   React.useEffect(() => {
     resetHash(hash ?? '');
+    console.log(`resetHash(${hash ?? ''});`);
   }, [hash]);
 
   React.useEffect(() => {
@@ -244,7 +258,7 @@ const ClassroomChat: React.FC<Props> = ({
           chatChunks[0].type === 'feed'
             ? (
               <FeedChatBox
-                key={`__FEED__-${chatChunks[0].sentAt}`}
+                key={chatChunks[0].id}
                 dark={dark}
                 chats={chatChunks as ChatContent<'feed'>[]}
               />
@@ -252,7 +266,7 @@ const ClassroomChat: React.FC<Props> = ({
             : chatChunks[0].sender!.stringId === myId
               ? (
                 <MyChatBox
-                  key={`${myId}-${chatChunks[0].sentAt}`}
+                  key={chatChunks[0].id}
                   dark={dark}
                   chats={chatChunks}
                   translations={translatedChats}
@@ -260,7 +274,7 @@ const ClassroomChat: React.FC<Props> = ({
                 />
               ) : (
                 <OthersChatBox
-                  key={`${chatChunks[0].sender!.stringId}-${chatChunks[0].sentAt}`}
+                  key={chatChunks[0].id}
                   dark={dark}
                   sender={chatChunks[0].sender!}
                   chats={chatChunks}

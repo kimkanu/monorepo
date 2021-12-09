@@ -9,6 +9,9 @@ export default {
   theme: 'Theme',
   accountMg: 'Account Management',
   seeProfile: 'See My Profile',
-  logout: 'Logout',
+  logout: 'Log Out',
   message: 'Please enter the required information first to use the service!',
+  profileImage: '{{s}}\'s profile image',
+  profileImageOnly: 'Profile image',
+  profileChangeComplete: 'The profile image is successfully changed!',
 };

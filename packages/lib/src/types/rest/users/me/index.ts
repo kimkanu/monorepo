@@ -3,6 +3,13 @@ import { Empty, Response } from '../..';
 import { ClassroomJSON } from '../../../classroom';
 
 import {
+  UsersMeLanguageEndpoints,
+  UsersMeLanguagePathParams,
+  UsersMeLanguageRequestBodyType,
+  UsersMeLanguageResponseType,
+} from './language';
+
+import {
   UsersMeSSOAccountsEndpoints,
   UsersMeSSOAccountsPathParams,
   UsersMeSSOAccountsRequestBodyType,
@@ -10,21 +17,24 @@ import {
 } from './sso-accounts';
 
 export type UsersMeEndpoints =
+  | UsersMeLanguageEndpoints
   | UsersMeSSOAccountsEndpoints
   | 'GET /users/me'
   | 'PATCH /users/me'
   | 'DELETE /users/me';
-export type UsersMePathParams = UsersMeSSOAccountsPathParams & {
+export type UsersMePathParams = UsersMeSSOAccountsPathParams & UsersMeLanguagePathParams & {
   'GET /users/me': Empty;
   'PATCH /users/me': Empty;
   'DELETE /users/me': Empty;
 };
-export type UsersMeRequestBodyType = UsersMeSSOAccountsRequestBodyType & {
+export type UsersMeRequestBodyType = UsersMeSSOAccountsRequestBodyType &
+UsersMeLanguageRequestBodyType & {
   'GET /users/me': Empty;
   'PATCH /users/me': Partial<UserInfoJSON>;
   'DELETE /users/me': Empty;
 };
-export type UsersMeResponseType = UsersMeSSOAccountsResponseType & {
+export type UsersMeResponseType = UsersMeSSOAccountsResponseType &
+UsersMeLanguageResponseType & {
   'GET /users/me': UsersMeGetResponse;
   'PATCH /users/me': UsersMePatchResponse;
   'DELETE /users/me': UsersMeDeleteResponse;
@@ -53,4 +63,5 @@ export interface UserInfoMeJSON extends UserInfoJSON {
   classrooms: ClassroomJSON[];
 }
 
+export * from './language';
 export * from './sso-accounts';

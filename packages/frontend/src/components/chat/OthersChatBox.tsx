@@ -2,10 +2,11 @@ import {
   ChatType, ChatContent, TextChatContent, PhotoChatContent,
 } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useRecoilValue } from 'recoil';
 
-import langState from '../../recoil/language';
+import languageState from '../../recoil/language';
 import { stringifyDateTime } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -50,17 +51,18 @@ const OthersChatBox: React.FC<Props> = ({
   dark, sender, chats, translations, onTranslate,
 }) => {
   const [date, setDate] = React.useState('');
-  const lang = useRecoilValue(langState.atom);
+  const language = useRecoilValue(languageState.atom);
   React.useEffect(() => {
     setDate(stringifyDateTime(new Date(chats.slice(-1)[0].sentAt)));
-  }, [lang]);
+  }, [language]);
+  const { t } = useTranslation('profile');
   return (
     <div className="w-full flex justify-start gap-2">
       <div className="w-8 h-8 rounded-full overflow-hidden">
         <img
           className="w-full h-full shadow-button"
           style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
-          alt={`${sender.displayName}의 프로필 사진`}
+          alt={t('profileImage', { s: sender.displayName })}
           src={sender.profileImage}
         />
       </div>
@@ -84,9 +86,11 @@ const OthersChatBox: React.FC<Props> = ({
           {sender.displayName}
           {' ㆍ '}
           {date}
+
         </div>
       </div>
     </div>
   );
 };
+
 export default OthersChatBox;

@@ -11,4 +11,7 @@ export default {
   seeProfile: '내 프로필 보기',
   logout: '로그아웃',
   message: '서비스 이용에 필요한 정보를 먼저 입력해 주세요!',
+  profileImage: '{{s}}의 프로필 사진',
+  profileImageOnly: '프로필 사진',
+  profileChangeComplete: '프로필 사진 변경이 완료되었습니다!',
 };

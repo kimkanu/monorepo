@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useRecoilValue } from 'recoil';
 
 import LogoAlt from '../../assets/logo-alt.svg';
@@ -14,13 +15,14 @@ interface Props {
 
 const LogoButton: React.FC<Props> = ({ onClick }) => {
   const theme = useRecoilValue(themeState.atom);
+  const { t } = useTranslation('main');
   return (
     <button
       type="button"
       onClick={onClick}
       className={mergeClassNames(styles.button, styles[theme])}
     >
-      <img src={['violet', 'pink'].includes(theme) ? Logo : LogoAlt} alt="Blearn! 로고" />
+      <img src={['violet', 'pink'].includes(theme) ? Logo : LogoAlt} alt={`Blearn! ${t('logo')}`} />
     </button>
   );
 };

@@ -19,7 +19,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import useScreenType from '../../hooks/useScreenType';
 import i18n from '../../i18n';
 import classroomsState from '../../recoil/classrooms';
-import langState from '../../recoil/language';
+import languageState from '../../recoil/language';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
 import themeState from '../../recoil/theme';
@@ -53,7 +53,7 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
     <div className="flex flex-col items-center">
       <img
         src={src}
-        alt="프로필 사진"
+        alt={t('profileImageOnly')}
         style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
         className="w-28 h-28 rounded-full overflow-hidden shadow-button object-cover object-center my-8"
       />
@@ -118,21 +118,25 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
 };
 
 const LanguageSelectionDropdownContent: React.FC = () => {
-  const setLang = useSetRecoilState(langState.atom);
+  const [language, setLanguage] = useRecoilState(languageState.atom);
   return (
     <div className="flex items-center">
       <button
         type="button"
-        className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
+        className={mergeClassNames(
+          'flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2',
+          language === 'ko' ? 'cursor-default bg-gray-200' : '',
+        )}
         style={{
           transitionProperty: 'background-color, border-color, color, fill, stroke',
         }}
         onClick={() => {
+          if (i18n.language === 'ko') return;
           i18n.changeLanguage('ko');
-          fetchAPI('PATCH /lang', {}, {
+          setLanguage('ko');
+          fetchAPI('PATCH /users/me/language', {}, {
             language: 'ko',
           });
-          setLang('ko');
         }}
       >
         <i className="twa twa-kr text-big" />
@@ -142,16 +146,20 @@ const LanguageSelectionDropdownContent: React.FC = () => {
       <div className="mx-4 bg-gray-200" style={{ width: 1, height: 24 }} />
       <button
         type="button"
-        className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
+        className={mergeClassNames(
+          'flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2',
+          language === 'en' ? 'cursor-default bg-gray-200' : '',
+        )}
         style={{
           transitionProperty: 'background-color, border-color, color, fill, stroke',
         }}
         onClick={() => {
+          if (i18n.language === 'en') return;
           i18n.changeLanguage('en');
-          fetchAPI('PATCH /lang', {}, {
+          setLanguage('en');
+          fetchAPI('PATCH /users/me/language', {}, {
             language: 'en',
           });
-          setLang('en');
         }}
       >
         <i className="twa twa-us text-big absolute" style={{ transform: 'translate(6px, 6px)', zIndex: 1 }} />
@@ -173,7 +181,7 @@ const Header: React.FC<Props> = ({ isUIHidden }) => {
   const history = useHistory();
   const me = useRecoilValue(meState.atom);
   const mainClassroomHash = useRecoilValue(mainClassroomHashState.atom);
-  const [mainClassroom, setMainClassroom] = useRecoilState(classroomsState.byHash(mainClassroomHash));
+  const mainClassroom = useRecoilValue(classroomsState.byHash(mainClassroomHash));
 
   const classroomHash = location.pathname.match(/^\/classrooms\/(\w{3}-\w{3}-\w{3})/)?.[1];
   const inClassroom = !!classroomHash;
