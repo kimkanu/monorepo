@@ -5,12 +5,16 @@ import {
 import React from 'react';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { useIntersectionObserver } from 'react-intersection-observer-hook';
-import { useRecoilState, useRecoilValue, atom } from 'recoil';
+import {
+  useRecoilState, useRecoilValue, atom, useSetRecoilState,
+} from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
 import meState from '../../recoil/me';
+
 import { isSameDate } from '../../utils/date';
+import toastState from '../../recoil/toast';
 import fetchAPI from '../../utils/fetch';
 import { conditionalStyle } from '../../utils/style';
 import FeedChatBox from '../chat/FeedChatBox';
@@ -20,6 +24,11 @@ import OthersChatBox from '../chat/OthersChatBox';
 const chatsAtom = atom<ChatContent[]>({
   key: 'chatsAtom',
   default: [],
+});
+
+const translatedChatsAtom = atom<{ [chatId: string]: string }>({
+  key: 'translatedChatsAtom',
+  default: {},
 });
 
 const useChats = (
@@ -114,7 +123,9 @@ interface Props {
 const ClassroomChat: React.FC<Props> = ({
   isInstructor, dark, hash,
 }) => {
+  const [translatedChats, setTranslatedChats] = useRecoilState(translatedChatsAtom);
   const myId = useRecoilValue(meState.id);
+  const addToast = useSetRecoilState(toastState.new);
   const screenType = useScreenType();
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -133,6 +144,33 @@ const ClassroomChat: React.FC<Props> = ({
     disabled: !!error || !hash,
     rootMargin: '0px 0px 400px 0px',
   });
+
+  const onTranslate = async (chatContent: ChatContent) => {
+    const response = await fetchAPI(
+      'GET /translate',
+      { chatId: chatContent.id } as any,
+    );
+    if (response.success) {
+      setTranslatedChats((c) => ({
+        ...c,
+        [chatContent.id]: response.payload,
+      }));
+    } else if (response.error.code === 'UNNECESSARY_TRANSLATION') {
+      addToast({
+        type: 'warn',
+        sentAt: new Date(),
+        message: '설정해 둔 언어로 쓰여 있습니다.',
+      });
+      throw new Error();
+    } else if (response.error.code === 'UNSUPPORTED_TRANSLATION') {
+      addToast({
+        type: 'warn',
+        sentAt: new Date(),
+        message: '지원되지 않는 언어입니다.',
+      });
+      throw new Error();
+    }
+  };
 
   const { socket, connected } = useSocket<
   SocketChat.Events.Response & SocketClassroom.Events.Response,
@@ -217,14 +255,17 @@ const ClassroomChat: React.FC<Props> = ({
                   key={`${myId}-${chatChunks[0].sentAt}`}
                   dark={dark}
                   chats={chatChunks}
+                  translations={translatedChats}
+                  onTranslate={onTranslate}
                 />
-              )
-              : (
+              ) : (
                 <OthersChatBox
                   key={`${chatChunks[0].sender!.stringId}-${chatChunks[0].sentAt}`}
                   dark={dark}
                   sender={chatChunks[0].sender!}
                   chats={chatChunks}
+                  translations={translatedChats}
+                  onTranslate={onTranslate}
                 />
               )
         ))}

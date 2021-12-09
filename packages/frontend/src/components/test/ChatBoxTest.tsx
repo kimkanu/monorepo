@@ -40,6 +40,8 @@ const ChatBoxTest: React.FC = () => {
               sentAt: Date.now(),
             },
           ]}
+          translations={{}}
+          onTranslate={async () => {}}
         />
         <MyChatBox
           dark={false}
@@ -57,6 +59,8 @@ const ChatBoxTest: React.FC = () => {
               sentAt: Date.now(),
             },
           ]}
+          translations={{}}
+          onTranslate={async () => {}}
         />
       </div>
       <ChatInput
