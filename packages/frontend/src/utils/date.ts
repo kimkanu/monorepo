@@ -41,5 +41,5 @@ export function isYesterday(date: Date): boolean {
 
 export function stringifyHours(date: Date): string {
   const hours = date.getHours();
-  return `${hours < 12 ? '오전' : '오후'} ${(hours % 12).toString().padStart(2, '0') || 12}`;
+  return `${hours < 12 ? '오전' : '오후'} ${hours % 12 === 0 ? '12' : (hours % 12).toString().padStart(2, '0')}`;
 }

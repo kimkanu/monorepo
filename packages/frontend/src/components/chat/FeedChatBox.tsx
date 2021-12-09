@@ -20,7 +20,7 @@ const FeedChat: React.FC<FeedChatProps> = ({
     )}
   >
     {content.type === 'date' ? (
-      stringifyDateConsistent(content.date)
+      stringifyDateConsistent(new Date(content.date))
     ) : (
       content.isStart ? '수업이 시작되었습니다.' : '수업이 끝났습니다.'
     )}

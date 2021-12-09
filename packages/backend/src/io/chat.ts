@@ -1,11 +1,10 @@
-import { SocketChat } from '@team-10/lib';
+import { ChatContent, SocketChat } from '@team-10/lib';
 import { Server as IOServer } from 'socket.io';
+import { v4 as uuidV4 } from 'uuid';
 
+import ChatEntity, { TextChatEntity, PhotoChatEntity } from '../entity/chat';
 import Server from '../server';
 import { UserSocket } from '../types/socket';
-import uuid from 'uuid';
-import ChatEntity, { TextChatEntity, PhotoChatEntity } from '../entity/chat';
-import ChatHistoryEntity from '../entity/history';
 
 const ioChatHandler = (
   io: IOServer<SocketChat.Events.Request, SocketChat.Events.Response>,
@@ -44,50 +43,85 @@ const ioChatHandler = (
         return;
       }
 
-      // 요청 수락 
+      // 요청 수락
       socket.emit('chat/Send', {
         success: true,
       });
 
       // broadcast the received message
+      const uuid = uuidV4();
+      const userEntity = (await server.managers.user.getEntity(userId))!;
+
+      let chatEntity: ChatEntity;
+      let content: ChatContent;
 
       if (message.type === 'photo') {
-        const chatEntity = new PhotoChatEntity();
-        chatEntity.uuid = chatUUID;
-        chatEntity.author = message.sender;
-        chatEntity.photoUrl = message.photo;
+        const imageData = await server.managers.image.uploadArraybuffer(message.photo);
+        if (!imageData) {
+          socket.emit('chat/Send', {
+            success: false,
+            reason: SocketChat.SendDeniedReason.INTERNAL_SERVER_ERROR,
+          });
+          return;
+        }
 
-        socket.broadcast('chat/SendBroadcast', {
-          hash,
-          chatUUID,
-          message,
-        })
-        classroom.broadcast('chat/ReceiveBroadcast', {
-          hash,
-          chatUUID,
-          message,
+        const altText = await server.managers.image.getAltText(imageData.link);
+
+        chatEntity = new PhotoChatEntity();
+        (chatEntity as PhotoChatEntity).photo = imageData.link;
+        (chatEntity as PhotoChatEntity).alt = altText ? JSON.stringify(altText) : null!;
+
+        content = {
+          id: uuid,
+          type: 'photo',
+          sender: server.managers.user.getUserInfoJSONFromEntity(userEntity),
+          sentAt: Date.now(),
+          content: {
+            photo: imageData.link,
+            alt: altText?.ko ?? '', // TODO
+          },
+        };
+      } else if (message.type === 'text') {
+        chatEntity = new TextChatEntity();
+        (chatEntity as TextChatEntity).text = message.text;
+
+        content = {
+          id: uuid,
+          type: 'text',
+          sender: server.managers.user.getUserInfoJSONFromEntity(userEntity),
+          sentAt: Date.now(),
+          content: {
+            text: message.text,
+          },
+        };
+      } else {
+        socket.emit('chat/Send', {
+          success: false,
+          reason: SocketChat.SendDeniedReason.BAD_REQUEST,
         });
-
-        await chatEntity.save();
+        return;
       }
-      else {
-        const chatEntity = new TextChatEntity();
-        chatEntity.uuid = chatUUID;
-        chatEntity.author = message.sender;
-        chatEntity.text = message.text;
 
-        socket.broadcast('chat/SendBroadcast', {
+      chatEntity.uuid = uuid;
+      chatEntity.sentAt = new Date();
+      chatEntity.author = userEntity;
+      chatEntity.classroom = classroom.entity;
+
+      if (message.users && message.users.length > 0) {
+        classroom.emit('chat/ChatBroadcast', [userId, ...message.users], {
           hash,
-          chatUUID,
-          message,
-        })
-        classroom.broadcast('chat/ReceiveBroadcast', {
-          hash,
-          chatUUID,
-          message,
+          chatId: uuid,
+          message: content,
         });
+      } else {
+        classroom.broadcast('chat/ChatBroadcast', {
+          hash,
+          chatId: uuid,
+          message: content,
+        });
+      }
 
-        await chatEntity.save();
+      await chatEntity.save();
     });
   });
 };

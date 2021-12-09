@@ -11,7 +11,7 @@ import {
   ChildEntity,
 } from 'typeorm';
 
-import { ChatHistoryEntity } from './history';
+import Classroom from './classroom';
 import UserEntity from './user';
 
 @Entity()
@@ -26,15 +26,15 @@ export default class ChatEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, (user) => user.chats)
   author: UserEntity;
 
-  @OneToOne(() => ChatHistoryEntity, (history) => history.chat)
-  history: ChatHistoryEntity;
+  @Column()
+  sentAt: Date;
+
+  @ManyToOne(() => Classroom, (classroom) => classroom.chats, { onDelete: 'CASCADE' })
+  classroom: Classroom;
 }
 
 @ChildEntity()
 export class TextChatEntity extends ChatEntity {
-  @Column()
-  sentAt: Date;
-
   @Column()
   text: string;
 }
@@ -42,11 +42,8 @@ export class TextChatEntity extends ChatEntity {
 @ChildEntity()
 export class PhotoChatEntity extends ChatEntity {
   @Column()
-  sentAt: Date;
-
-  @Column()
   photo: string;
 
-  @Column()
+  @Column({ nullable: true })
   alt: string;
 }

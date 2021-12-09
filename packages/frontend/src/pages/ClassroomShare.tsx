@@ -169,7 +169,7 @@ const ClassroomShare: React.FC = () => {
           <YouTubeItem key={(item.video as any).playlistId ?? item.video.videoId} desc={item} />
         ))}
 
-        {(isLoading || items.length > 0) && (
+        {(isLoading || hasNextPage) && (
           <div ref={sentryRef} style={{ transform: 'scale(200%)' }} className="w-5 h-5 m-auto pt-6 py-10">
             <SpinnerIos20Regular className="stroke-current stroke-2 text-gray-300 block w-5 h-5 animate-spin" />
           </div>

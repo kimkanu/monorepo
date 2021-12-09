@@ -1,5 +1,6 @@
-import { ClassroomHash, DateNumber } from './common';
 import { ChatContent } from '../chat';
+
+import { ClassroomHash } from './common';
 
 export namespace SocketChat {
   export namespace Events {
@@ -8,9 +9,8 @@ export namespace SocketChat {
     }
 
     export interface Response {
-      'chat/Send': (params: SocketChat.Request.Send) => void;
-      'chat/SendBroadcast': (params: SocketChat.Broadcast.ChatSend) => void;
-      'chat/ReceiveBroadcast': (params: SocketChat.Broadcast.ChatReceive) => void;
+      'chat/Send': (params: SocketChat.Response.Send) => void;
+      'chat/ChatBroadcast': (params: SocketChat.Broadcast.Chat) => void;
     }
   }
 
@@ -23,14 +23,13 @@ export namespace SocketChat {
   }
 
   export namespace Broadcast {
-    export type ChatSend = SendBroadcast;
-    export type ChatReceive = ReceiveBroadcast;
+    export type Chat = ChatBroadcast;
   }
 
   /* Request to send a chat message */
   export interface SendRequest {
     hash: ClassroomHash;
-    message: ChatContent;
+    message: ChatRequest;
   }
   export type SendResponse =
     | SendGrantedResponse
@@ -45,6 +44,8 @@ export namespace SocketChat {
   export const SendDeniedReason = {
     UNAUTHORIZED: -1 as -1,
     NOT_MEMBER: -2 as -2,
+    BAD_REQUEST: -3 as -3,
+    INTERNAL_SERVER_ERROR: -4 as -4,
   };
   export function sendDeniedReasonAsMessage(
     reason: typeof SendDeniedReason[keyof typeof SendDeniedReason],
@@ -52,22 +53,25 @@ export namespace SocketChat {
     return {
       [SendDeniedReason.UNAUTHORIZED]: '현재 로그아웃 상태입니다.',
       [SendDeniedReason.NOT_MEMBER]: '이 수업을 가르치거나 듣는 사람이 아닙니다.',
+      [SendDeniedReason.BAD_REQUEST]: '잘못된 요청입니다.',
+      [SendDeniedReason.INTERNAL_SERVER_ERROR]: '내부 서버 에러가 발생했습니다.',
     }[reason];
   }
 
-  /* Send chat message */
-  export interface SendBroadcast {
-    hash: ClassroomHash;
-    chatId: string;
-    message: ChatContent;
-    users: string[];
-  }
+  type ChatRequest = {
+    type: 'text';
+    users?: string[];
+    text: string;
+  } | {
+    type: 'photo';
+    users?: string[];
+    photo: ArrayBuffer;
+  };
 
-  /* Received chat messages */
-  export interface ReceiveBroadcast {
+  /* Send chat message */
+  export interface ChatBroadcast {
     hash: ClassroomHash;
     chatId: string;
     message: ChatContent;
-    users: string[];
   }
 }

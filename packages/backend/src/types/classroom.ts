@@ -3,12 +3,14 @@ import Crypto from 'crypto';
 
 import { ClassroomJSON, ClassroomMemberJSON, YouTubeVideo } from '@team-10/lib';
 import { ChatContent } from '@team-10/lib/src/types/chat';
-import { getConnection } from 'typeorm';
-
-import { PhotoChatEntity, TextChatEntity } from '../entity/chat';
-import ClassroomEntity from '../entity/classroom';
 import {
-  ClassHistoryEntity, ChatHistoryEntity, VoiceHistoryEntity, AttendanceHistoryEntity,
+  Between, getConnection, LessThanOrEqual, MoreThan,
+} from 'typeorm';
+
+import ChatEntity, { PhotoChatEntity, TextChatEntity } from '../entity/chat';
+import ClassroomEntity from '../entity/classroom';
+import HistoryEntity, {
+  ClassHistoryEntity, VoiceHistoryEntity, AttendanceHistoryEntity,
 } from '../entity/history';
 import UserEntity from '../entity/user';
 import Server from '../server';
@@ -276,6 +278,7 @@ export default class Classroom {
     classHistoryEntity.classroom = this.entity;
     await classHistoryEntity.save();
 
+    this.isLive = true;
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
       patch: {
@@ -299,6 +302,8 @@ export default class Classroom {
     await classHistoryEntity.save();
 
     this.youtube.video = null;
+    this.isLive = false;
+
     // broadcast to all
     this.broadcast('classroom/PatchBroadcast', {
       hash: this.hash,
@@ -328,41 +333,89 @@ export default class Classroom {
     return true;
   }
 
-  async recordChatHistory(
-    senderId: string,
-    chatContent: ChatContent,
-    // Pass chat information here
-  ) {
-    const userEntity = this.members.find(({ stringId }) => stringId === senderId);
-    if (!userEntity) return false;
+  async getChats(chatId?: string): Promise<any[]> {
+    const chatRepository = getConnection().getRepository(ChatEntity);
+    const lastChat = chatId ? await chatRepository.findOne({
+      where: {
+        uuid: chatId,
+      },
+    }) : undefined;
 
-    // TODO: create chat entity instance (text or photo, or other type..?)
-    const chatHistoryEntity = new ChatHistoryEntity();
+    const chatEntities = lastChat
+      ? await chatRepository.createQueryBuilder('chat')
+        .innerJoinAndSelect('chat.classroom', 'classroom')
+        .innerJoinAndSelect('chat.author', 'author')
+        .where('(chat.id < :lastChatId) AND (classroom.id = :classroomId)', {
+          lastChatId: lastChat?.id ?? 0,
+          classroomId: this.entity.id,
+        })
+        .orderBy('chat.id', 'ASC')
+        .limit(50)
+        .getMany()
+      : await chatRepository.createQueryBuilder('chat')
+        .innerJoinAndSelect('chat.classroom', 'classroom')
+        .innerJoinAndSelect('chat.author', 'author')
+        .where('classroom.id = :classroomId', { classroomId: this.entity.id })
+        .orderBy('chat.id', 'ASC')
+        .getMany();
+    const beforeChat = chatEntities.length === 0
+      ? undefined
+      : await chatRepository.createQueryBuilder('chat')
+        .innerJoinAndSelect('chat.classroom', 'classroom')
+        .innerJoinAndSelect('chat.author', 'author')
+        .where('(chat.id < :firstChatId) AND (classroom.id = :classroomId)', {
+          firstChatId: chatEntities[0].id,
+          classroomId: this.entity.id,
+        })
+        .orderBy('chat.id', 'DESC')
+        .getOne();
+    const classHistoryRepository = getConnection().getRepository(ClassHistoryEntity);
+    const classHistories = await classHistoryRepository.find(
+      !lastChat && !beforeChat ? undefined : {
+        where: {
+          date: !lastChat ? MoreThan(beforeChat!.sentAt)
+            : beforeChat ? Between(beforeChat.sentAt, lastChat.sentAt)
+              : LessThanOrEqual(lastChat.sentAt),
+        },
+      },
+    );
+    const chats = await Promise.all(
+      chatEntities.map(async (entity) => (entity instanceof TextChatEntity ? {
+        id: entity.uuid,
+        type: 'text',
+        sentAt: entity.sentAt.getTime(),
+        sender: this.server.managers.user.getUserInfoJSONFromEntity(
+          (await this.server.managers.user.getEntity(entity.author.stringId))!,
+        ),
+        content: {
+          text: entity.text,
+        },
+      } as ChatContent<'text'> : entity instanceof PhotoChatEntity ? {
+        id: entity.uuid,
+        type: 'photo',
+        sentAt: entity.sentAt.getTime(),
+        sender: this.server.managers.user.getUserInfoJSONFromEntity(
+          (await this.server.managers.user.getEntity(entity.author.stringId))!,
+        ),
+        content: {
+          photo: entity.photo,
+          alt: entity.alt,
+        },
+      } as ChatContent<'photo'> : null)),
+    ).then((a) => a.filter((x) => x !== null)) as ChatContent[];
 
-    if (chatContent.type === 'text') {
-      const chatTextEntity = new TextChatEntity();
-      chatTextEntity.author = userEntity;
-      chatTextEntity.text = (chatContent as ChatContent<'text'>).content.text;
-      chatTextEntity.history = chatHistoryEntity;
+    const classHistoryChats = classHistories.map((history) => ({
+      id: `FeedChat__${history.date.getTime()}`,
+      type: 'feed',
+      sentAt: history.date.getTime(),
+      content: {
+        type: 'class',
+        isStart: history.start,
+      },
+    }));
 
-      chatHistoryEntity.chat = chatTextEntity;
-      chatHistoryEntity.classroom = this.entity;
-      await chatTextEntity.save();
-    } else if (chatContent.type === 'photo') {
-      const chatPhotoEntity = new PhotoChatEntity();
-      chatPhotoEntity.author = userEntity;
-      chatPhotoEntity.photo = (chatContent as ChatContent<'photo'>).content.photo;
-      chatPhotoEntity.alt = (chatContent as ChatContent<'photo'>).content.alt;
-      chatPhotoEntity.history = chatHistoryEntity;
-
-      chatHistoryEntity.chat = chatPhotoEntity;
-      chatHistoryEntity.classroom = this.entity;
-      await chatPhotoEntity.save();
-    }
-    // create ChatHistoryEntity instance
-    // TODO: set appropriate information and save
-    await chatHistoryEntity.save();
-    return true;
+    const allChats = [...chats, ...classHistoryChats];
+    return allChats.sort((c1, c2) => c1.sentAt - c2.sentAt);
   }
 
   /**
@@ -386,6 +439,20 @@ export default class Classroom {
   broadcastExcept<T>(eventName: string, userIds: string[], message: T) {
     const sockets = Array.from(this.server.managers.user.users.values())
       .filter(({ info }) => !userIds.includes(info.stringId))
+      .flatMap(({ sockets: userSockets }) => userSockets);
+    sockets.forEach((socket) => {
+      socket.emit(eventName, message);
+    });
+  }
+
+  /**
+   * 특정 유저를 제외하고 모든 소켓에 broadcast하는 method
+   * @param eventName
+   * @param message
+   */
+  emit<T>(eventName: string, userIds: string[], message: T) {
+    const sockets = Array.from(this.server.managers.user.users.values())
+      .filter(({ info }) => userIds.includes(info.stringId))
       .flatMap(({ sockets: userSockets }) => userSockets);
     sockets.forEach((socket) => {
       socket.emit(eventName, message);

@@ -31,7 +31,7 @@ const MyChatBox: React.FC<Props> = ({
   dark, chats,
 }) => (
   <div className="w-full flex justify-end gap-2">
-    <div className="flex flex-col gap-1.5 items-end" style={{ maxWidth: 'calc(100% - 40px)' }}>
+    <div className="flex flex-col gap-1.5 items-end w-full" style={{ maxWidth: 'calc(100% - 40px)' }}>
       {chats.map((chat) => (
         <MyChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
       ))}
@@ -41,7 +41,7 @@ const MyChatBox: React.FC<Props> = ({
         )}
         style={{ padding: '3px 4px' }}
       >
-        {stringifyDateTime(chats.slice(-1)[0].sentAt)}
+        {stringifyDateTime(new Date(chats.slice(-1)[0].sentAt))}
       </div>
     </div>
   </div>

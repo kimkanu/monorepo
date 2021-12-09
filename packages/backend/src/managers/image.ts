@@ -1,7 +1,11 @@
 /* eslint-disable class-methods-use-this */
+import { promises as fs } from 'fs';
+import path from 'path';
+
 import got from 'got';
 import { ImgurClient } from 'imgur';
 import { ImageData } from 'imgur/lib/common/types';
+import { v4 as uuidV4 } from 'uuid';
 
 import Server from '../server';
 
@@ -37,6 +41,25 @@ export default class ImageManager {
       await this.client.upload(file.path),
     );
     return response.success ? response.data : null;
+  }
+
+  async uploadArraybuffer(buffer: ArrayBuffer): Promise<ImageData | null> {
+    if (!this.client) {
+      console.error('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
+      return null;
+    }
+
+    const filepath = path.join(this.server.tempDir, uuidV4());
+    try {
+      await fs.writeFile(filepath, Buffer.from(buffer));
+
+      const response = (<T>(a: T | T[]) => (Array.isArray(a) ? a[0] : a))(
+        await this.client.upload(filepath),
+      );
+      return response.success ? response.data : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   async delete(deleteHash: string): Promise<boolean> {

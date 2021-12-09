@@ -24,6 +24,10 @@ const Login: React.FC = () => {
     }
   }, [me]);
 
+  React.useEffect(() => () => {
+    setLoading(false);
+  }, []);
+
   return (
     <ContentPadding>
       <div className="mx-auto mb-16" style={{ maxWidth: 360 }}>
@@ -36,6 +40,7 @@ const Login: React.FC = () => {
               onClick={() => {
                 setLoading(true);
                 window.location.pathname = `/api/auth/${provider}`;
+                setLoading(false);
               }}
             />
           ))}

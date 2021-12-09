@@ -9,6 +9,7 @@ import {
   JoinTable,
 } from 'typeorm';
 
+import ChatEntity from './chat';
 import History from './history';
 import User from './user';
 
@@ -33,6 +34,9 @@ export default class ClassroomEntity extends BaseEntity {
 
   @OneToMany(() => History, (history) => history.classroom)
   histories: History[];
+
+  @OneToMany(() => ChatEntity, (chat) => chat.classroom)
+  chats: ChatEntity[];
 
   @Column()
   passcode: string;

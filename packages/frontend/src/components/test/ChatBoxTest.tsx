@@ -25,19 +25,19 @@ const ChatBoxTest: React.FC = () => {
               content: { text: '상대 메세지' },
               id: '1',
               type: 'text',
-              sentAt: new Date(),
+              sentAt: Date.now(),
             },
             {
               content: { text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
               id: '1',
               type: 'text',
-              sentAt: new Date(),
+              sentAt: Date.now(),
             },
             {
               content: { photo: 'https://picsum.photos/640/480', alt: '채팅 사진' },
               id: '2',
               type: 'photo',
-              sentAt: new Date(),
+              sentAt: Date.now(),
             },
           ]}
         />
@@ -48,13 +48,13 @@ const ChatBoxTest: React.FC = () => {
               content: { text: '내 메세지' },
               id: '1',
               type: 'text',
-              sentAt: new Date(),
+              sentAt: Date.now(),
             },
             {
               content: { text: '긴 메세지는 이렇게 표시됩니다 긴 메세지는 이렇게 표시됩니다' },
               id: '1',
               type: 'text',
-              sentAt: new Date(),
+              sentAt: Date.now(),
             },
           ]}
         />
@@ -63,7 +63,7 @@ const ChatBoxTest: React.FC = () => {
         dark
         text={text}
         onInput={setText}
-        onPhotoButtonClick={() => console.log('사진 버튼이 눌렸습니다.')}
+        onPhoto={() => console.log('사진 버튼이 눌렸습니다.')}
         onSend={() => {
           console.log('전송 버튼이 눌렸습니다.');
           addToast({

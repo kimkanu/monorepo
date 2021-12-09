@@ -1,6 +1,7 @@
 import Server from '../server';
 import { UserSocket } from '../types/socket';
 
+import ioChatHandler from './chat';
 import ioClassroomHandler from './classroom';
 import ioVoiceHandler from './voice';
 import ioYouTubeHandler from './YouTube';
@@ -22,6 +23,8 @@ const ioHandler = (server: Server) => {
       }
     });
   });
+
+  ioChatHandler(io, server);
   ioVoiceHandler(io, server);
   ioYouTubeHandler(io, server);
   ioClassroomHandler(io, server);

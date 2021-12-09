@@ -1,25 +1,29 @@
 import { Empty } from '..';
-import { KeysOfUnion, Response } from '../..';
+import { ChatContent, KeysOfUnion, Response } from '../..';
 import { ClassroomJSON } from '../../classroom';
 
 export type ClassroomsEndpoints =
   | 'POST /classrooms'
   | 'PATCH /classrooms/:hash'
-  | 'DELETE /classrooms/:hash';
+  | 'DELETE /classrooms/:hash'
+  | 'GET /classrooms/:hash/chats';
 export type ClassroomsPathParams = {
   'POST /classrooms': Empty;
   'PATCH /classrooms/:hash': { hash: string };
   'DELETE /classrooms/:hash': { hash: string };
+  'GET /classrooms/:hash/chats': { hash: string };
 };
 export type ClassroomsRequestBodyType = {
   'POST /classrooms': ClassroomsPostRequest;
   'PATCH /classrooms/:hash': ClassroomsHashPatchRequest;
   'DELETE /classrooms/:hash': Empty;
+  'GET /classrooms/:hash/chats': Empty;
 };
 export type ClassroomsResponseType = {
   'POST /classrooms': ClassroomsPostResponse;
   'PATCH /classrooms/:hash': ClassroomsHashPatchResponse;
   'DELETE /classrooms/:hash': ClassroomsHashDeleteResponse;
+  'GET /classrooms/:hash/chats': ClassroomsHashChatsGetResponse;
 };
 
 /* POST /classrooms */
@@ -85,6 +89,17 @@ export type ClassroomsHashPatchError = {
 
 export type ClassroomsHashDeleteResponse = Response<Empty, ClassroomsHashDeleteError>;
 export type ClassroomsHashDeleteError = {
+  code: 'NONEXISTENT_CLASSROOM';
+  statusCode: 400;
+  extra: Empty;
+} | {
+  code: 'FORBIDDEN';
+  statusCode: 403;
+  extra: {}
+};
+
+export type ClassroomsHashChatsGetResponse = Response<ChatContent[], ClassroomsHashChatsGetError>;
+export type ClassroomsHashChatsGetError = {
   code: 'NONEXISTENT_CLASSROOM';
   statusCode: 400;
   extra: Empty;
