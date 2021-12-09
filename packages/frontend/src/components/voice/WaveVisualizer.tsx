@@ -1,6 +1,8 @@
 import React from 'react';
+import { useRecoilValue } from 'recoil';
 
 import useScreenType from '../../hooks/useScreenType';
+import themeState from '../../recoil/theme';
 import ScreenType from '../../types/screen';
 import { random, randomInt, range } from '../../utils/math';
 import { conditionalStyle } from '../../utils/style';
@@ -16,13 +18,29 @@ interface Props {
   frequency: number;
 }
 
-const COLORS = [
-  '#ff78c9',
-  '#b957ff',
-  '#817df5',
-];
+const COLORS = {
+  violet: [
+    '#ff78c9',
+    '#b957ff',
+    '#817df5',
+  ],
+  pink: [
+    '#FF2667',
+    '#FF9F29',
+    '#13ED79',
+  ],
+  green: [
+    '#FFB526',
+    '#13ED79',
+    '#0DB6FF',
+  ],
+  blue: [
+    '#07EFE1',
+    '#4484FF',
+    '#817df5',
+  ],
+};
 const INTERVAL = 300;
-const MAX_CURVES = 4 * COLORS.length;
 const AMP_THRESHOLD = 10;
 
 const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
@@ -31,6 +49,10 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
   const [state] = React.useState({
     amplitude, frequency,
   });
+
+  const theme = useRecoilValue(themeState.atom);
+  const MAX_CURVES = 4 * COLORS[theme].length;
+
   React.useEffect(() => {
     state.frequency = frequency;
   }, [frequency]);
@@ -43,8 +65,8 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
       // 랜덤으로 COLORS.length 가지 색 중 하나를 제외하고 생성
       setCurves((c) => [
         ...c.slice(-(MAX_CURVES - 2)),
-        ...range(3)
-          .filter((x) => x !== randomInt(COLORS.length) && state.amplitude > AMP_THRESHOLD)
+        ...range(COLORS[theme].length)
+          .filter((x) => x !== randomInt(COLORS[theme].length) && state.amplitude > AMP_THRESHOLD)
           .map((x) => generateCurve(x, state)),
       ]);
     }, INTERVAL * random(0.9, 1.1));
@@ -59,7 +81,7 @@ const WaveVisualizer: React.FC<Props> = ({ frequency, amplitude }) => {
       key={key}
       className={styles[`path-${a}${b}`]}
       d={getBezierCurveSum(components)}
-      fill={COLORS[type]}
+      fill={COLORS[theme][type]}
       style={{ mixBlendMode: 'screen' }}
     />
   ));
