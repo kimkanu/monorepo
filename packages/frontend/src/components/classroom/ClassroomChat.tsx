@@ -13,6 +13,8 @@ import {
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
 import meState from '../../recoil/me';
+
+import { isSameDate } from '../../utils/date';
 import toastState from '../../recoil/toast';
 import fetchAPI from '../../utils/fetch';
 import { conditionalStyle } from '../../utils/style';
@@ -113,7 +115,8 @@ function chunkChats(chats: ChatContent[]): ChatContent[][] {
   return chats.reduce((collection, item) => {
     if (collection.length > 0 && (
       (collection[collection.length - 1][0].type === 'feed' && item.type === 'feed')
-        || collection[collection.length - 1][0].sender?.stringId === item.sender?.stringId
+        || ((collection[collection.length - 1][0].sender?.stringId === item.sender?.stringId)
+        && (isSameDate(collection[collection.length - 1][0].sentAt, item.sentAt)))
     )) {
       collection[collection.length - 1].push(item);
       return collection;

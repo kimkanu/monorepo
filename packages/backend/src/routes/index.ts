@@ -23,6 +23,5 @@ export default function generateRoute(server: Server): Route {
   route.use(toasts);
   route.use(youtube);
   route.use(translate);
-
   return route;
 }
