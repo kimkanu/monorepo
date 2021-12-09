@@ -26,6 +26,7 @@ const MyTextChat: React.FC<Props> = ({
   React.useEffect(() => {
     setTranslatable(true);
     setTranslated(false);
+    setLoading(false);
   }, [language]);
 
   return (
