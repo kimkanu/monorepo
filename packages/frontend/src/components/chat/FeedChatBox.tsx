@@ -4,7 +4,9 @@ import {
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
+import { useRecoilValue } from 'recoil';
 
+import langState from '../../recoil/language';
 import { stringifyDateConsistent } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -16,6 +18,15 @@ const FeedChat: React.FC<FeedChatProps> = ({
   dark, content,
 }) => {
   const { t } = useTranslation('classroom');
+  const [date, setDate] = React.useState('');
+  const lang = useRecoilValue(langState.atom);
+
+  React.useEffect(() => {
+    if (content.type === 'date') {
+      setDate(stringifyDateConsistent(new Date(content.date)));
+    }
+  }, [lang]);
+
   return (
     <div
       className={mergeClassNames(
@@ -24,7 +35,7 @@ const FeedChat: React.FC<FeedChatProps> = ({
       )}
     >
       {content.type === 'date' ? (
-        stringifyDateConsistent(new Date(content.date))
+        date
       ) : (
         content.isStart ? t('startClass') : t('endClass')
       )}

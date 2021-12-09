@@ -3,6 +3,9 @@ import {
 } from '@team-10/lib';
 import React from 'react';
 
+import { useRecoilValue } from 'recoil';
+
+import langState from '../../recoil/language';
 import { stringifyDateTime } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -34,32 +37,38 @@ interface Props {
 }
 const OthersChatBox: React.FC<Props> = ({
   dark, sender, chats,
-}) => (
-  <div className="w-full flex justify-start gap-2">
-    <div className="w-8 h-8 rounded-full overflow-hidden">
-      <img
-        className="w-full h-full shadow-button"
-        style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
-        alt={`${sender.displayName}의 프로필 사진`}
-        src={sender.profileImage}
-      />
-    </div>
-    <div className="flex flex-col gap-1.5 items-start w-full" style={{ maxWidth: 'calc(100% - 40px)' }}>
-      {chats.map((chat) => (
-        <OthersChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
-      ))}
-      <div
-        className={mergeClassNames(
-          'text-tiny', dark ? 'bg-gray-600 bg-opacity-70 text-white rounded-lg' : 'text-gray-500',
-        )}
-        style={{ padding: '3px 4px' }}
-      >
-        {sender.displayName}
-        {' ㆍ '}
-        {stringifyDateTime(new Date(chats.slice(-1)[0].sentAt))}
+}) => {
+  const [date, setDate] = React.useState('');
+  const lang = useRecoilValue(langState.atom);
+  React.useEffect(() => {
+    setDate(stringifyDateTime(new Date(chats.slice(-1)[0].sentAt)));
+  }, [lang]);
+  return (
+    <div className="w-full flex justify-start gap-2">
+      <div className="w-8 h-8 rounded-full overflow-hidden">
+        <img
+          className="w-full h-full shadow-button"
+          style={{ '--shadow-color': 'rgba(0, 0, 0, 0.1)' } as React.CSSProperties}
+          alt={`${sender.displayName}의 프로필 사진`}
+          src={sender.profileImage}
+        />
+      </div>
+      <div className="flex flex-col gap-1.5 items-start w-full" style={{ maxWidth: 'calc(100% - 40px)' }}>
+        {chats.map((chat) => (
+          <OthersChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
+        ))}
+        <div
+          className={mergeClassNames(
+            'text-tiny', dark ? 'bg-gray-600 bg-opacity-70 text-white rounded-lg' : 'text-gray-500',
+          )}
+          style={{ padding: '3px 4px' }}
+        >
+          {sender.displayName}
+          {' ㆍ '}
+          {date}
+        </div>
       </div>
     </div>
-  </div>
-);
-
+  );
+};
 export default OthersChatBox;

@@ -3,6 +3,9 @@ import {
 } from '@team-10/lib';
 import React from 'react';
 
+import { useRecoilValue } from 'recoil';
+
+import langState from '../../recoil/language';
 import { stringifyDateTime } from '../../utils/date';
 import { mergeClassNames } from '../../utils/style';
 
@@ -29,22 +32,30 @@ interface Props {
 
 const MyChatBox: React.FC<Props> = ({
   dark, chats,
-}) => (
-  <div className="w-full flex justify-end gap-2">
-    <div className="flex flex-col gap-1.5 items-end w-full" style={{ maxWidth: 'calc(100% - 40px)' }}>
-      {chats.map((chat) => (
-        <MyChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
-      ))}
-      <div
-        className={mergeClassNames(
-          'text-tiny', dark ? 'bg-gray-600 bg-opacity-70 text-white rounded-lg' : 'text-gray-500',
-        )}
-        style={{ padding: '3px 4px' }}
-      >
-        {stringifyDateTime(new Date(chats.slice(-1)[0].sentAt))}
+}) => {
+  const [date, setDate] = React.useState('');
+  const lang = useRecoilValue(langState.atom);
+  React.useEffect(() => {
+    setDate(stringifyDateTime(new Date(chats.slice(-1)[0].sentAt)));
+  }, [lang]);
+
+  return (
+    <div className="w-full flex justify-end gap-2">
+      <div className="flex flex-col gap-1.5 items-end w-full" style={{ maxWidth: 'calc(100% - 40px)' }}>
+        {chats.map((chat) => (
+          <MyChat key={chat.id} dark={dark} type={chat.type} content={chat.content} />
+        ))}
+        <div
+          className={mergeClassNames(
+            'text-tiny', dark ? 'bg-gray-600 bg-opacity-70 text-white rounded-lg' : 'text-gray-500',
+          )}
+          style={{ padding: '3px 4px' }}
+        >
+          {date}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default MyChatBox;

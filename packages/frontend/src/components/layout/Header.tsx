@@ -19,6 +19,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import useScreenType from '../../hooks/useScreenType';
 import i18n from '../../i18n';
 import classroomsState from '../../recoil/classrooms';
+import langState from '../../recoil/language';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
 import meState from '../../recoil/me';
 import themeState from '../../recoil/theme';
@@ -116,46 +117,51 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
   );
 };
 
-const LanguageSelectionDropdownContent: React.FC = () => (
-  <div className="flex items-center">
-    <button
-      type="button"
-      className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
-      style={{
-        transitionProperty: 'background-color, border-color, color, fill, stroke',
-      }}
-      onClick={() => {
-        i18n.changeLanguage('ko');
-        fetchAPI('PATCH /lang', {}, {
-          language: 'ko',
-        });
-      }}
-    >
-      <i className="twa twa-kr text-big" />
-      {' '}
-      <span style={{ lineHeight: '32px' }}>한국어</span>
-    </button>
-    <div className="mx-4 bg-gray-200" style={{ width: 1, height: 24 }} />
-    <button
-      type="button"
-      className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
-      style={{
-        transitionProperty: 'background-color, border-color, color, fill, stroke',
-      }}
-      onClick={() => {
-        i18n.changeLanguage('en');
-        fetchAPI('PATCH /lang', {}, {
-          language: 'en',
-        });
-      }}
-    >
-      <i className="twa twa-us text-big absolute" style={{ transform: 'translate(6px, 6px)', zIndex: 1 }} />
-      <i className="twa twa-gb text-big" style={{ transform: 'translate(-6px, -6px)' }} />
-      {' '}
-      <span style={{ lineHeight: '32px' }}>English</span>
-    </button>
-  </div>
-);
+const LanguageSelectionDropdownContent: React.FC = () => {
+  const setLang = useSetRecoilState(langState.atom);
+  return (
+    <div className="flex items-center">
+      <button
+        type="button"
+        className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
+        style={{
+          transitionProperty: 'background-color, border-color, color, fill, stroke',
+        }}
+        onClick={() => {
+          i18n.changeLanguage('ko');
+          fetchAPI('PATCH /lang', {}, {
+            language: 'ko',
+          });
+          setLang('ko');
+        }}
+      >
+        <i className="twa twa-kr text-big" />
+        {' '}
+        <span style={{ lineHeight: '32px' }}>한국어</span>
+      </button>
+      <div className="mx-4 bg-gray-200" style={{ width: 1, height: 24 }} />
+      <button
+        type="button"
+        className="flex w-full justify-between items-center transition rounded-2xl bg-transparent text-gray-900 hover:bg-gray-200 text-emph px-4 py-2"
+        style={{
+          transitionProperty: 'background-color, border-color, color, fill, stroke',
+        }}
+        onClick={() => {
+          i18n.changeLanguage('en');
+          fetchAPI('PATCH /lang', {}, {
+            language: 'en',
+          });
+          setLang('en');
+        }}
+      >
+        <i className="twa twa-us text-big absolute" style={{ transform: 'translate(6px, 6px)', zIndex: 1 }} />
+        <i className="twa twa-gb text-big" style={{ transform: 'translate(-6px, -6px)' }} />
+        {' '}
+        <span style={{ lineHeight: '32px' }}>English</span>
+      </button>
+    </div>
+  );
+};
 
 interface Props {
   isUIHidden: boolean;

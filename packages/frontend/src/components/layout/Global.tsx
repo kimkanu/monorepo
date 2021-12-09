@@ -9,6 +9,7 @@ import useSocket from '../../hooks/useSocket';
 
 import i18n from '../../i18n';
 import classroomsState from '../../recoil/classrooms';
+import langState from '../../recoil/language';
 import loadingState from '../../recoil/loading';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
@@ -63,6 +64,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
   const addToast = useSetRecoilState(toastState.new);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
   const setMe = useSetRecoilState(meState.atom);
+  const setLang = useSetRecoilState(langState.atom);
 
   const { connected } = useSocket('/');
 
@@ -118,6 +120,7 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
       .then((response) => {
         if (response.success) {
           i18n.changeLanguage(response.payload.lang);
+          setLang(response.payload.lang);
         }
       });
   }, []);
