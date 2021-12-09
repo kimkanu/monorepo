@@ -51,4 +51,7 @@ export default class UserEntity extends BaseEntity {
     cascade: true,
   })
   chats: ChatEntity[];
+
+  @Column({ nullable: true })
+  language: string;
 }

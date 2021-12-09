@@ -2,7 +2,6 @@ import { ClassroomsHashPatchResponse, SocketClassroom } from '@team-10/lib';
 import React from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import Button from '../components/buttons/Button';
 import ClassroomChat from '../components/classroom/ClassroomChat';
 import ClassroomInstructorButtons from '../components/classroom/ClassroomInstructorButtons';
 import useScreenType from '../hooks/useScreenType';
@@ -11,7 +10,6 @@ import classroomsState from '../recoil/classrooms';
 import mainClassroomHashState from '../recoil/mainClassroomHash';
 import meState from '../recoil/me';
 import ScreenType from '../types/screen';
-import fetchAPI from '../utils/fetch';
 
 interface Props {
   hash: string;

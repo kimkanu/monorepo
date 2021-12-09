@@ -1,6 +1,7 @@
 import { Search20Regular, SpinnerIos20Regular } from '@fluentui/react-icons';
 import { ResponseError, YouTubeVideoDescription } from '@team-10/lib';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -11,7 +12,6 @@ import Title from '../components/elements/Title';
 import TextInput from '../components/input/TextInput';
 import classroomsState from '../recoil/classrooms';
 import meState from '../recoil/me';
-import toastState from '../recoil/toast';
 import fetchAPI from '../utils/fetch';
 import appHistory, { classroomPrefixRegex } from '../utils/history';
 
@@ -133,6 +133,7 @@ const ClassroomShare: React.FC = () => {
     disabled: !!error || !searchText,
     rootMargin: '0px 0px 400px 0px',
   });
+  const { t } = useTranslation('classroom');
 
   return (
     <Dialog
@@ -140,12 +141,12 @@ const ClassroomShare: React.FC = () => {
       onClose={() => appHistory.goBack(history)}
       style={{ width: 480, maxWidth: '100vw' }}
     >
-      <Title size="sect">영상 공유</Title>
+      <Title size="sect">{t('share')}</Title>
 
       <TextInput
         value={searchText}
         onInput={setSearchText}
-        placeholderText="유튜브 영상 검색"
+        placeholderText={t('search')}
         containerClassName={!isLoading && items.length === 0 ? 'mt-8 mb-2' : 'my-8'}
         onSubmit={() => {
           loadMore(searchText);

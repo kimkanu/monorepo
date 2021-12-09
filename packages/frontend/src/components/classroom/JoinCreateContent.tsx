@@ -4,6 +4,8 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import AmbientButton from '../buttons/AmbientButton';
 import Button from '../buttons/Button';
 import Title from '../elements/Title';
@@ -28,13 +30,14 @@ const JoinCreateContent: React.FC<Props> = ({
   const [classroomIdJoin, setClassroomIdJoin] = React.useState('');
   const [passwordJoin, setPasswordJoin] = React.useState('');
   const [classNameCreate, setClassNameCreate] = React.useState('');
+  const { t } = useTranslation('main');
 
   return (
     <div>
       <section>
         <Title size="sect" className="mb-6">
           <div className="flex justify-between items-end">
-            수업 참가하기
+            {t('joinClass')}
             <div className="w-8 h-8 relative">
               <AmbientButton icon={<QrCode28Regular />} size={48} style={{ top: -8, left: -8 }} className="absolute" />
             </div>
@@ -69,7 +72,7 @@ const JoinCreateContent: React.FC<Props> = ({
               }
               setClassroomIdJoin(next);
             }}
-            placeholderText="Classroom ID"
+            placeholderText={t('classroomId')}
             font="mono"
             nextRef={passwordJoinRef}
             icon={<NumberSymbol20Regular />}
@@ -80,14 +83,14 @@ const JoinCreateContent: React.FC<Props> = ({
             font="mono"
             value={passwordJoin}
             onInput={setPasswordJoin}
-            placeholderText="Password"
+            placeholderText={t('password')}
             nextRef={joinButtonRef}
             icon={<LockClosed20Regular />}
           />
           <Button
             ref_={joinButtonRef}
             type="primary"
-            text="Join"
+            text={t('join')}
             width="full"
             disabled={!(classroomIdJoin && passwordJoin)}
             onClick={() => onJoin(classroomIdJoin, passwordJoin)}
@@ -96,19 +99,19 @@ const JoinCreateContent: React.FC<Props> = ({
         </div>
       </section>
       <section className="mt-14">
-        <Title size="sect" className="mb-6">수업 만들기</Title>
+        <Title size="sect" className="mb-6">{t('createClass')}</Title>
         <div className="w-full flex flex-col gap-4">
           <TextInput
             value={classNameCreate}
             onInput={setClassNameCreate}
-            placeholderText="Class Name"
+            placeholderText={t('className')}
             nextRef={createButtonRef}
             icon={<Book20Regular />}
           />
           <Button
             ref_={createButtonRef}
             type="primary"
-            text="Create"
+            text={t('create')}
             width="full"
             disabled={!classNameCreate}
             onClick={() => onCreate(classNameCreate)}

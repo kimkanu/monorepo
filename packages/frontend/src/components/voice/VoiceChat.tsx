@@ -4,6 +4,7 @@ import useMediaRecorder from '@wmik/use-media-recorder';
 import AudioRecorder from 'audio-recorder-polyfill';
 import mpegEncoder from 'audio-recorder-polyfill/mpeg-encoder';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -44,6 +45,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
   const meInfo = useRecoilValue(meState.info);
   const userId = meInfo?.stringId ?? null;
   const hashRef = React.useRef<string | null>(hash);
+  const { t } = useTranslation('classroom');
 
   React.useEffect(() => {
     hashRef.current = hash;
@@ -492,7 +494,7 @@ const VoiceChat: React.FC<Styled<Props>> = ({
       icon={<Speaker220Filled />}
       style={style}
       className={className}
-      text={isDesktop ? '말하기' : undefined}
+      text={isDesktop ? t('speak') : undefined}
       filled
       onMouseDown={pressButton}
       onTouchStart={pressButton}

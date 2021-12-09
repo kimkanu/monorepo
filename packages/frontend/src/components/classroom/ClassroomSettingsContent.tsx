@@ -5,6 +5,7 @@ import {
 import { ClassroomJSON, ResponseError } from '@team-10/lib';
 import CancelablePromise from 'cancelable-promise';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 import copyTextToClipboard from '../../utils/clipboard';
@@ -37,12 +38,13 @@ const ClassroomSettingsContent: React.FC<Props> = ({
 }) => {
   const [isCopyChecked, setCopyChecked] = React.useState(false);
   const history = useHistory();
+  const { t } = useTranslation('classroom');
 
   return (
     <div>
-      <Title size="sect">설정</Title>
+      <Title size="sect">{t('setting')}</Title>
       <section className="mt-8">
-        <Title size="sub" className="mb-6">수업 정보</Title>
+        <Title size="sub" className="mb-6">{t('classInfo')}</Title>
         <div className="relative w-full h-12 mb-4">
           <TextInput
             value={classroomName}
@@ -50,7 +52,7 @@ const ClassroomSettingsContent: React.FC<Props> = ({
             icon={<Book20Regular />}
             name="courseName"
             font="mono"
-            placeholderText="수업 이름"
+            placeholderText={t('className')}
             align="left"
             validator={(newName) => new CancelablePromise<boolean>((
               resolve, reject, onCancel,
@@ -106,7 +108,7 @@ const ClassroomSettingsContent: React.FC<Props> = ({
                   disabled={false}
                   width="fit-content"
                   height={48}
-                  text="Copy"
+                  text={t('copy')}
                   icon={isCopyChecked ? <Checkmark20Regular className="z-10" /> : <Clipboard20Regular className="z-10" />}
                   className="absolute right-0 z-5 w-2/5 font-sans"
                   onClick={async () => {
@@ -137,7 +139,7 @@ const ClassroomSettingsContent: React.FC<Props> = ({
                   disabled={false}
                   width="full"
                   height={48}
-                  text="Reset"
+                  text={t('reset')}
                   icon={<ArrowCounterclockwise20Regular className="z-10" />}
                   className="absolute right-0 z-5 w-2/5 font-sans"
                   onClick={onResetPasscode}
@@ -149,14 +151,14 @@ const ClassroomSettingsContent: React.FC<Props> = ({
         )}
       </section>
       <section className="mt-8">
-        <Title size="sub" className="mb-6">수업 관리</Title>
+        <Title size="sub" className="mb-6">{t('classMg')}</Title>
         <Button
           type="destructive"
           disabled={false}
           width="full"
           height={48}
           className="font-sans"
-          text={isInstructor ? '수업 삭제하기' : '수업 나가기'}
+          text={isInstructor ? t('remove') : t('leave')}
           onClick={() => {
             appHistory.push(`/classrooms/${classroom.hash}/settings/${isInstructor ? 'remove' : 'leave'}`, history);
           }}
