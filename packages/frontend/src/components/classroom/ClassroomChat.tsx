@@ -12,11 +12,11 @@ import {
 
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
-import languageAtom from '../../recoil/language/atom';
+import languageState from '../../recoil/language';
 import meState from '../../recoil/me';
+import toastState from '../../recoil/toast';
 
 import { isSameDate } from '../../utils/date';
-import toastState from '../../recoil/toast';
 import fetchAPI from '../../utils/fetch';
 import { conditionalStyle } from '../../utils/style';
 import FeedChatBox from '../chat/FeedChatBox';
@@ -139,7 +139,7 @@ const ClassroomChat: React.FC<Props> = ({
   const [translatedChats, setTranslatedChats] = useRecoilState(translatedChatsAtom);
   const myId = useRecoilValue(meState.id);
   const addToast = useSetRecoilState(toastState.new);
-  const language = useRecoilValue(languageAtom);
+  const language = useRecoilValue(languageState.atom);
   const screenType = useScreenType();
   const { t } = useTranslation('classroom');
 

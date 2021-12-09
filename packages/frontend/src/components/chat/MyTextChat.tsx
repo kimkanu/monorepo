@@ -3,7 +3,7 @@ import { TextChatContent } from '@team-10/lib';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
-import languageAtom from '../../recoil/language/atom';
+import languageState from '../../recoil/language';
 import { mergeClassNames } from '../../utils/style';
 import AmbientButton from '../buttons/AmbientButton';
 
@@ -21,7 +21,7 @@ const MyTextChat: React.FC<Props> = ({
   const [isTranslated, setTranslated] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [isTranslatable, setTranslatable] = React.useState(true);
-  const language = useRecoilValue(languageAtom);
+  const language = useRecoilValue(languageState.atom);
 
   React.useEffect(() => {
     setTranslatable(true);
