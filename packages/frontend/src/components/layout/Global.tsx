@@ -113,11 +113,9 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
   }, []);
 
   React.useEffect(() => {
-    fetchAPI('GET /users/lang')
+    fetchAPI('GET /lang')
       .then((response) => {
-        console.log('response', response.success);
-        if (response.success && response.payload.lang) {
-          console.log('language ', response.payload.lang);
+        if (response.success) {
           i18n.changeLanguage(response.payload.lang);
         }
       });

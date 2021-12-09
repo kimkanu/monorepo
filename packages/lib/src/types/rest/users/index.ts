@@ -1,10 +1,4 @@
 import {
-  UsersLangEndpoints,
-  UsersLangPathParams,
-  UsersLangRequestBodyType,
-  UsersLangResponseType,
-} from './language';
-import {
   UsersMeEndpoints,
   UsersMePathParams,
   UsersMeRequestBodyType,
@@ -38,21 +32,16 @@ export interface UserLangJSON {
 
 export type UsersEndpoints =
   | UsersMeEndpoints
-  | UsersOtherEndpoints
-  | UsersLangEndpoints;
+  | UsersOtherEndpoints;
 export type UsersPathParams =
   UsersMePathParams
-  & UsersOtherPathParams
-  & UsersLangPathParams;
+  & UsersOtherPathParams;
 export type UsersRequestBodyType =
   UsersMeRequestBodyType
-  & UsersOtherRequestBodyType
-  & UsersLangRequestBodyType;
+  & UsersOtherRequestBodyType;
 export type UsersResponseType =
   UsersMeResponseType
-  & UsersOtherResponseType
-  & UsersLangResponseType;
+  & UsersOtherResponseType;
 
 export * from './me';
 export * from './other';
-export * from './language';

@@ -4,6 +4,7 @@ export default {
   start: 'Start Class',
   end: 'End Class',
   changeVideo: 'Change Video',
+  shareVideo: 'Share Video',
   stopShare: 'Stop Sharing',
   startClass: 'Class has started.',
   endClass: 'Class is finished.',
@@ -15,4 +16,7 @@ export default {
   reset: 'Reset',
   leave: 'Leave the Class',
   remove: 'Remove the Class',
+  speak: 'Speak',
+  search: 'Search Video',
+  share: 'Share Video',
 };

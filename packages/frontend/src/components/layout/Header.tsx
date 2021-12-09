@@ -126,7 +126,7 @@ const LanguageSelectionDropdownContent: React.FC = () => (
       }}
       onClick={() => {
         i18n.changeLanguage('ko');
-        fetchAPI('PATCH /users/lang', {}, {
+        fetchAPI('PATCH /lang', {}, {
           language: 'ko',
         });
       }}
@@ -144,7 +144,7 @@ const LanguageSelectionDropdownContent: React.FC = () => (
       }}
       onClick={() => {
         i18n.changeLanguage('en');
-        fetchAPI('PATCH /users/lang', {}, {
+        fetchAPI('PATCH /lang', {}, {
           language: 'en',
         });
       }}

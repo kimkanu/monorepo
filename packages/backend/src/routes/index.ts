@@ -2,6 +2,7 @@ import Server from '../server';
 
 import auth from './auth';
 import classrooms from './classrooms';
+import language from './language';
 import Route from './route';
 import toasts from './toasts';
 import users from './users';
@@ -20,6 +21,7 @@ export default function generateRoute(server: Server): Route {
   route.use(users);
   route.use(toasts);
   route.use(youtube);
+  route.use(language);
 
   return route;
 }

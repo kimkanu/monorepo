@@ -5,6 +5,12 @@ import {
   ClassroomsResponseType,
 } from './classrooms';
 import {
+  UsersLangEndpoints,
+  UsersLangPathParams,
+  UsersLangRequestBodyType,
+  UsersLangResponseType,
+} from './language';
+import {
   ToastsEndpoints,
   ToastsPathParams,
   ToastsRequestBodyType,
@@ -63,27 +69,32 @@ export type Endpoints =
   | UsersEndpoints
   | ClassroomsEndpoints
   | ToastsEndpoints
-  | YouTubeEndpoints;
+  | YouTubeEndpoints
+  | UsersLangEndpoints;
 export type PathParams =
   { 'GET /': Empty }
   & UsersPathParams
   & ClassroomsPathParams
   & ToastsPathParams
-  & YouTubePathParams;
+  & YouTubePathParams
+  & UsersLangPathParams;
 export type RequestBodyType =
   { 'GET /': Empty }
   & UsersRequestBodyType
   & ClassroomsRequestBodyType
   & ToastsRequestBodyType
-  & YouTubeRequestBodyType;
+  & YouTubeRequestBodyType
+  & UsersLangRequestBodyType;
 export type ResponseType =
   { 'GET /': Response<Empty, never> }
   & UsersResponseType
   & ClassroomsResponseType
   & ToastsResponseType
-  & YouTubeResponseType;
+  & YouTubeResponseType
+  & UsersLangResponseType;
 
 export * from './users';
 export * from './classrooms';
 export * from './toasts';
 export * from './youtube';
+export * from './language';
