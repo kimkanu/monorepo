@@ -94,7 +94,7 @@ const Button: React.FC<Styled<Props>> = ({
           setPressedByKey(true);
         }
       }}
-      onKeyUp={(e) => {
+      onKeyUp={() => {
         setPressedByKey(false);
       }}
     >

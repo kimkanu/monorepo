@@ -1,7 +1,7 @@
+/* eslint-disable no-console */
 /* istanbul ignore file */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useRecoilSnapshot, useSetRecoilState } from 'recoil';
 
 import useMainClassroom from '../../hooks/useMainClassroom';

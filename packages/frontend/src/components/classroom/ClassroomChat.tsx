@@ -51,19 +51,15 @@ const useChats = (
   const [error, setError] = React.useState<ResponseError | null>(null);
 
   const loadMore = React.useCallback((newHash: string) => {
-    console.log('loadMore', newHash, isLoading, lastChatId);
     if (isLoading) return;
     if (!newHash) return;
 
     setLoading(true);
-    console.log('loading');
     fetchAPI(
       'GET /classrooms/:hash/chats',
       lastChatId ? { hash: newHash, chatId: lastChatId } : { hash: newHash },
     ).then((response) => {
-      console.log('loaded');
       if (response.success) {
-        console.log(response.payload);
         setScrollBottom(
           wrapperRef.current
             ? wrapperRef.current.scrollHeight - wrapperRef.current.scrollTop
@@ -84,7 +80,6 @@ const useChats = (
   }, [isLoading, lastChatId]);
 
   const resetHash = (newHash: string) => {
-    console.log('resetHash', newHash);
     if (newHash === hash) return;
     if (newHash === lastHash) return;
     if (!newHash) return;
@@ -187,14 +182,13 @@ const ClassroomChat: React.FC<Props> = ({
     }
   };
 
-  const { socket, connected } = useSocket<
+  const { socket } = useSocket<
   SocketChat.Events.Response & SocketClassroom.Events.Response,
   SocketChat.Events.Request & SocketClassroom.Events.Response
   >('/');
 
   React.useEffect(() => {
     resetHash(hash ?? '');
-    console.log(`resetHash(${hash ?? ''});`);
   }, [hash]);
 
   React.useEffect(() => {
@@ -213,7 +207,6 @@ const ClassroomChat: React.FC<Props> = ({
 
   React.useEffect(() => {
     const listener = ({ hash: chatClassroomHash, message }: SocketChat.Broadcast.Chat) => {
-      console.log('chat', hash, message);
       if (hash === chatClassroomHash) {
         addChat(message);
       }

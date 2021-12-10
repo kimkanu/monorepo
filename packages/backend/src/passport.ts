@@ -130,6 +130,7 @@ export default (connection: Connection) => {
       }
       return done(null, user);
     } catch (error: any) {
+      // eslint-disable-next-line no-console
       console.error(error);
       done(error, undefined);
     }
@@ -220,6 +221,7 @@ export default (connection: Connection) => {
       }
       return done(null, user);
     } catch (error: any) {
+      // eslint-disable-next-line no-console
       console.error(error);
       done(error, undefined);
     }

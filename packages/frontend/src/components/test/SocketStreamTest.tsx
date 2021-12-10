@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* istanbul ignore file */
 import { SocketVoice } from '@team-10/lib';
 import useMediaRecorder from '@wmik/use-media-recorder';
@@ -9,7 +10,7 @@ import { useSetRecoilState } from 'recoil';
 
 import useSocket from '../../hooks/useSocket';
 import toastState from '../../recoil/toast';
-import { arrayBufferToString, concatArrayBuffer } from '../../utils/arrayBuffer';
+import { concatArrayBuffer } from '../../utils/arrayBuffer';
 import { mergeClassNames } from '../../utils/style';
 import VoiceBuffer from '../../utils/VoiceBuffer';
 

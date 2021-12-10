@@ -1,13 +1,11 @@
-import { Video16Filled, WeatherPartlyCloudyDay16Regular } from '@fluentui/react-icons';
 import { ClassroomsHashPatchResponse, SocketClassroom, SocketYouTube } from '@team-10/lib';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { YouTubePlayer } from 'youtube-player/dist/types';
-import { useTranslation } from 'react-i18next';
 
-import useMainClassroom from '../../hooks/useMainClassroom';
 import useSocket from '../../hooks/useSocket';
 import classroomsState from '../../recoil/classrooms';
 import mainClassroomHashState from '../../recoil/mainClassroomHash';
@@ -62,7 +60,6 @@ const YTSynchronizer: React.FC = () => {
     target.pauseVideo();
     setVolume(target.getVolume());
     setDuration(target.getDuration());
-    console.log('onReady', target);
 
     if (hash) {
       socket.emit('youtube/ChangePlayStatus', {
@@ -77,7 +74,6 @@ const YTSynchronizer: React.FC = () => {
   const onStateChange = React.useCallback((newPlayerState: number, newPlayer: YouTubePlayer) => {
     if (!hash || !classroom) return () => {};
     setPlayer(newPlayer);
-    console.log('onStateChange', newPlayerState, newPlayer.getPlaylistIndex());
 
     if (classroom.video?.type === 'playlist' && newPlayer.getPlaylist()) {
       setPlaylist(newPlayer.getPlaylist() as string[]);
@@ -132,12 +128,10 @@ const YTSynchronizer: React.FC = () => {
         socket.once('youtube/ChangePlayStatus', listener);
       }
     } else if (newPlayerState === YouTube.PlayerState.PLAYING) {
-      console.log('broadcast:', lastBroadcast);
       if (!lastBroadcast) {
         newPlayer.pauseVideo();
       }
     } else if (newPlayerState === YouTube.PlayerState.PAUSED) {
-      console.log('broadcast:', lastBroadcast);
       if (lastBroadcast) {
         newPlayer.playVideo();
       }
@@ -172,8 +166,6 @@ const YTSynchronizer: React.FC = () => {
           player.seekTo(time, true);
         }
       }
-
-      console.log('synchronize');
 
       // handle videoId changes
       setClassroom((c) => ({
@@ -211,11 +203,9 @@ const YTSynchronizer: React.FC = () => {
 
   // 동기화
   useEffect(() => {
-    console.log(connected, player, isStudent, hash);
     if (!connected || !hash) return () => {};
 
     const listener = (response: SocketYouTube.Broadcast.ChangePlayStatus) => {
-      console.log('ChangePlayStatusBroadcast', response);
       setlastBroadcast(response.play);
       if (isStudent) {
         setClassroom((c) => ({
@@ -228,7 +218,6 @@ const YTSynchronizer: React.FC = () => {
         setSyncResponse(response);
       }
     };
-    console.log('ChangePlayStatusBroadcast listener');
     socket.on('youtube/ChangePlayStatusBroadcast', listener);
 
     return () => {
@@ -237,7 +226,6 @@ const YTSynchronizer: React.FC = () => {
   }, [connected, player, isStudent, hash, lastBroadcast]);
 
   useEffect(() => {
-    console.log('ChangePlayStatus', isInstructor, playerState, video, hash);
     if (isInstructor && !!video && !!hash) {
       socket.emit('youtube/ChangePlayStatus', {
         hash,
@@ -249,7 +237,6 @@ const YTSynchronizer: React.FC = () => {
   }, [player, playerState, video, isInstructor, hash]);
 
   useEffect(() => {
-    console.log('ChangePlayStatus', isInstructor, playerState, video, hash);
     if (isInstructor && !!video && !!hash) {
       socket.emit('youtube/ChangePlayStatus', {
         hash,
@@ -262,7 +249,6 @@ const YTSynchronizer: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('ChangePlayStatusInterval', isInstructor, playerState, video, hash);
       if (isInstructor && !!video && !!hash) {
         socket.emit('youtube/ChangePlayStatus', {
           hash,

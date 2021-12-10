@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { EyeShow24Regular, EyeHide24Regular } from '@fluentui/react-icons';
-import { PhotoChatContent, SocketChat } from '@team-10/lib';
+import { SocketChat } from '@team-10/lib';
 import React from 'react';
 import { spring, Motion } from 'react-motion';
 import { useLocation } from 'react-router-dom';
@@ -49,7 +49,6 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
     setText('');
   };
   const onPhoto = async (photo: Blob) => {
-    console.log(photo, socket, mainClassroom);
     if (!socket || !mainClassroom) return;
     socket.emit('chat/Send', {
       hash: mainClassroom.hash,

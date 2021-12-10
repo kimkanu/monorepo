@@ -1,10 +1,8 @@
 /* istanbul ignore file */
 import { ClassroomJSONWithSpeaker } from '@team-10/lib';
 import React from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import useMainClassroom from '../../hooks/useMainClassroom';
 import useSocket from '../../hooks/useSocket';
 
 import i18n from '../../i18n';
@@ -17,15 +15,12 @@ import toastState from '../../recoil/toast';
 import { Theme } from '../../types/theme';
 
 import fetchAPI from '../../utils/fetch';
-import appHistory, { classroomPrefixRegex } from '../../utils/history';
 import { Styled } from '../../utils/style';
 
 import ToastDisplay from '../alert/ToastDisplay';
 import ClassroomPatcher from '../patcher/ClassroomPatcher';
 import MyInfoPatcher from '../patcher/MyInfoPatcher';
-import YTPlayerControl from '../youtube/YTPlayerControl';
 import YTSynchronizer from '../youtube/YTSynchronizer';
-import YTWrapper from '../youtube/YTWrapper';
 
 import Debug from './Debug';
 import DynamicManifest from './DynamicManifest';
@@ -55,12 +50,7 @@ function sortClassrooms(
 }
 
 const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style }) => {
-  const history = useHistory();
-  const location = useLocation();
-  const inClassroom = classroomPrefixRegex.test(location.pathname);
-
-  const [classrooms, setClassrooms] = useRecoilState(classroomsState.atom);
-  const mainClassroom = useMainClassroom();
+  const setClassrooms = useSetRecoilState(classroomsState.atom);
   const toasts = useRecoilValue(toastState.atom);
   const addToast = useSetRecoilState(toastState.new);
   const [loading, setLoading] = useRecoilState(loadingState.atom);
@@ -100,7 +90,6 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
             loaded: true,
             info: response.payload,
           });
-          console.log('response.payload.classrooms', response.payload.classrooms);
           setClassrooms(sortClassrooms(
             response.payload.classrooms.map((c) => ({ ...c, speakerId: null })),
             response.payload.stringId,
@@ -121,7 +110,6 @@ const Global: React.FC<Styled<{ theme: Theme }>> = ({ theme, className, style })
   React.useEffect(() => {
     fetchAPI('GET /users/me/language')
       .then((response) => {
-        console.log(response);
         if (response.success) {
           i18n.changeLanguage(response.payload.language);
           setLanguage(response.payload.language);

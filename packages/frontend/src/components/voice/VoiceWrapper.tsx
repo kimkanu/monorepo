@@ -1,8 +1,5 @@
 import React from 'react';
-import { useRecoilValue } from 'recoil';
 
-import useMainClassroom from '../../hooks/useMainClassroom';
-import meState from '../../recoil/me';
 import { clamp } from '../../utils/math';
 import VoiceBuffer from '../../utils/VoiceBuffer';
 

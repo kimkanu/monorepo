@@ -1,4 +1,4 @@
-import { Provider, providers } from '@team-10/lib';
+import { providers } from '@team-10/lib';
 import { getConnection } from 'typeorm';
 
 import SSOAccountEntity from '../../../entity/sso-account';

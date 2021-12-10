@@ -120,7 +120,6 @@ const ClassroomShare: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
 
-  const hash = location.pathname.match(classroomPrefixRegex)?.[1] ?? null;
   const isVisible = /^\/classrooms\/(\w{3}-\w{3}-\w{3})\/share\/?$/.test(location.pathname);
 
   const [searchText, setSearchText] = React.useState('');

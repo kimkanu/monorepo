@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 import YTPlayer from './YTPlayer';
-import i18n from '../../i18n';
 
 test('`No videos are shared.` message should be present when the videoId is not given.', () => {
   const { container } = render(<YTPlayer>No videos are shared.</YTPlayer>);

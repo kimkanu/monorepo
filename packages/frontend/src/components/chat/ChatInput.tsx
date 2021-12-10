@@ -59,7 +59,6 @@ const ChatInput: React.FC<Props> = ({
                 const file = e.currentTarget.files?.[0];
                 if (file) {
                   onPhoto(file);
-                  console.log(file);
                   e.currentTarget.value = '';
                 }
               }}
@@ -96,7 +95,6 @@ const ChatInput: React.FC<Props> = ({
               const file = e.currentTarget.files?.[0];
               if (file) {
                 onPhoto(file);
-                console.log(file);
                 e.currentTarget.value = '';
               }
             }}

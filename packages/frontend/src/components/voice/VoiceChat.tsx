@@ -233,7 +233,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     if (!classroom || !hash) return;
 
     setButtonPressed(false);
-    console.log('released!');
     if (onVoice) onVoice(0, 100);
     setClassroom((c) => ({ ...c, speakerId: null }));
     sequenceIndex.current = 0;
@@ -258,7 +257,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
 
     setButtonPressed(true);
 
-    console.log('pressed!');
     if (onVoice) onVoice(100, 300);
 
     if (isSpeaking.current !== 'none') return;
@@ -392,7 +390,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     const broadcastListener = ({
       speaking, userId: id,
     }: SocketVoice.Broadcast.StateChange) => {
-      console.log('statechange', speaking ? id : null, mutableSpeakerId);
       if (mutableSpeakerId !== (speaking ? id : null)) {
         nextSequenceIndex = 0;
         mutableSpeakerId = speaking ? id : null;
@@ -403,7 +400,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
     const listener: SocketVoice.Events.Response['voice/StreamReceiveBroadcast'] = async (response) => {
       // 정상적인 상황
       if (nextSequenceIndex === response.sequenceIndex) {
-        console.log('correct; response.voices', response.voices);
         // eslint-disable-next-line no-restricted-syntax
         const indexedVoices: [number, SocketVoice.Voice[]][] = [
           [response.sequenceIndex, response.voices],
@@ -421,7 +417,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
           nextSequenceIndex,
           indexedVoices.slice(-1)[0][0],
         ) + 1;
-        console.log('nextSequenceIndex.current changed to', nextSequenceIndex);
         timeoutsWrongSequenceIndex.current.forEach(clearTimeout);
         timeoutsWrongSequenceIndex.current = new Map();
         voicesWrongSequenceIndex.current = new Map();
@@ -435,8 +430,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
           response.sequenceIndex,
           response.voices,
         );
-        console.log('wrong', nextSequenceIndex, response.sequenceIndex);
-        console.log('wrong; response.voices', response.voices);
         timeoutsWrongSequenceIndex.current.set(
           response.sequenceIndex,
           setTimeout(() => {
@@ -455,7 +448,6 @@ const VoiceChat: React.FC<Styled<Props>> = ({
               nextSequenceIndex,
               indexedVoices.slice(-1)[0][0],
             ) + 1;
-            console.log('nextSequenceIndex.current changed to', nextSequenceIndex);
             timeoutsWrongSequenceIndex.current.forEach(clearTimeout);
             timeoutsWrongSequenceIndex.current = new Map();
             voicesWrongSequenceIndex.current = new Map();
