@@ -206,15 +206,13 @@ const ClassroomChat: React.FC<Props> = ({
   }, [chats, wrapperRef.current]);
 
   React.useEffect(() => {
-    const listener = ({ hash: chatClassroomHash, message }: SocketChat.Broadcast.Chat) => {
+    socket.on('chat/ChatBroadcast', ({ hash: chatClassroomHash, message }) => {
       if (hash === chatClassroomHash) {
         addChat(message);
       }
-    };
-    socket.on('chat/ChatBroadcast', listener);
-
+    });
     return () => {
-      socket.off('chat/ChatBroadcast', listener);
+      socket.off('chat/ChatBroadcast');
     };
   }, [socket, hash]);
 

@@ -131,6 +131,7 @@ export default class Server {
       cors: {
         origin: '*',
       },
+      maxHttpBufferSize: 1e8, // 100MB
     });
 
     const wrap = (middleware: any) => (
