@@ -1,4 +1,4 @@
-import { ChatType } from '@team-10/lib';
+/* eslint-disable no-console */
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
 

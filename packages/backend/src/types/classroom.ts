@@ -3,14 +3,12 @@ import Crypto from 'crypto';
 
 import { ClassroomJSON, ClassroomMemberJSON, YouTubeVideo } from '@team-10/lib';
 import { ChatContent } from '@team-10/lib/src/types/chat';
-import {
-  Between, getConnection, LessThanOrEqual, MoreThan,
-} from 'typeorm';
+import { getConnection } from 'typeorm';
 import { v4 as uuidV4 } from 'uuid';
 
 import ChatEntity, { FeedChatEntity, PhotoChatEntity, TextChatEntity } from '../entity/chat';
 import ClassroomEntity from '../entity/classroom';
-import HistoryEntity, {
+import {
   ClassHistoryEntity, VoiceHistoryEntity, AttendanceHistoryEntity,
 } from '../entity/history';
 import UserEntity from '../entity/user';
@@ -89,7 +87,6 @@ export default class Classroom {
     const userEntity = this.members.find(({ stringId }) => stringId === userId);
     if (!userEntity) return false;
     this.connectedMemberIds.add(userId);
-    console.log('a member connected', userId);
 
     // TODO: 임시적으로 끊긴 유저라면 DB 접근 없이 timeout만 clear & delete하고,
     // TODO: 그렇지 않다면 DB에 출석 history entity 만들어서 저장하기
@@ -98,7 +95,6 @@ export default class Classroom {
       this.temporaryDisconnectionTimeout.delete(userId);
       this.temporarilyDisconnectedMemberIds.delete(userId);
     } else {
-      console.log('a member attended the classroom', userId);
       const attendanceEntity = new AttendanceHistoryEntity();
       attendanceEntity.classroom = this.entity;
       attendanceEntity.user = userEntity;
@@ -154,7 +150,6 @@ export default class Classroom {
         await attendanceEntity.save();
 
         this.temporaryDisconnectionTimeout.delete(userId);
-        console.log('a member exited the classroom', userId);
       }
     }, 1.5 * 60 * 1000);
     clearTimeout(this.temporaryDisconnectionTimeout.get(userId) ?? undefined!);

@@ -27,13 +27,13 @@ export default class ImageManager {
 
   async upload(file: Express.Multer.File): Promise<ImageData | null> {
     if (!this.client) {
+      // eslint-disable-next-line no-console
       console.error('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
       return null;
     }
 
     const extension = file.mimetype.split('/')[1];
     if (!extension) {
-      console.error('WRONG MIMETYPE', file.mimetype);
       return null;
     }
 
@@ -45,6 +45,7 @@ export default class ImageManager {
 
   async uploadArraybuffer(buffer: ArrayBuffer): Promise<ImageData | null> {
     if (!this.client) {
+      // eslint-disable-next-line no-console
       console.error('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
       return null;
     }
@@ -64,6 +65,7 @@ export default class ImageManager {
 
   async delete(deleteHash: string): Promise<boolean> {
     if (!this.client) {
+      // eslint-disable-next-line no-console
       console.error('IMGUR_CLIENT_ID IS NOT GIVEN!!!');
       return false;
     }

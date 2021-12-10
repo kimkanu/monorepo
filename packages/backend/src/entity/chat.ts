@@ -1,12 +1,10 @@
 /* eslint-disable max-classes-per-file */
-import { ChatContent } from '@team-10/lib';
 import {
   BaseEntity,
   Entity,
   Column,
   PrimaryGeneratedColumn,
   TableInheritance,
-  OneToOne,
   ManyToOne,
   ChildEntity,
 } from 'typeorm';

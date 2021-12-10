@@ -10,7 +10,6 @@ import {
   Person24Filled,
   SignOut24Filled,
 } from '@fluentui/react-icons';
-import { ClassroomsHashPatchResponse } from '@team-10/lib';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -31,7 +30,6 @@ import appHistory from '../../utils/history';
 import { mergeClassNames } from '../../utils/style';
 import Dropdown from '../alert/Dropdown';
 import AmbientButton from '../buttons/AmbientButton';
-import Button from '../buttons/Button';
 import LogoButton from '../buttons/LogoButton';
 import ClassroomInstructorButtons from '../classroom/ClassroomInstructorButtons';
 import MemberList from '../classroom/MemberList';

@@ -13,7 +13,6 @@ export default function generateRoute(server: Server): Route {
       const { managers } = server;
 
       const userEntity = await managers.user.getEntityOrFail(user.stringId);
-      console.log('user id', userEntity.displayName);
 
       return {
         success: true,
@@ -27,7 +26,7 @@ export default function generateRoute(server: Server): Route {
   route.accept(
     'PATCH /users/me/language',
     isAuthenticatedOrFail,
-    async (params, body, user, req) => {
+    async (params, body, user) => {
       // Body validation
       const { language } = body;
 

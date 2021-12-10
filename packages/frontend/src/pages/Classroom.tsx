@@ -1,4 +1,4 @@
-import { ClassroomsHashPatchResponse, SocketClassroom } from '@team-10/lib';
+import { SocketClassroom } from '@team-10/lib';
 import React from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 

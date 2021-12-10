@@ -12,6 +12,7 @@ export default function generateRoute(server: Server): Route {
 
   route.accept(
     'GET /',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (params, body, user, req, res, next) => ({
       success: true,
       payload: {},

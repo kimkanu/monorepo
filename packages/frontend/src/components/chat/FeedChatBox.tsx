@@ -1,5 +1,5 @@
 import {
-  ChatContent, ChatType, FeedChatContent, FeedType,
+  ChatContent, FeedChatContent, FeedType,
 } from '@team-10/lib';
 import React from 'react';
 

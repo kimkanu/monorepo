@@ -11,7 +11,6 @@ const ClassroomPatcher: React.FC = () => {
 
   React.useEffect(() => {
     const listener = ({ hash, patch }: SocketClassroom.Broadcast.Patch) => {
-      console.log('patch', hash, patch);
       setClassrooms((classrooms) => classrooms.map((classroom) => (classroom.hash === hash ? {
         ...classroom, ...patch,
       } : classroom)));

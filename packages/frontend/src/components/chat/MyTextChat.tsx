@@ -49,7 +49,6 @@ const MyTextChat: React.FC<Props> = ({
                 ? <ArrowCounterclockwise20Regular />
                 : <Translate20Filled />}
             onClick={() => {
-              console.log(isTranslated, isLoading, translation);
               if (isLoading) return;
               if (translation) {
                 setTranslated((t) => !t);

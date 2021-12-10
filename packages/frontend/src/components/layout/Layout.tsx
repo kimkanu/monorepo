@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { mergeClassNames, Styled } from '../../utils/style';
-import VoiceWrapper from '../voice/VoiceWrapper';
 
 import Footer from './Footer';
 import Header from './Header';
