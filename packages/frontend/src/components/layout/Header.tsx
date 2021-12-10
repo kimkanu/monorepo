@@ -56,9 +56,9 @@ const ProfileDropdownContent: React.FC<ProfileDropdownContentProps> = ({ src, di
         className="w-28 h-28 rounded-full overflow-hidden shadow-button object-cover object-center my-8"
       />
       <span className="text-sub inline-flex max-w-full whitespace-nowrap gap-1">
-        <span>{t('hello')}</span>
+        {t('hello')}
         <span className="font-bold inline-block overflow-hidden overflow-ellipsis">{displayName}</span>
-        <span>{t('mark')}</span>
+        {t('mark')}
       </span>
       <div className="w-full flex flex-col justify-start mt-8">
         <span className="text-gray-800 font-bold">{t('theme')}</span>

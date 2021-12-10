@@ -60,12 +60,13 @@ const Footer: React.FC<Props> = ({ isUIHidden, setUIHidden }) => {
   };
 
   return (
-    <Motion style={{
-      percentage: spring(isVisible ? 0 : 100),
-      height: spring(
-        screenType === ScreenType.MobilePortrait && inClassroom ? 136 : 76,
-      ),
-    }}
+    <Motion
+      style={{
+        percentage: spring(isVisible ? 0 : 100),
+        height: spring(
+          screenType === ScreenType.MobilePortrait && inClassroom ? 136 : 76,
+        ),
+      }}
     >
       {({ percentage, height }) => (
         <div
