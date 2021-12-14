@@ -3,10 +3,6 @@
 [![codecov](https://codecov.io/gh/2021-fall-cs492c-team-10/monorepo/branch/main/graph/badge.svg)](https://codecov.io/gh/2021-fall-cs492c-team-10/monorepo) ![example workflow](https://github.com/2021-fall-cs492c-team-10/monorepo/actions/workflows/node.yml/badge.svg)
 
 
-## Live Demo on Heroku
-
-https://cs492c.herokuapp.com
-
 
 ### **블렌디드 러닝을 위한 그룹 웹앱 개발**
 2021년도 봄학기 KAIST 전산학특강 프로젝트
@@ -14,6 +10,15 @@ https://cs492c.herokuapp.com
 멘토: 김동훈
 
 멤버: 김건우, 김진석, 이주훈, 유홍범, 한승희
+
+
+## Live Demo on Heroku
+
+<p align="center">https://cs492c.herokuapp.com</p>
+
+![image](https://user-images.githubusercontent.com/22598138/145964276-b7366729-df0f-488b-ba1e-f33e12fdf5d5.png)
+
+
 
 ## Project Set Up
 [Wiki 문서를 참고해 주세요.](https://github.com/2021-fall-cs492c-team-10/monorepo/wiki/%EB%A0%88%ED%8F%AC-%EC%84%B8%ED%8C%85)
