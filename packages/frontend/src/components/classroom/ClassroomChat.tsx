@@ -12,6 +12,7 @@ import {
 
 import useScreenType from '../../hooks/useScreenType';
 import useSocket from '../../hooks/useSocket';
+import chatsAtom from '../../recoil/chats/atom';
 import languageState from '../../recoil/language';
 import meState from '../../recoil/me';
 import toastState from '../../recoil/toast';
@@ -22,19 +23,6 @@ import { conditionalStyle } from '../../utils/style';
 import FeedChatBox from '../chat/FeedChatBox';
 import MyChatBox from '../chat/MyChatBox';
 import OthersChatBox from '../chat/OthersChatBox';
-
-const chatsAtom = atom<{
-  chats: ChatContent[];
-  lastChatId: string | null | undefined;
-  lastHash: string;
-}>({
-  key: 'chatsAtom',
-  default: {
-    chats: [],
-    lastChatId: undefined,
-    lastHash: '',
-  },
-});
 
 const translatedChatsAtom = atom<{ [chatId: string]: string }>({
   key: 'translatedChatsAtom',
@@ -89,8 +77,7 @@ const useChats = (
   };
 
   const addChat = (chat: ChatContent) => {
-    if (chats.some((c) => c.id === chat.id)) return;
-    setChatsState((s) => ({ ...s, chats: [...s.chats, chat] }));
+    setChatsState((s) => ({ ...s, chats: [...s.chats.filter((m) => m.id !== chat.id), chat] }));
   };
 
   return {
@@ -206,15 +193,13 @@ const ClassroomChat: React.FC<Props> = ({
   }, [chats, wrapperRef.current]);
 
   React.useEffect(() => {
-    const listener = ({ hash: chatClassroomHash, message }: SocketChat.Broadcast.Chat) => {
+    socket.on('chat/ChatBroadcast', ({ hash: chatClassroomHash, message }) => {
       if (hash === chatClassroomHash) {
         addChat(message);
       }
-    };
-    socket.on('chat/ChatBroadcast', listener);
-
+    });
     return () => {
-      socket.off('chat/ChatBroadcast', listener);
+      socket.off('chat/ChatBroadcast');
     };
   }, [socket, hash]);
 
