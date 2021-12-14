@@ -9,15 +9,15 @@
 
 멤버: 김건우, 김진석, 이주훈, 유홍범, 한승희
 
-## Set Up
-Wiki 참고
+## Project Set Up
+[Wiki 문서를 참고해 주세요.](https://github.com/2021-fall-cs492c-team-10/monorepo/wiki/%EB%A0%88%ED%8F%AC-%EC%84%B8%ED%8C%85)
 
 
-## Report
-https://2021-fall-cs492c-team-10.github.io/report/
+## 최종 보고서
+[최종 보고서 보기](https://2021-fall-cs492c-team-10.github.io/report/)
 
 
-## Prototype Design
-[피그마 UI 디자인](https://www.figma.com/file/Y4GVrTepriDoMHRtV1giG8/Frontend-Project-Design-Proposal-Draft?node-id=11%3A347])
-
+## 디자인
+* [UI 디자인 보기](https://www.figma.com/file/Y4GVrTepriDoMHRtV1giG8/Frontend-Project-Design-Proposal-Draft?node-id=11%3A347)
+* [BI 디자인 보기](https://www.figma.com/file/jQzWRZbxG54zUd1U2ZEcbJ/Logo-(Final)?node-id=1%3A1811)
 
